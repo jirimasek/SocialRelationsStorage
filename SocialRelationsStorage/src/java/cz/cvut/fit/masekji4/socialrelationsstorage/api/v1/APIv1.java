@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
-@Path("relations")
+@Path("v1/relations")
 public class APIv1
 {
 
