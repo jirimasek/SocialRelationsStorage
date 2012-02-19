@@ -63,7 +63,8 @@ public class APIv2
     //@Produces("application/xml")
     public String getXml()
     {
-        storageService.saveRelationship(null);
+        //storageService.saveRelationship(null);
+        storageService.setName("jiri");
         return "ok";
     }
 

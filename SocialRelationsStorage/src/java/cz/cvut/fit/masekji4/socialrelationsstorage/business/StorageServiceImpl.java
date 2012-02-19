@@ -10,11 +10,20 @@ import javax.ejb.Stateless;
  */
 @Storage
 @Stateless
-public class StorageServiceImpl extends StorageService
+public class StorageServiceImpl implements StorageService
 {
+    private String name;
 
-    public StorageServiceImpl()
+    @Override
+    public String getName()
     {
+        return name;
+    }
+
+    @Override
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
     @Override

@@ -9,12 +9,11 @@ import javax.enterprise.inject.Default;
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
 @Default
-public abstract class StorageService
+public interface StorageService
 {
+    public String getName();
 
-    public StorageService()
-    {
-    }
+    public void setName(String name);
 
     public abstract  boolean saveRelationship(Relationship relationship);
 }
