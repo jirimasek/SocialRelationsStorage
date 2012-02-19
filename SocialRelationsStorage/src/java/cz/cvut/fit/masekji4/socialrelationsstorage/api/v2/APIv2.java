@@ -1,6 +1,9 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.api.v2;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.exceptions.BadRequestException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.Storage;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.StorageServiceImpl;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.StorageService;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.GraphDAO;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.IGraphDAO;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.DataProperty;
@@ -14,6 +17,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -34,11 +39,16 @@ import org.xml.sax.SAXException;
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
 @Path("v2/relations")
+@RequestScoped
 public class APIv2
 {
 
     @Context
     private UriInfo context;
+    
+    @Inject
+    @Storage
+    private StorageService storageService;
 
     /** Creates a new instance of APIv1 */
     public APIv2()
@@ -50,9 +60,10 @@ public class APIv2
      * @return an instance of java.lang.String
      */
     @GET
-    @Produces("application/xml")
+    //@Produces("application/xml")
     public String getXml()
     {
+        storageService.saveRelationship(null);
         return "ok";
     }
 
@@ -66,6 +77,9 @@ public class APIv2
     @Produces("application/json")
     public String postXml(String content) throws JSONException, URISyntaxException
     {
+        
+        
+        /*
         JSONObject data = new JSONObject(content);
         Relationship rel = new Relationship();
 
@@ -140,6 +154,10 @@ public class APIv2
         }
         
         return "[ { \"object\" : \"" + objURI.toString() + "\" , \"subject\" : \"" + subURI.toString() + "\" } ]";
+        
+        */
+                
+        return "";
     }
 
     /**
