@@ -1,8 +1,8 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao.tools;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.DataProperty;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.ObjectProperty;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.DataProperty;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.ObjectProperty;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;

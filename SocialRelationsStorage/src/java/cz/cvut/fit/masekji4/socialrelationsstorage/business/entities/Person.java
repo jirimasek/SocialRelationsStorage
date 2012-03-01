@@ -1,39 +1,67 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities;
+package cz.cvut.fit.masekji4.socialrelationsstorage.business.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Třída <code>Person</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
+@XmlRootElement
 public class Person
 {
-
-    private String about;
+    
+    private String prefix;
+    private String username;
+    private Integer uin;
     private List<DataProperty> dataProperties;
     private List<ObjectProperty> objectProperties;
+    private List<SameAs> sameAs;
 
     public Person()
-    {
-        this(null);
-    }
-
-    public Person(String about)
-    {
-        this.about = about;
+    {   
+        this.prefix = null;
+        this.username = null;
+        this.uin = null;
         this.dataProperties = null;
         this.objectProperties = null;
     }
 
-    public String getAbout()
+    public Person(String uid)
     {
-        return about;
+        String[] s = uid.split(":");
+        
+        this.prefix = s[0];
+        this.username = s[1];
+        
+        this.uin = null;
+        this.dataProperties = null;
+        this.objectProperties = null;
+    }
+    
+    public String getUid()
+    {
+        return prefix + ":" + username;
+    }
+    
+    public void setUid(String uid)
+    {
+        String[] s = uid.split(":");
+        
+        this.prefix = s[0];
+        this.username = s[1];
     }
 
-    public void setAbout(String about)
+    public Integer getUin()
     {
-        this.about = about;
+        return uin;
+    }
+
+    public void setUin(Integer uin)
+    {
+        this.uin = uin;
     }
 
     public List<DataProperty> getDataProperties()
@@ -76,5 +104,15 @@ public class Person
         }
 
         this.objectProperties.add(objectProperty);
+    }
+
+    public List<SameAs> getSameAs()
+    {
+        return sameAs;
+    }
+
+    public void setSameAs(List<SameAs> sameAs)
+    {
+        this.sameAs = sameAs;
     }
 }

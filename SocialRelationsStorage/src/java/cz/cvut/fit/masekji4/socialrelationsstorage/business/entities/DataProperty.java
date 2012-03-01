@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities;
+package cz.cvut.fit.masekji4.socialrelationsstorage.business.entities;
 
 /**
  *
@@ -9,6 +9,13 @@ public class DataProperty
     private String name;
     private String datatype;
     private String value;
+
+    public DataProperty()
+    {
+        this.name = null;
+        this.datatype = null;
+        this.value = null;
+    }
 
     public DataProperty(String name, String datatype, String value)
     {

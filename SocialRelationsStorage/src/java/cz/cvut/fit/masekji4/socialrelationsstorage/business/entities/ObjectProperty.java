@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities;
+package cz.cvut.fit.masekji4.socialrelationsstorage.business.entities;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +12,13 @@ public class ObjectProperty
     private String name;
     private String resource;
     private Map<String, String> properties;
+    
+    public ObjectProperty()
+    {
+        this.name = null;
+        this.resource = null;
+        this.properties = null;
+    }
 
     public ObjectProperty(String name, String resource)
     {

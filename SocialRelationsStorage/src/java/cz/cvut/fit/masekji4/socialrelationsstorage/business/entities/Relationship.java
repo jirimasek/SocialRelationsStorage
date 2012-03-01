@@ -1,5 +1,7 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities;
+package cz.cvut.fit.masekji4.socialrelationsstorage.business.entities;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities.Relation;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,6 +9,7 @@ import org.json.JSONObject;
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
+@XmlRootElement
 public class Relationship
 {
     private Person object;
@@ -20,6 +23,14 @@ public class Relationship
         this.subject = null;
         this.relationship = null;
         this.source = null;
+    }
+    
+    public Relationship(Relation relation)
+    {
+        this.object = new Person(relation.getStart().toString());
+        this.subject = new Person(relation.getEnd().toString());
+        this.relationship = relation.getType();
+        this.source = "";
     }
 
     public Person getObject()

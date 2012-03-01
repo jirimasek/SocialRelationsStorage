@@ -1,10 +1,10 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.GraphDAO;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.IGraphDAO;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.DataProperty;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.ObjectProperty;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManagerImpl;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManager;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.DataProperty;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.ObjectProperty;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.tools.RDFParser;
 import java.io.IOException;
 import java.net.URI;
@@ -74,11 +74,11 @@ public class APIv1
     @Consumes("application/xml")
     public void putXml(String content) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, JSONException
     {
-        RDFParser parser = new RDFParser();
+        /*RDFParser parser = new RDFParser();
 
         List<Person> persons = parser.getPersons(content);
 
-        IGraphDAO graphDAO = new GraphDAO();
+        PersistenceManager graphDAO = new PersistenceManagerImpl();
 
         for (Person person : persons)
         {
@@ -101,7 +101,7 @@ public class APIv1
 
                     URI index = new URI("http://localhost:7474/db/data/node/0");
 
-                    graphDAO.addRelationship(index, uri, "ctu:" + login);
+                    graphDAO.createRelation(index, uri, "ctu:" + login);
                 }
 
                 graphDAO.addProperty(uri, "foaf:homepage", person.getAbout());
@@ -139,13 +139,13 @@ public class APIv1
                                 URI index = new URI(
                                         "http://localhost:7474/db/data/node/0");
 
-                                graphDAO.addRelationship(index, u, "ctu:" + l);
+                                graphDAO.createRelation(index, u, "ctu:" + l);
                             }
 
-                            if (!graphDAO.getRelationURI(uri, u,
+                            if (!graphDAO.getRelation(uri, u,
                                     objectProperty.getName()))
                             {
-                                URI relation = graphDAO.addRelationship(uri, u,
+                                URI relation = graphDAO.createRelation(uri, u,
                                         objectProperty.getName());
 
                                 if (objectProperty.getProperties() != null)
@@ -164,7 +164,7 @@ public class APIv1
                     }
                 }
             }
-        }
+        }*/
     }
 
     /**
@@ -176,10 +176,12 @@ public class APIv1
     @Path("{id}")
     public String getURI(@PathParam("id") String id) throws URISyntaxException, JSONException
     {
-        IGraphDAO graphDAO = new GraphDAO();
+        /*PersistenceManager graphDAO = new PersistenceManagerImpl();
 
         URI uri = graphDAO.getNodeURI(id);
 
-        return "{ \"id\" : \"" + id + "\", \"uri\" : \"" + uri.toString() + "\" }";
+        return "{ \"id\" : \"" + id + "\", \"uri\" : \"" + uri.toString() + "\" }";*/
+        
+        return "";
     }
 }

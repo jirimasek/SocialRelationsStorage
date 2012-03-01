@@ -1,13 +1,10 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.Storage;
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.StorageService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -25,13 +22,10 @@ import org.json.JSONException;
 })
 public class ShowServlet extends HttpServlet
 {
-    
-    @Inject
-    @Storage
-    private StorageService storageService;
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * 
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -44,20 +38,8 @@ public class ShowServlet extends HttpServlet
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         
-        /*IGraphDAO dao = new GraphDAO();
-        
-        boolean uri = dao.getRelationURI(new URI("http://localhost:7474/db/data/node/1780"),
-                new URI("http://localhost:7474/db/data/node/1636"),
-                "rel:hasMet");
-        
-        System.out.println(uri);*/
-        
         try
         {
-            out.println(storageService.getName());
-            //out.println(uri);
-            //config.setProperty("BASE_URL");
-            //out.println(config.getProperty());
         }
         finally
         {            

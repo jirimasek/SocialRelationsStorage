@@ -9,23 +9,23 @@ import javax.ws.rs.core.Response;
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
-public class BadRequestException extends WebApplicationException {
+public class NotFoundException extends WebApplicationException {
 
     /**
-     * Creates a new instance of <code>BadRequestException</code> without detail message.
+     * Creates a new instance of <code>NotFoundException</code> without detail message.
      */
-    public BadRequestException() {
+    public NotFoundException() {
         super();
     }
 
 
     /**
-     * Constructs an instance of <code>BadRequestException</code> with the specified detail message.
+     * Constructs an instance of <code>NotFoundException</code> with the specified detail message.
      * @param msg the detail message.
      */
-    public BadRequestException(String msg) {
+    public NotFoundException(String msg) {
         super(Response.status(
-                Response.Status.BAD_REQUEST)
+                Response.Status.NOT_FOUND)
                     .entity("[ { \"error\" : { \"message\" : \"" + msg +"\" } } ]")
                     .type(MediaType.APPLICATION_JSON)
                     .build()
