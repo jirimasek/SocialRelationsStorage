@@ -1,10 +1,10 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.business;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relationship;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
 import java.net.URISyntaxException;
 import java.util.List;
-import org.json.JSONException;
+import org.codehaus.jettison.json.JSONException;
 
 /**
  * Rozhraní <code>StorageService</code>
@@ -15,16 +15,16 @@ public interface StorageService
 {
     public Person getPerson(String uid) throws JSONException, URISyntaxException;
     
-    public List<Relationship> getRelationships(String object)
+    public List<Relation> getRelationships(String object)
             throws JSONException, URISyntaxException;
     
-    public List<Relationship> getRelationships(String object, String relation)
+    public List<Relation> getRelationships(String object, String relation)
             throws JSONException, URISyntaxException;
     
-    public Relationship getRelationship(String object, String subject, String relation)
+    public Relation getRelationship(String object, String subject, String relation)
             throws JSONException, URISyntaxException;
     
     public boolean savePerson(Person person);
     
-    public boolean saveRelation(Relationship relation);
+    public boolean saveRelation(Relation relation);
 }

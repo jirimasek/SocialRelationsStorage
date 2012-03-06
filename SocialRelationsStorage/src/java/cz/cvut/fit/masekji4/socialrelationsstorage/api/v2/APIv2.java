@@ -4,7 +4,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.exceptions.BadRequestE
 import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.exceptions.NotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.business.StorageService;
 import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relationship;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.utils.Filter;
 import cz.cvut.fit.masekji4.socialrelationsstorage.utils.FilterService;
 import java.net.URISyntaxException;
@@ -21,7 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import org.json.JSONException;
+import org.codehaus.jettison.json.JSONException;
 
 /**
  * REST Web Service
@@ -100,7 +100,7 @@ public class APIv2
 
         /*
         JSONObject data = new JSONObject(content);
-        Relationship rel = new Relationship();
+        Relation rel = new Relation();
         
         rel.build(data);
         
@@ -182,11 +182,11 @@ public class APIv2
     @GET
     @Path("relations/{object}")
     @Produces("application/json")
-    public List<Relationship> retrieveRelations(@PathParam("object") String object)
+    public List<Relation> retrieveRelations(@PathParam("object") String object)
     {
         try
         {   
-            List<Relationship> relationships = storageService.getRelationships(object);
+            List<Relation> relationships = storageService.getRelationships(object);
 
             if (relationships != null)
             {
@@ -208,12 +208,12 @@ public class APIv2
     @GET
     @Path("relations/{object}/{relation}")
     @Produces("application/json")
-    public List<Relationship> retrieveRelations(@PathParam("object") String object,
+    public List<Relation> retrieveRelations(@PathParam("object") String object,
             @PathParam("relation") String relation)
     {
         try
         {   
-            List<Relationship> relationships = storageService.getRelationships(object, relation);
+            List<Relation> relationships = storageService.getRelationships(object, relation);
 
             if (relationships != null)
             {
@@ -235,7 +235,7 @@ public class APIv2
     @GET
     @Path("relations/{object}/{relation}/{subject}")
     @Produces("application/json")
-    public Relationship retrieveRelation(@PathParam("object") String object,
+    public Relation retrieveRelation(@PathParam("object") String object,
             @PathParam("relation") String relation,
             @PathParam("subject") String subject)
     {
@@ -243,7 +243,7 @@ public class APIv2
         
         try
         {   
-            Relationship relationship = storageService.getRelationship(object, subject, relation);
+            Relation relationship = storageService.getRelationship(object, subject, relation);
 
             if (relationship != null)
             {

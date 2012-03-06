@@ -1,13 +1,11 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relationship;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities.Relationship;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 /**
  * Třída <code>TraversalDescription</code>
@@ -24,7 +22,7 @@ public final class TraversalDescription
     private int maxDepth = 1;
     private String returnFilter = ALL;
     private String order = DEPTH_FIRST;
-    private List<Relation> relationships = new ArrayList<Relation>();
+    private List<Relationship> relationships = new ArrayList<Relationship>();
 
     public void setOrder(String order)
     {
@@ -46,7 +44,7 @@ public final class TraversalDescription
         this.returnFilter = returnFilter;
     }
 
-    public void setRelationships(Relation relation)
+    public void setRelationships(Relationship relation)
     {
         this.relationships = Arrays.asList(relation);
     }
