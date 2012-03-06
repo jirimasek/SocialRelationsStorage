@@ -1,6 +1,8 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import org.codehaus.jettison.json.JSONException;
 import static org.junit.Assert.*;
 
@@ -85,16 +87,25 @@ public class PersistenceManagerImplTest
         ctuBartolu5Properties.put("sioc:note", "http://usermap.cvut.cz");
     }
 
+    /**
+     * 
+     * @throws InvalidPropertiesException 
+     */
     @Test
     public void testCreateNode() throws InvalidPropertiesException
     {
         System.out.println("Test vytváření uzlů");
+        
+        // Vytvoření uživatele bez vlastností
         
         fbJirima5ek = pm.createNode();
 
         assertNotNull(fbJirima5ek);
         
         System.out.println("    Uzel: " + fbJirima5ek);
+        
+        // Vytvoření uživatele s vlastnostmi, přičemž objekt reprezentující
+        // vlasntosti je prázdný
         
         JSONObject emptyProperties = new JSONObject();
         
@@ -110,6 +121,8 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test vytváření uzlů s parametry");
         
+        // Vytvoření uzlu s vlastnostmi
+        
         twXmorfeus = pm.createNode(twXmorfeusProperties);
 
         assertNotNull(twXmorfeus);
@@ -121,6 +134,9 @@ public class PersistenceManagerImplTest
     public void testCreateNodeWithInvalidProperties() throws JSONException, InvalidPropertiesException
     {
         System.out.println("Test vytváření uzlu s invalidními parametry");
+        
+        // Vytvoření uzlu s vlastnostmi, přičemž objekt reprezentující vlasnosti
+        // obsahuje vnožený objekt
         
         JSONObject nestedValue = new JSONObject();
         
@@ -142,7 +158,11 @@ public class PersistenceManagerImplTest
         
         assertNotNull(object);
         
+        // Ověření, že se URI uzlu shodují
+        
         assertEquals(twXmorfeus.toString(), object.get("self"));
+        
+        // Ověření, že se shodují vlastnosti uzlu
         
         JSONObject data = (JSONObject) object.get("data");
         
@@ -162,6 +182,46 @@ public class PersistenceManagerImplTest
         
         pm.retrieveNode(DATABASE_URI + "/node/9896876997");
     }
+    
+    @Test
+    public void testCreateRelationship()
+    {
+        
+    }
+    
+    @Test(expected = InvalidRelationshipException.class)
+    public void testCreateInvalidRelationship_1() throws InvalidMetadataException,
+    InvalidRelationshipException, JSONException, NodeNotFoundException
+    {
+        URI uri = pm.createRelationship(fbJirima5ek.toString(), fbBartonekLukas.toString(), "");
+        
+        pm.deleteRelationship(uri.toString());
+    }
+    
+    @Test(expected = NodeNotFoundException.class)
+    public void testCreateInvalidRelationship_2() throws InvalidMetadataException,
+    InvalidRelationshipException, JSONException, NodeNotFoundException
+    {
+        URI uri = pm.createRelationship(fbJirima5ek.toString(), fbBartonekLukas.toString(), "foaf:knows");
+        
+        pm.deleteRelationship(uri.toString());
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     @Ignore
     @Test(expected = CannotDeleteNodeException.class)

@@ -4,7 +4,9 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionE
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities.GraphElement;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidPropertiesException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.MetadataNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.PropertyNotFoundException;
@@ -84,7 +86,7 @@ public interface PersistenceManager
      * @throws PropertyNotFoundException 
      */
     public String retrieveProperty(String nodeURI, String property)
-            throws NodeNotFoundException, PropertyNotFoundException;
+            throws PropertyNotFoundException;
     
     /**
      * 
@@ -94,7 +96,7 @@ public interface PersistenceManager
      * @throws NodeNotFoundException 
      */
     public boolean deleteProperty(String nodeURI, String property)
-            throws NodeNotFoundException;
+            throws PropertyNotFoundException;
     /**
      * 
      * @param nodeURI
@@ -117,22 +119,23 @@ public interface PersistenceManager
      * @throws NodeNotFoundException 
      */
     public URI createRelationship(String startNodeURI, String endNodeURI,
-            String relationship)
-            throws InvalidPropertiesException, NodeNotFoundException;
+            String relationship) throws InvalidMetadataException,
+            InvalidRelationshipException, JSONException, NodeNotFoundException;
     
     /**
      * 
      * @param startNodeURI
      * @param endNodeURI
      * @param relationship
-     * @param properties
+     * @param metadata
      * @return
      * @throws InvalidPropertiesException
      * @throws NodeNotFoundException 
      */
     public URI createRelationship(String startNodeURI, String endNodeURI,
-            String relationship, JSONObject properties)
-            throws InvalidPropertiesException, NodeNotFoundException;
+            String relationship, JSONObject metadata)
+            throws InvalidMetadataException, InvalidRelationshipException,
+            JSONException, NodeNotFoundException;
     
     /**
      * 
@@ -150,7 +153,7 @@ public interface PersistenceManager
      * @return
      * @throws NodeNotFoundException 
      */
-    public JSONArray getRelationships(String nodeURI, DirectionEnum direction)
+    public JSONArray retrieveRelationships(String nodeURI, DirectionEnum direction)
         throws NodeNotFoundException;
     
     /**
@@ -161,7 +164,7 @@ public interface PersistenceManager
      * @return
      * @throws NodeNotFoundException 
      */
-    public JSONArray getRelationships(String nodeURI, DirectionEnum direction,
+    public JSONArray retrieveRelationships(String nodeURI, DirectionEnum direction,
             String relationship)
         throws NodeNotFoundException;
     
@@ -199,7 +202,7 @@ public interface PersistenceManager
      * @throws RelationshipNotFoundException 
      */
     public String retrieveRelationshipMetadata(String relationshipURI, String metadata)
-            throws MetadataNotFoundException, RelationshipNotFoundException;
+            throws MetadataNotFoundException;
     
     /**
      * 
@@ -208,8 +211,7 @@ public interface PersistenceManager
      * @return
      * @throws RelationNotFoundException 
      */
-    public boolean deleteRelationshipMetadata(String relationshipURI, String metadata)
-            throws RelationshipNotFoundException;
+    public boolean deleteRelationshipMetadata(String relationshipURI, String metadata);
     
     /**
      * 

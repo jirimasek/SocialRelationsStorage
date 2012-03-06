@@ -9,19 +9,20 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidPropertiesException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.MetadataNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.PropertyNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.RelationshipNotFoundException;
 import java.net.URI;
-import java.rmi.UnexpectedException;
 import java.util.List;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
@@ -233,6 +234,12 @@ public class PersistenceManagerImpl implements PersistenceManager
         return response.getLocation();
     }
 
+    /**
+     * 
+     * @param nodeURI
+     * @return
+     * @throws NodeNotFoundException 
+     */
     @Override
     public JSONObject retrieveNode(String nodeURI) throws NodeNotFoundException
     {
@@ -276,61 +283,196 @@ public class PersistenceManagerImpl implements PersistenceManager
     {
         String propertiesURI = nodeURI + "/properties";
         
-        throw new UnsupportedOperationException("Not supported yet.");
+        ClientResponse response = put(propertiesURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new NodeNotFoundException();
+        }
+        else if (response.getStatus() == 400)
+        {
+            throw new InvalidPropertiesException();
+        }
     }
 
+    /**
+     * 
+     * @param nodeURI
+     * @return
+     * @throws NodeNotFoundException 
+     */
     @Override
     public JSONObject retrieveProperties(String nodeURI) throws NodeNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String propertiesURI = nodeURI + "/properties";
+        
+        ClientResponse response = get(propertiesURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new NodeNotFoundException();
+        }
+        
+        JSONObject properties = response.getEntity(JSONObject.class);
+        
+        return properties;
     }
 
+    /**
+     * 
+     * @param nodeURI
+     * @param property
+     * @return
+     * @throws PropertyNotFoundException 
+     */
     @Override
-    public String retrieveProperty(String nodeURI, String property) throws NodeNotFoundException, PropertyNotFoundException
+    public String retrieveProperty(String nodeURI, String property) throws PropertyNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String propertyURI = nodeURI + "/properties/" + property;
+        
+        ClientResponse response = get(propertyURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new PropertyNotFoundException();
+        }
+        
+        String prop = response.getEntity(String.class);
+        
+        return prop;
     }
 
+    /**
+     * 
+     * @param nodeURI
+     * @param property
+     * @return 
+     */
     @Override
-    public boolean deleteProperty(String nodeURI, String property) throws NodeNotFoundException
+    public boolean deleteProperty(String nodeURI, String property)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String propertyURI = nodeURI + "/properties/" + property;
+        
+        ClientResponse response = delete(propertyURI);
+        
+        if (response.getStatus() == 204)
+        {
+            return true;
+        }
+        
+        return false;
     }
 
+    /**
+     * 
+     * @param nodeURI
+     * @return
+     * @throws NodeNotFoundException 
+     */
     @Override
     public boolean deleteProperties(String nodeURI) throws NodeNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String propertiesURI = nodeURI + "/properties";
+        
+        ClientResponse response = get(propertiesURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new NodeNotFoundException();
+        }
+        else if (response.getStatus() == 204)
+        {
+            return true;
+        }
+        
+        return false;
     }
 
     /* ********************************************************************** *
      *                                  Hrany                                 *
      * ********************************************************************** */
 
+    /**
+     * 
+     * @param startNodeURI
+     * @param endNodeURI
+     * @param relationship
+     * @return
+     * @throws InvalidMetadataException
+     * @throws JSONException
+     * @throws InvalidRelationshipException
+     * @throws NodeNotFoundException 
+     */
     @Override
     public URI createRelationship(String startNodeURI, String endNodeURI,
-            String relationship) throws InvalidPropertiesException, NodeNotFoundException
+            String relationship) throws InvalidMetadataException, JSONException,
+            InvalidRelationshipException, NodeNotFoundException
+    {
+        return createRelationship(startNodeURI, endNodeURI, relationship, null);
+    }
+
+    /**
+     * 
+     * @param startNodeURI
+     * @param endNodeURI
+     * @param relationship
+     * @param metadata
+     * @return
+     * @throws InvalidMetadataException
+     * @throws InvalidRelationshipException
+     * @throws JSONException
+     * @throws NodeNotFoundException 
+     */
+    @Override
+    public URI createRelationship(String startNodeURI, String endNodeURI,
+            String relationship, JSONObject metadata) throws InvalidMetadataException,
+            InvalidRelationshipException, JSONException, NodeNotFoundException
     {
         String fromURI = startNodeURI + "/relationships";
-
-        //String relationshipJson = "{"
-          //      + "\"to\":\"" + endNode.toString() + "\","
-            //    + "\"type\":\"" + relationship + "\"}";
+        System.out.println(fromURI);                
+        JSONObject rel = new JSONObject();
         
-        throw new UnsupportedOperationException("Not supported yet.");
+        rel.put("to", endNodeURI);
+        rel.put("type", relationship);
+        rel.put("data", metadata);
+        
+        ClientResponse response = post(fromURI, rel);
+        
+        System.out.println(response.getStatus());
+        
+        if (response.getStatus() == 400)
+        {
+            throw new InvalidRelationshipException();
+        }
+        else if (response.getStatus() == 404)
+        {
+        }
+        
+        URI relationshipURI = response.getLocation();
+        
+        return relationshipURI;
     }
 
+    /**
+     * 
+     * @param relationshipURI
+     * @return
+     * @throws RelationshipNotFoundException 
+     */
     @Override
-    public URI createRelationship(String startNodeURI, String endNodeURI,
-            String relationship, JSONObject properties) throws InvalidPropertiesException, NodeNotFoundException
+    public JSONObject retrieveRelationship(String relationshipURI)
+            throws RelationshipNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public JSONObject retrieveRelationship(String relationshipURI) throws RelationshipNotFoundException
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
+        ClientResponse response = get(relationshipURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new RelationshipNotFoundException();
+        }
+        
+        JSONObject relationship = response.getEntity(JSONObject.class);
+        
+        return relationship;
     }
 
     /**
@@ -341,7 +483,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONArray getRelationships(String nodeURI, DirectionEnum direction)
+    public JSONArray retrieveRelationships(String nodeURI, DirectionEnum direction)
             throws NodeNotFoundException
     {
         String relationships = nodeURI + "/relationships/" + direction.toString().toLowerCase();
@@ -358,7 +500,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONArray getRelationships(String nodeURI, DirectionEnum direction,
+    public JSONArray retrieveRelationships(String nodeURI, DirectionEnum direction,
             String relationship) throws NodeNotFoundException
     {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -372,7 +514,14 @@ public class PersistenceManagerImpl implements PersistenceManager
     @Override
     public boolean deleteRelationship(String relationshipURI)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        ClientResponse response = delete(relationshipURI);
+        
+        if (response.getStatus() == 204)
+        {
+            return true;
+        }
+        
+        return false;
     }
 
     /**
@@ -385,38 +534,110 @@ public class PersistenceManagerImpl implements PersistenceManager
     public void addMetadataToRelationship(String relationshipURI,
             JSONObject metadata) throws RelationshipNotFoundException
     {
-        String propertyUri = relationshipURI + "/properties";
-
-        //String entity = "{\"" + property + "\":\"" + value + "\"}";
+        String metadataURI = relationshipURI + "/properties";
         
-        throw new UnsupportedOperationException("Not supported yet.");
+        ClientResponse response = put(metadataURI, metadata);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new RelationshipNotFoundException();
+        }
     }
 
+    /**
+     * 
+     * @param relationshipURI
+     * @return
+     * @throws RelationshipNotFoundException 
+     */
     @Override
     public JSONObject retrieveRelationshipMetadata(String relationshipURI)
             throws RelationshipNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String metadataURI = relationshipURI + "/properties";
+        
+        ClientResponse response = get(metadataURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new RelationshipNotFoundException();
+        }
+        
+        JSONObject metadata = response.getEntity(JSONObject.class);
+        
+        return metadata;
     }
 
+    /**
+     * 
+     * @param relationshipURI
+     * @param metadata
+     * @return
+     * @throws MetadataNotFoundException 
+     */
     @Override
     public String retrieveRelationshipMetadata(String relationshipURI,
-            String metadata) throws MetadataNotFoundException, RelationshipNotFoundException
+            String metadata) throws MetadataNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String metadataURI = relationshipURI + "/properties/" + metadata;
+        
+        ClientResponse response = get(metadataURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new MetadataNotFoundException();
+        }
+        
+        String meta = response.getEntity(String.class);
+        
+        return meta;
     }
 
+    /**
+     * 
+     * @param relationshipURI
+     * @param metadata
+     * @return 
+     */
     @Override
     public boolean deleteRelationshipMetadata(String relationshipURI,
-            String metadata) throws RelationshipNotFoundException
+            String metadata)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String metadataURI = relationshipURI + "/properties/" + metadata;
+        
+        ClientResponse response = delete(metadataURI);
+        
+        if (response.getStatus() == 204)
+        {
+            return true;
+        }
+        
+        return false;
     }
 
+    /**
+     * 
+     * @param relationshipURI
+     * @return
+     * @throws RelationshipNotFoundException 
+     */
     @Override
     public boolean deleteRelationshipMetadata(String relationshipURI) throws RelationshipNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String metadataURI = relationshipURI + "/properties";
+        
+        ClientResponse response = delete(metadataURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new RelationshipNotFoundException();
+        }
+        else if (response.getStatus() == 204)
+        {
+            return true;
+        }
+        
+        return false;
     }
 
     /* ********************************************************************** *
