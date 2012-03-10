@@ -178,10 +178,11 @@ public interface PersistenceManager
      * 
      * @param relationshipURI
      * @param metadata
-     * @throws RelationNotFoundException 
+     * @throws InvalidMetadataException
+     * @throws RelationshipNotFoundException 
      */
     public void addMetadataToRelationship(String relationshipURI, JSONObject metadata)
-        throws RelationshipNotFoundException;
+        throws InvalidMetadataException, RelationshipNotFoundException;
     
     /**
      * 
@@ -207,18 +208,16 @@ public interface PersistenceManager
      * 
      * @param relationshipURI
      * @param metadata
-     * @return
-     * @throws RelationNotFoundException 
+     * @return 
      */
     public boolean deleteRelationshipMetadata(String relationshipURI, String metadata);
     
     /**
      * 
      * @param relationshipURI
-     * @return
      * @throws RelationshipNotFoundException 
      */
-    public boolean deleteRelationshipMetadata(String relationshipURI)
+    public void deleteRelationshipMetadata(String relationshipURI)
             throws RelationshipNotFoundException;
     
     /* ********************************************************************** *

@@ -504,9 +504,8 @@ public class PersistenceManagerImpl implements PersistenceManager
     public JSONArray retrieveRelationships(String nodeURI, DirectionEnum direction)
             throws NodeNotFoundException
     {
-        String relationships = nodeURI + "/relationships/" + direction.toString().toLowerCase();
         
-        throw new UnsupportedOperationException("Not supported yet.");
+        return retrieveRelationships(nodeURI, direction, null);
     }
 
     /**
@@ -521,7 +520,23 @@ public class PersistenceManagerImpl implements PersistenceManager
     public JSONArray retrieveRelationships(String nodeURI, DirectionEnum direction,
             String relationship) throws NodeNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String relationships = nodeURI + "/relationships/" + direction.toString().toLowerCase();
+        
+        if (relationship != null && !relationship.isEmpty())
+        {
+            relationships += "/" + relationship;
+        }
+        
+        ClientResponse response = get(relationships);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new NodeNotFoundException();
+        }
+        
+        JSONArray rel = response.getEntity(JSONArray.class);
+        
+        return rel;
     }
 
     /**
@@ -546,11 +561,13 @@ public class PersistenceManagerImpl implements PersistenceManager
      * 
      * @param relationshipURI
      * @param metadata
+     * @throws InvalidMetadataException
      * @throws RelationshipNotFoundException 
      */
     @Override
     public void addMetadataToRelationship(String relationshipURI,
-            JSONObject metadata) throws RelationshipNotFoundException
+            JSONObject metadata) throws InvalidMetadataException,
+            RelationshipNotFoundException
     {
         String metadataURI = relationshipURI + "/properties";
         
@@ -559,6 +576,10 @@ public class PersistenceManagerImpl implements PersistenceManager
         if (response.getStatus() == 404)
         {
             throw new RelationshipNotFoundException();
+        }
+        else if (response.getStatus() == 400)
+        {
+            throw new InvalidMetadataException();
         }
     }
 
@@ -579,6 +600,10 @@ public class PersistenceManagerImpl implements PersistenceManager
         if (response.getStatus() == 404)
         {
             throw new RelationshipNotFoundException();
+        }
+        else if (response.getStatus() == 204)
+        {
+            return new JSONObject();
         }
         
         JSONObject metadata = response.getEntity(JSONObject.class);
@@ -618,8 +643,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @return 
      */
     @Override
-    public boolean deleteRelationshipMetadata(String relationshipURI,
-            String metadata)
+    public boolean  deleteRelationshipMetadata(String relationshipURI, String metadata)
     {
         String metadataURI = relationshipURI + "/properties/" + metadata;
         
@@ -636,11 +660,11 @@ public class PersistenceManagerImpl implements PersistenceManager
     /**
      * 
      * @param relationshipURI
-     * @return
      * @throws RelationshipNotFoundException 
      */
     @Override
-    public boolean deleteRelationshipMetadata(String relationshipURI) throws RelationshipNotFoundException
+    public void deleteRelationshipMetadata(String relationshipURI)
+            throws RelationshipNotFoundException
     {
         String metadataURI = relationshipURI + "/properties";
         
@@ -650,12 +674,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         {
             throw new RelationshipNotFoundException();
         }
-        else if (response.getStatus() == 204)
-        {
-            return true;
-        }
-        
-        return false;
     }
 
     /* ********************************************************************** *
