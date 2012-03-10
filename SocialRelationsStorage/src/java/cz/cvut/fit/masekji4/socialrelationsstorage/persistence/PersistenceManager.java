@@ -100,10 +100,9 @@ public interface PersistenceManager
     /**
      * 
      * @param nodeURI
-     * @return
      * @throws NodeNotFoundException 
      */
-    public boolean deleteProperties(String nodeURI) throws NodeNotFoundException;
+    public void deleteProperties(String nodeURI) throws NodeNotFoundException;
     
     /* ********************************************************************** *
      *                                  Hrany                                 *

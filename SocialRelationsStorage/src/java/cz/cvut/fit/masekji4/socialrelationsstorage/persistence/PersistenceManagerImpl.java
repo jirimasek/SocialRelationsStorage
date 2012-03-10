@@ -283,7 +283,7 @@ public class PersistenceManagerImpl implements PersistenceManager
     {
         String propertiesURI = nodeURI + "/properties";
         
-        ClientResponse response = put(propertiesURI);
+        ClientResponse response = put(propertiesURI, properties);
         
         if (response.getStatus() == 404)
         {
@@ -312,6 +312,10 @@ public class PersistenceManagerImpl implements PersistenceManager
         {
             throw new NodeNotFoundException();
         }
+        else if (response.getStatus() == 204)
+        {
+            return new JSONObject();
+        }
         
         JSONObject properties = response.getEntity(JSONObject.class);
         
@@ -338,6 +342,16 @@ public class PersistenceManagerImpl implements PersistenceManager
         }
         
         String prop = response.getEntity(String.class);
+        
+        if (prop.startsWith("\""))
+        {
+            prop = prop.substring(1);
+        }
+        
+        if (prop.endsWith("\""))
+        {
+            prop = prop.substring(0, prop.length() - 1);
+        }
         
         return prop;
     }
@@ -370,22 +384,16 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public boolean deleteProperties(String nodeURI) throws NodeNotFoundException
+    public void deleteProperties(String nodeURI) throws NodeNotFoundException
     {
         String propertiesURI = nodeURI + "/properties";
         
-        ClientResponse response = get(propertiesURI);
+        ClientResponse response = delete(propertiesURI);
         
         if (response.getStatus() == 404)
         {
             throw new NodeNotFoundException();
         }
-        else if (response.getStatus() == 204)
-        {
-            return true;
-        }
-        
-        return false;
     }
 
     /* ********************************************************************** *
@@ -425,27 +433,37 @@ public class PersistenceManagerImpl implements PersistenceManager
      */
     @Override
     public URI createRelationship(String startNodeURI, String endNodeURI,
-            String relationship, JSONObject metadata) throws InvalidMetadataException,
-            InvalidRelationshipException, JSONException, NodeNotFoundException
+            String relationship, JSONObject metadata) throws InvalidRelationshipException,
+            JSONException, NodeNotFoundException
     {
         String fromURI = startNodeURI + "/relationships";
-        System.out.println(fromURI);                
+                        
         JSONObject rel = new JSONObject();
         
-        rel.put("to", endNodeURI);
-        rel.put("type", relationship);
-        rel.put("data", metadata);
+        if (endNodeURI != null && !endNodeURI.isEmpty())
+        {
+            rel.put("to", endNodeURI);
+        }
+        
+        if (relationship != null && !relationship.isEmpty())
+        {
+            rel.put("type", relationship);
+        }
+        
+        if (metadata != null && metadata.length() > 0)
+        {
+            rel.put("data", metadata);
+        }
         
         ClientResponse response = post(fromURI, rel);
         
-        System.out.println(response.getStatus());
-        
-        if (response.getStatus() == 400)
+        if (response.getStatus() == 404)
+        {
+            throw new NodeNotFoundException();
+        }
+        else if (response.getStatus() >= 400)
         {
             throw new InvalidRelationshipException();
-        }
-        else if (response.getStatus() == 404)
-        {
         }
         
         URI relationshipURI = response.getLocation();
