@@ -13,10 +13,10 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.Invali
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidPropertiesException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.MetadataNotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeIndexNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.PropertyNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.RelationshipNotFoundException;
-import java.net.URI;
 import java.util.List;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -201,7 +201,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @return 
      */
     @Override
-    public URI createNode()
+    public int createNode()
     {
         try
         {
@@ -209,7 +209,7 @@ public class PersistenceManagerImpl implements PersistenceManager
         }
         catch (InvalidPropertiesException ex)
         {
-            return null;
+            return 0;
         }
     }
 
@@ -220,7 +220,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws InvalidPropertiesException 
      */
     @Override
-    public URI createNode(JSONObject properties) throws InvalidPropertiesException
+    public int createNode(JSONObject properties) throws InvalidPropertiesException
     {
         final String nodeEntryPointURI = DATABASE_URI + "/node";
         
@@ -231,18 +231,24 @@ public class PersistenceManagerImpl implements PersistenceManager
             throw new InvalidPropertiesException();
         }
         
-        return response.getLocation();
+        String nodeURI = response.getLocation().toString();
+        
+        String node = nodeURI.substring(nodeURI.lastIndexOf("/") + 1);
+                
+        return Integer.valueOf(node);
     }
 
     /**
      * 
-     * @param nodeURI
+     * @param node
      * @return
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONObject retrieveNode(String nodeURI) throws NodeNotFoundException
+    public JSONObject retrieveNode(int node) throws NodeNotFoundException
     {
+        String nodeURI = DATABASE_URI + "/node/" + node; 
+        
         ClientResponse response = get(nodeURI);
         
         if (response.getStatus() == 404)
@@ -250,20 +256,22 @@ public class PersistenceManagerImpl implements PersistenceManager
             throw new NodeNotFoundException();
         }
         
-        JSONObject node = response.getEntity(JSONObject.class);
+        JSONObject output = response.getEntity(JSONObject.class);
         
-        return node;
+        return output;
     }
 
     /**
      * 
-     * @param nodeURI
+     * @param node
      * @return
      * @throws CannotDeleteNodeException 
      */
     @Override
-    public boolean deleteNode(String nodeURI) throws CannotDeleteNodeException
+    public boolean deleteNode(int node) throws CannotDeleteNodeException
     {
+        String nodeURI = DATABASE_URI + "/node/" + node; 
+        
         ClientResponse response = delete(nodeURI);
         
         if (response.getStatus() == 409)
@@ -278,10 +286,17 @@ public class PersistenceManagerImpl implements PersistenceManager
         return false;
     }
 
+    /**
+     * 
+     * @param node
+     * @param properties
+     * @throws InvalidPropertiesException
+     * @throws NodeNotFoundException 
+     */
     @Override
-    public void addProperties(String nodeURI, JSONObject properties) throws InvalidPropertiesException, NodeNotFoundException
+    public void addProperties(int node, JSONObject properties) throws InvalidPropertiesException, NodeNotFoundException
     {
-        String propertiesURI = nodeURI + "/properties";
+        String propertiesURI = DATABASE_URI + "/node/" + node + "/properties";
         
         ClientResponse response = put(propertiesURI, properties);
         
@@ -297,14 +312,14 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param nodeURI
+     * @param node
      * @return
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONObject retrieveProperties(String nodeURI) throws NodeNotFoundException
+    public JSONObject retrieveProperties(int node) throws NodeNotFoundException
     {
-        String propertiesURI = nodeURI + "/properties";
+        String propertiesURI = DATABASE_URI + "/node/" + node + "/properties";
         
         ClientResponse response = get(propertiesURI);
         
@@ -324,15 +339,15 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param nodeURI
+     * @param node
      * @param property
      * @return
      * @throws PropertyNotFoundException 
      */
     @Override
-    public String retrieveProperty(String nodeURI, String property) throws PropertyNotFoundException
+    public String retrieveProperty(int node, String property) throws PropertyNotFoundException
     {
-        String propertyURI = nodeURI + "/properties/" + property;
+        String propertyURI = DATABASE_URI + "/node/" + node + "/properties/" + property;
         
         ClientResponse response = get(propertyURI);
         
@@ -358,14 +373,14 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param nodeURI
+     * @param node
      * @param property
      * @return 
      */
     @Override
-    public boolean deleteProperty(String nodeURI, String property)
+    public boolean deleteProperty(int node, String property)
     {
-        String propertyURI = nodeURI + "/properties/" + property;
+        String propertyURI = DATABASE_URI + "/node/" + node + "/properties/" + property;
         
         ClientResponse response = delete(propertyURI);
         
@@ -379,14 +394,14 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param nodeURI
+     * @param node
      * @return
      * @throws NodeNotFoundException 
      */
     @Override
-    public void deleteProperties(String nodeURI) throws NodeNotFoundException
+    public void deleteProperties(int node) throws NodeNotFoundException
     {
-        String propertiesURI = nodeURI + "/properties";
+        String propertiesURI = DATABASE_URI + "/node/" + node + "/properties";
         
         ClientResponse response = delete(propertiesURI);
         
@@ -402,8 +417,8 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param startNodeURI
-     * @param endNodeURI
+     * @param startNode
+     * @param endNode
      * @param relationship
      * @return
      * @throws InvalidMetadataException
@@ -412,30 +427,32 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public URI createRelationship(String startNodeURI, String endNodeURI,
+    public int createRelationship(int startNode, int endNode,
             String relationship) throws InvalidMetadataException, JSONException,
             InvalidRelationshipException, NodeNotFoundException
     {
-        return createRelationship(startNodeURI, endNodeURI, relationship, null);
+        return createRelationship(startNode, endNode, relationship, null);
     }
 
     /**
      * 
-     * @param startNodeURI
-     * @param endNodeURI
+     * @param startNode
+     * @param endNode
      * @param relationship
      * @param metadata
      * @return
-     * @throws InvalidMetadataException
      * @throws InvalidRelationshipException
      * @throws JSONException
      * @throws NodeNotFoundException 
      */
     @Override
-    public URI createRelationship(String startNodeURI, String endNodeURI,
+    public int createRelationship(int startNode, int endNode,
             String relationship, JSONObject metadata) throws InvalidRelationshipException,
             JSONException, NodeNotFoundException
     {
+        String startNodeURI = DATABASE_URI + "/node/" + startNode;
+        String endNodeURI = DATABASE_URI + "/node/" + endNode;
+        
         String fromURI = startNodeURI + "/relationships";
                         
         JSONObject rel = new JSONObject();
@@ -466,21 +483,25 @@ public class PersistenceManagerImpl implements PersistenceManager
             throw new InvalidRelationshipException();
         }
         
-        URI relationshipURI = response.getLocation();
+        String relURI = response.getLocation().toString();
         
-        return relationshipURI;
+        String node = relURI.substring(relURI.lastIndexOf("/") + 1);
+                
+        return Integer.valueOf(node);
     }
 
     /**
      * 
-     * @param relationshipURI
+     * @param relationship
      * @return
      * @throws RelationshipNotFoundException 
      */
     @Override
-    public JSONObject retrieveRelationship(String relationshipURI)
+    public JSONObject retrieveRelationship(int relationship)
             throws RelationshipNotFoundException
     {
+        String relationshipURI = DATABASE_URI + "/relationship/" + relationship;
+        
         ClientResponse response = get(relationshipURI);
         
         if (response.getStatus() == 404)
@@ -488,39 +509,40 @@ public class PersistenceManagerImpl implements PersistenceManager
             throw new RelationshipNotFoundException();
         }
         
-        JSONObject relationship = response.getEntity(JSONObject.class);
+        JSONObject rel = response.getEntity(JSONObject.class);
         
-        return relationship;
+        return rel;
     }
 
     /**
      * 
-     * @param nodeURI
+     * @param node
      * @param direction
      * @return
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONArray retrieveRelationships(String nodeURI, DirectionEnum direction)
+    public JSONArray retrieveRelationships(int node, DirectionEnum direction)
             throws NodeNotFoundException
     {
         
-        return retrieveRelationships(nodeURI, direction, null);
+        return retrieveRelationships(node, direction, null);
     }
 
     /**
      * 
-     * @param nodeURI
+     * @param node
      * @param direction
      * @param relationship
      * @return
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONArray retrieveRelationships(String nodeURI, DirectionEnum direction,
+    public JSONArray retrieveRelationships(int node, DirectionEnum direction,
             String relationship) throws NodeNotFoundException
     {
-        String relationships = nodeURI + "/relationships/" + direction.toString().toLowerCase();
+        String relationships = DATABASE_URI + "/node/" + node + "/relationships/"
+                + direction.toString().toLowerCase();
         
         if (relationship != null && !relationship.isEmpty())
         {
@@ -541,12 +563,14 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param relationshipURI
+     * @param relationship
      * @return 
      */
     @Override
-    public boolean deleteRelationship(String relationshipURI)
+    public boolean deleteRelationship(int relationship)
     {
+        String relationshipURI = DATABASE_URI + "/relationship/" + relationship;
+        
         ClientResponse response = delete(relationshipURI);
         
         if (response.getStatus() == 204)
@@ -559,17 +583,17 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param relationshipURI
+     * @param relationship
      * @param metadata
      * @throws InvalidMetadataException
      * @throws RelationshipNotFoundException 
      */
     @Override
-    public void addMetadataToRelationship(String relationshipURI,
+    public void addMetadataToRelationship(int relationship,
             JSONObject metadata) throws InvalidMetadataException,
             RelationshipNotFoundException
     {
-        String metadataURI = relationshipURI + "/properties";
+        String metadataURI = DATABASE_URI + "/relationship/" + relationship + "/properties";
         
         ClientResponse response = put(metadataURI, metadata);
         
@@ -585,15 +609,15 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param relationshipURI
+     * @param relationship
      * @return
      * @throws RelationshipNotFoundException 
      */
     @Override
-    public JSONObject retrieveRelationshipMetadata(String relationshipURI)
+    public JSONObject retrieveRelationshipMetadata(int relationship)
             throws RelationshipNotFoundException
     {
-        String metadataURI = relationshipURI + "/properties";
+        String metadataURI = DATABASE_URI + "/relationship/" + relationship + "/properties";
         
         ClientResponse response = get(metadataURI);
         
@@ -613,16 +637,17 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param relationshipURI
+     * @param relationship
      * @param metadata
      * @return
      * @throws MetadataNotFoundException 
      */
     @Override
-    public String retrieveRelationshipMetadata(String relationshipURI,
+    public String retrieveRelationshipMetadata(int relationship,
             String metadata) throws MetadataNotFoundException
     {
-        String metadataURI = relationshipURI + "/properties/" + metadata;
+        String metadataURI = DATABASE_URI + "/relationship/" + relationship
+                + "/properties/" + metadata;
         
         ClientResponse response = get(metadataURI);
         
@@ -638,14 +663,15 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param relationshipURI
+     * @param relationship
      * @param metadata
      * @return 
      */
     @Override
-    public boolean  deleteRelationshipMetadata(String relationshipURI, String metadata)
+    public boolean  deleteRelationshipMetadata(int relationship, String metadata)
     {
-        String metadataURI = relationshipURI + "/properties/" + metadata;
+        String metadataURI = DATABASE_URI + "/relationship/" + relationship
+                + "/properties/" + metadata;
         
         ClientResponse response = delete(metadataURI);
         
@@ -659,14 +685,14 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param relationshipURI
+     * @param relationship
      * @throws RelationshipNotFoundException 
      */
     @Override
-    public void deleteRelationshipMetadata(String relationshipURI)
+    public void deleteRelationshipMetadata(int relationship)
             throws RelationshipNotFoundException
     {
-        String metadataURI = relationshipURI + "/properties";
+        String metadataURI = DATABASE_URI + "/relationship/" + relationship + "/properties";
         
         ClientResponse response = delete(metadataURI);
         
@@ -675,15 +701,15 @@ public class PersistenceManagerImpl implements PersistenceManager
             throw new RelationshipNotFoundException();
         }
     }
-
+    
     /* ********************************************************************** *
-     *                              Traverzování                              *
+     *                               Traversals                               *
      * ********************************************************************** */
 
     @Override
-    public <T> List<T> traverse(String startNode, TraversalDescription t) throws NodeNotFoundException
+    public <T> List<T> traverse(int startNode, TraversalDescription t) throws NodeNotFoundException
     {
-        String traverserUri = startNode + "/traverse/node";
+        String traverserUri = DATABASE_URI + "/node/" + startNode + "/traverse/node";
         
         //TraversalDescription t = new TraversalDescription();
 
@@ -694,5 +720,125 @@ public class PersistenceManagerImpl implements PersistenceManager
         //t.setRelationships(new Relationship(relationship, Relationship.OUT));
         
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    /* ********************************************************************** *
+     *                                Indexes                                 *
+     * ********************************************************************** */
+
+    /**
+     * 
+     * @param name
+     * @throws JSONException 
+     */
+    @Override
+    public void createNodeIndex(String name) throws JSONException
+    {
+        String nodeIndexEntryPointURI = DATABASE_URI + "/index/node";
+        
+        JSONObject entity = new JSONObject();
+            
+        entity.put("name", name);
+        
+        ClientResponse response = post(nodeIndexEntryPointURI, entity);
+    }
+
+    /**
+     * 
+     * @param nodeIndex 
+     */
+    @Override
+    public void deleteNodeIndex(String nodeIndex)
+    {
+        String nodeIndexURI = DATABASE_URI + "/index/node/" + nodeIndex;
+        
+        ClientResponse response = delete(nodeIndexURI);
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public JSONObject retrieveListOfNodeIndexes()
+    {
+        String nodeIndexEntryPointURI = DATABASE_URI + "/index/node";
+        
+        ClientResponse response = get(nodeIndexEntryPointURI);
+        
+        JSONObject list = response.getEntity(JSONObject.class);
+        
+        return list;
+    }
+
+    /**
+     * 
+     * @param nodeIndex
+     * @param key
+     * @param value
+     * @param node
+     * @throws JSONException
+     */
+    @Override
+    public void addNodeToIndex(String nodeIndex, String key, String value,
+            int node) throws JSONException
+    {
+        String nodeIndexURI = DATABASE_URI + "/index/node/" + nodeIndex + "?unique";
+        String nodeURI = DATABASE_URI + "/node/" + node;
+        
+        JSONObject entity = new JSONObject();
+        
+        entity.put("key", key);
+        entity.put("value", value);
+        entity.put("uri", nodeURI);
+        
+        ClientResponse response = post(nodeIndexURI, entity);
+    }
+
+    /**
+     * 
+     * @param nodeIndex
+     * @param key
+     * @param value
+     * @return
+     * @throws JSONException
+     */
+    @Override
+    public JSONObject retrieveNodeFromIndex(String nodeIndex, String key,
+            String value) throws JSONException
+    {
+        String nodeURI = DATABASE_URI + "/index/node/" + nodeIndex + "/" + key+ "/" + value;
+        
+        ClientResponse response = get(nodeURI);
+        
+        JSONArray nodes = response.getEntity(JSONArray.class);
+        
+        if (nodes.length() > 0)
+        {
+            return nodes.getJSONObject(0);
+        }
+        
+        return null;
+    }
+
+    /**
+     * 
+     * @param nodeIndex
+     * @param key
+     * @param value
+     * @throws NodeIndexNotFoundException 
+     */
+    @Override
+    public void deleteNodeFromIndex(String nodeIndex, int node, String key, String value)
+            throws NodeIndexNotFoundException
+    {
+        String indexNodeURI = DATABASE_URI + "/index/node/" + nodeIndex + "/" + key + "/" + value + "/" + node;
+        
+        ClientResponse response = delete(indexNodeURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new NodeIndexNotFoundException();
+        }
     }
 }
