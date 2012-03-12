@@ -15,18 +15,45 @@ import org.codehaus.jettison.json.JSONObject;
 public final class TraversalDescription
 {
 
-    public static final String DEPTH_FIRST = "depth first";
-    public static final String NODE = "node";
+    public static final String DEPTH_FIRST = "depth_first";
+    public static final String BREADTH_FIRST = "breadth_first";
+    
+    public static final String NODE_GLOBAL = "node_global";
+    public static final String NONE = "none";
+    public static final String RELATIONSHIP_GLOBAL = "relationship_global";
+    public static final String NODE_PATH = "node_path";
+    public static final String RELATIONSHIP_PATH = "relationship_path";
+    
     public static final String ALL = "all";
-    private String uniqueness = NODE;
-    private int maxDepth = 1;
-    private String returnFilter = ALL;
-    private String order = DEPTH_FIRST;
-    private List<Relationship> relationships = new ArrayList<Relationship>();
+    public static final String ALL_BUT_START_NODE = "all_but_start_node";
+    
+    private String order;
+    private String uniqueness;
+    private int maxDepth;
+    private String returnFilter;
+    private List<Relationship> relationships;
+
+    public TraversalDescription()
+    {
+        uniqueness = NODE_GLOBAL;
+        maxDepth = 1;
+        returnFilter = ALL;
+        order = DEPTH_FIRST;
+    }
+
+    public String getOrder()
+    {
+        return order;
+    }
 
     public void setOrder(String order)
     {
         this.order = order;
+    }
+
+    public String getUniqueness()
+    {
+        return uniqueness;
     }
 
     public void setUniqueness(String uniqueness)
@@ -34,9 +61,19 @@ public final class TraversalDescription
         this.uniqueness = uniqueness;
     }
 
+    public int getMaxDepth()
+    {
+        return maxDepth;
+    }
+
     public void setMaxDepth(int maxDepth)
     {
         this.maxDepth = maxDepth;
+    }
+
+    public String getReturnFilter()
+    {
+        return returnFilter;
     }
 
     public void setReturnFilter(String returnFilter)
@@ -44,9 +81,26 @@ public final class TraversalDescription
         this.returnFilter = returnFilter;
     }
 
-    public void setRelationships(Relationship relation)
+    public List<Relationship> getRelationships()
     {
-        this.relationships = Arrays.asList(relation);
+        return relationships;
+    }
+
+    public void setRelationships(List<Relationship> relationships)
+    {
+        this.relationships = relationships;
+    }
+
+    public void addRelationship(String type, DirectionEnum direction)
+    {
+        if (relationships == null)
+        {
+            relationships = new ArrayList<Relationship>();
+        }
+        
+        Relationship relation = new Relationship(type, direction);
+        
+        relationships.add(relation);
     }
 
     /**
@@ -61,19 +115,22 @@ public final class TraversalDescription
         json.put("order", order);
         json.put("uniqueness", uniqueness);
 
-        for (int i = 0 ; i < relationships.size() ; i++)
+        if (relationships != null)
         {
-            json.put("relationships", relationships.get(i).toJson());
+            for (int i = 0 ; i < relationships.size() ; i++)
+            {
+                json.append("relationships", relationships.get(i).toJson());
+            }
         }
 
         JSONObject filter = new JSONObject();
-        
+
         filter.put("language", "builtin");
         filter.put("name", returnFilter);
 
-        json.put("return filter", filter);
+        json.put("return_filter", filter);
 
-        json.put("max depth", maxDepth);
+        json.put("max_depth", maxDepth);
 
         return json;
     }

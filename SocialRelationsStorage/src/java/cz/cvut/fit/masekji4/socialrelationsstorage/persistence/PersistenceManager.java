@@ -2,6 +2,7 @@ package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidPropertiesException;
@@ -11,7 +12,6 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeIn
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.PropertyNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.RelationshipNotFoundException;
-import java.util.List;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -224,14 +224,15 @@ public interface PersistenceManager
     
     /**
      * 
-     * @param <T>
-     * @param start
+     * @param startNode
      * @param t
+     * @param type
      * @return
+     * @throws JSONException
      * @throws NodeNotFoundException 
      */
-    public <T> List<T> traverse(int start, TraversalDescription t)
-            throws NodeNotFoundException; 
+    public JSONArray traverse(int startNode, TraversalDescription t, TypeEnum type)
+            throws JSONException, NodeNotFoundException; 
     
     /* ********************************************************************** *
      *                                Indexes                                 *

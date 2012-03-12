@@ -8,6 +8,7 @@ import com.sun.jersey.api.client.WebResource.Builder;
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidPropertiesException;
@@ -17,7 +18,6 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeIn
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.PropertyNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.RelationshipNotFoundException;
-import java.util.List;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -108,8 +108,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         }
         
         ClientResponse response = builder.post(ClientResponse.class);
-
-        response.close();
         
         return response;
     }
@@ -707,19 +705,29 @@ public class PersistenceManagerImpl implements PersistenceManager
      * ********************************************************************** */
 
     @Override
-    public <T> List<T> traverse(int startNode, TraversalDescription t) throws NodeNotFoundException
+    public JSONArray traverse(int startNode, TraversalDescription t, TypeEnum type)
+            throws JSONException, NodeNotFoundException
     {
-        String traverserUri = DATABASE_URI + "/node/" + startNode + "/traverse/node";
+        String traverserURI = DATABASE_URI + "/node/" + startNode + "/traverse/"
+                + type.toString().toLowerCase();
         
-        //TraversalDescription t = new TraversalDescription();
-
-        //t.setOrder(TraversalDescription.DEPTH_FIRST);
-        //t.setUniqueness(TraversalDescription.NODE);
-        //t.setMaxDepth(maxDepth);
-        //t.setReturnFilter(TraversalDescription.ALL);
-        //t.setRelationships(new Relationship(relationship, Relationship.OUT));
+        ClientResponse response = post(traverserURI, t.toJson());
         
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (response.getStatus() == 404)
+        {
+            throw new NodeNotFoundException();
+        }
+        
+        try
+        {
+            JSONArray output = response.getEntity(JSONArray.class);
+        
+            return output;
+        }
+        catch (Exception ex)
+        {
+            return new JSONArray();
+        }
     }
     
     /* ********************************************************************** *

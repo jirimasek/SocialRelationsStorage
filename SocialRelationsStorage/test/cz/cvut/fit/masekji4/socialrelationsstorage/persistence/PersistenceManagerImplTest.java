@@ -1,5 +1,8 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities.Relationship;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeIndexNotFoundException;
 import static org.junit.Assert.*;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.ALL;
@@ -19,6 +22,7 @@ import java.util.Iterator;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -498,7 +502,7 @@ public class PersistenceManagerImplTest
 
         foafKnows = pm.createRelationship(fbJirima5ek, fbBartonekLukas, "foaf:knows");
         
-        assertTrue(foafKnows > 0);
+        assertNotNull(foafKnows);
         
         System.out.println("    Hrana: " + foafKnows);
     }
@@ -909,7 +913,52 @@ public class PersistenceManagerImplTest
 
         pm.deleteRelationshipMetadata(98968769);
     }
-
+    
+    /**
+     * 
+     * @throws JSONException
+     * @throws NodeNotFoundException 
+     */
+    @Test
+    public void testTraverse() throws JSONException, NodeNotFoundException
+    {
+        System.out.println("Test traverzování");
+        
+        TraversalDescription t;
+        
+        t = new TraversalDescription();
+        t.addRelationship("foaf:knows", OUT);
+        
+        JSONArray nodes;
+        
+        nodes = pm.traverse(fbBartonekLukas, t, TypeEnum.RELATIONSHIP);
+        
+        assertEquals(nodes.length(), 0);
+        
+        nodes = pm.traverse(fbJirima5ek, t, TypeEnum.RELATIONSHIP);
+        
+        assertEquals(nodes.length(), 1);
+        
+        JSONObject node = nodes.getJSONObject(0);
+        
+        assertTrue(node.getString("self").endsWith(String.valueOf(foafKnows)));
+    }
+    
+    /**
+     * 
+     * @throws JSONException
+     * @throws NodeNotFoundException 
+     */
+    @Test(expected = NodeNotFoundException.class)
+    public void testTraverseFromNonexistentNode() throws JSONException, NodeNotFoundException
+    {
+        System.out.println("Test traverzování z neexistujícího uzlu");
+        
+        TraversalDescription t = new TraversalDescription();
+        
+        pm.traverse(98968769, t, TypeEnum.NODE);
+    }
+    
     /**
      * 
      * @throws JSONException 
