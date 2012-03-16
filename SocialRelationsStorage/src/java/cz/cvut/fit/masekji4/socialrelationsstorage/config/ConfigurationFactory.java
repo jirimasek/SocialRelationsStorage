@@ -1,6 +1,6 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.config;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.utils.Namespace;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Namespace;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;

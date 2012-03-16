@@ -2,7 +2,6 @@ package cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities.Relationship;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -33,6 +32,9 @@ public final class TraversalDescription
     private String returnFilter;
     private List<Relationship> relationships;
 
+    /**
+     * 
+     */
     public TraversalDescription()
     {
         uniqueness = NODE_GLOBAL;
@@ -41,56 +43,101 @@ public final class TraversalDescription
         order = DEPTH_FIRST;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getOrder()
     {
         return order;
     }
 
+    /**
+     * 
+     * @param order 
+     */
     public void setOrder(String order)
     {
         this.order = order;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getUniqueness()
     {
         return uniqueness;
     }
 
+    /**
+     * 
+     * @param uniqueness 
+     */
     public void setUniqueness(String uniqueness)
     {
         this.uniqueness = uniqueness;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public int getMaxDepth()
     {
         return maxDepth;
     }
 
+    /**
+     * 
+     * @param maxDepth 
+     */
     public void setMaxDepth(int maxDepth)
     {
         this.maxDepth = maxDepth;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getReturnFilter()
     {
         return returnFilter;
     }
 
+    /**
+     * 
+     * @param returnFilter 
+     */
     public void setReturnFilter(String returnFilter)
     {
         this.returnFilter = returnFilter;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public List<Relationship> getRelationships()
     {
         return relationships;
     }
 
+    /**
+     * 
+     * @param relationships 
+     */
     public void setRelationships(List<Relationship> relationships)
     {
         this.relationships = relationships;
     }
 
+    /**
+     * 
+     * @param type
+     * @param direction 
+     */
     public void addRelationship(String type, DirectionEnum direction)
     {
         if (relationships == null)

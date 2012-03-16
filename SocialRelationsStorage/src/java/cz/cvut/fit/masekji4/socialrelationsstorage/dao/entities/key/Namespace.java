@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.utils;
+package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key;
 
 /**
  * Třída <code>Namespace</code>

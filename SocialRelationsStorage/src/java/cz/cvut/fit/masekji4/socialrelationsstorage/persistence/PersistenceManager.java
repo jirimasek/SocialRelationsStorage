@@ -264,10 +264,10 @@ public interface PersistenceManager
      * @param value
      * @param node
      * @throws JSONException
-     * @throws NodeAlreadyIndexedException 
+     * @throws NodeIndexNotFoundException 
      */
     public void addNodeToIndex(String nodeIndex, String key, String value, int node)
-            throws JSONException;
+            throws JSONException, NodeIndexNotFoundException;
     
     /**
      * 
@@ -275,10 +275,11 @@ public interface PersistenceManager
      * @param key
      * @param value
      * @return
-     * @throws JSONException 
+     * @throws JSONException
+     * @throws NodeIndexNotFoundException 
      */
     public JSONObject retrieveNodeFromIndex(String nodeIndex, String key, String value)
-            throws JSONException;
+            throws JSONException, NodeIndexNotFoundException;
     
     /**
      * 

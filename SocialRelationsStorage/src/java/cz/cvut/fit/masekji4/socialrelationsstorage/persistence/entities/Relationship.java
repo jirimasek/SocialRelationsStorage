@@ -1,8 +1,6 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
-import java.net.URI;
-import java.util.Map;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -11,85 +9,65 @@ import org.codehaus.jettison.json.JSONObject;
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
-public class Relationship implements GraphElement
+public class Relationship
 {
 
-    private URI self;
     private String type;
-    private URI start;
-    private URI end;
     private DirectionEnum direction;
-    private Map<String, String> properties;
 
+    /**
+     * 
+     */
     public Relationship()
     {
         this(null, null);
     }
     
+    /**
+     * 
+     * @param type
+     * @param direction 
+     */
     public Relationship(String type, DirectionEnum direction)
     {
         this.type = type;
         this.direction = direction;
     }
 
-    public URI getSelf()
-    {
-        return self;
-    }
-
-    public void setSelf(URI self)
-    {
-        this.self = self;
-    }
-
+    /**
+     * 
+     * @return 
+     */
     public String getType()
     {
         return type;
     }
 
+    /**
+     * 
+     * @param type 
+     */
     public void setType(String type)
     {
         this.type = type;
     }
 
-    public URI getStart()
-    {
-        return start;
-    }
-
-    public void setStart(URI start)
-    {
-        this.start = start;
-    }
-
-    public URI getEnd()
-    {
-        return end;
-    }
-
-    public void setEnd(URI end)
-    {
-        this.end = end;
-    }
-
+    /**
+     * 
+     * @return 
+     */
     public DirectionEnum getDirection()
     {
         return direction;
     }
 
+    /**
+     * 
+     * @param direction 
+     */
     public void setDirection(DirectionEnum direction)
     {
         this.direction = direction;
-    }
-
-    public Map<String, String> getProperties()
-    {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties)
-    {
-        this.properties = properties;
     }
 
     /**

@@ -1,6 +1,5 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
 
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -18,7 +17,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeIn
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.PropertyNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.RelationshipNotFoundException;
-import javax.enterprise.inject.Default;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.codehaus.jettison.json.JSONArray;
@@ -30,7 +29,8 @@ import org.codehaus.jettison.json.JSONObject;
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
-@Default
+@Neo4j
+@Stateless
 public class PersistenceManagerImpl implements PersistenceManager
 {
 
@@ -42,7 +42,7 @@ public class PersistenceManagerImpl implements PersistenceManager
     {
     }
 
-    protected PersistenceManagerImpl(String databaseURI)
+    public PersistenceManagerImpl(String databaseURI)
     {
         this.DATABASE_URI = databaseURI;
     }
@@ -789,7 +789,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      */
     @Override
     public void addNodeToIndex(String nodeIndex, String key, String value,
-            int node) throws JSONException
+            int node) throws JSONException, NodeIndexNotFoundException
     {
         String nodeIndexURI = DATABASE_URI + "/index/node/" + nodeIndex + "?unique";
         String nodeURI = DATABASE_URI + "/node/" + node;
@@ -801,6 +801,11 @@ public class PersistenceManagerImpl implements PersistenceManager
         entity.put("uri", nodeURI);
         
         ClientResponse response = post(nodeIndexURI, entity);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new NodeIndexNotFoundException();
+        }
     }
 
     /**
@@ -813,11 +818,16 @@ public class PersistenceManagerImpl implements PersistenceManager
      */
     @Override
     public JSONObject retrieveNodeFromIndex(String nodeIndex, String key,
-            String value) throws JSONException
+            String value) throws JSONException, NodeIndexNotFoundException
     {
         String nodeURI = DATABASE_URI + "/index/node/" + nodeIndex + "/" + key+ "/" + value;
         
         ClientResponse response = get(nodeURI);
+        
+        if (response.getStatus() == 404)
+        {
+            throw new NodeIndexNotFoundException();
+        }
         
         JSONArray nodes = response.getEntity(JSONArray.class);
         

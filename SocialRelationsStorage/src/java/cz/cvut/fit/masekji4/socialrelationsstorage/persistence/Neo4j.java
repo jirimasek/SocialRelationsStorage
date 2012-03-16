@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.business;
+package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -17,5 +17,5 @@ import javax.inject.Qualifier;
 @Qualifier
 @Retention(RUNTIME)
 @Target({TYPE, METHOD, PARAMETER, FIELD})
-public @interface Storage {
+public @interface Neo4j { 
 }

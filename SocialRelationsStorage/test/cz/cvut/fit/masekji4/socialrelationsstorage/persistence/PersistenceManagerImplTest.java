@@ -2,7 +2,6 @@ package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities.Relationship;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeIndexNotFoundException;
 import static org.junit.Assert.*;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.ALL;
@@ -22,7 +21,6 @@ import java.util.Iterator;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -34,7 +32,9 @@ public class PersistenceManagerImplTest
 {
 
     private static final String DATABASE_URI = "http://localhost:7474/db/data";
+    
     private PersistenceManagerImpl pm;
+    
     private static int fbJirima5ek;
     private static int twJirimasek;
     private static int ctuMasekji4;
@@ -43,6 +43,7 @@ public class PersistenceManagerImplTest
     private static int ctuBartolu5;
     private static int foafKnows;
     private static int owlSameAs;
+    
     private JSONObject fbJirima5ekProperties;
     private JSONObject fbBartonekLukasProperties;
     private JSONObject twJirimasekProperties;
@@ -991,7 +992,7 @@ public class PersistenceManagerImplTest
      * @throws JSONException 
      */
     @Test
-    public void testAddNodeToIndex() throws JSONException
+    public void testAddNodeToIndex() throws JSONException, NodeIndexNotFoundException
     {
         System.out.println("Test přidávání uzlů do indexu");
         
