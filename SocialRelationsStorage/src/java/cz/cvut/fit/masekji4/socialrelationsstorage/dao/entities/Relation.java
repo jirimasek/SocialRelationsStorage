@@ -1,6 +1,10 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Třída <code>Relation</code>
@@ -9,48 +13,236 @@ import java.util.List;
  */
 public class Relation
 {
-    private int id;
-    private Person start;
-    private Person end;
-    private List<String> source;
+    private Integer id;
+    private Integer object;
+    private Integer subject;
+    private String type;
+    private List<URI> sources;
+    private Map<String, String> properties;
 
+    /**
+     * 
+     * @return 
+     */
     public int getId()
     {
         return id;
     }
 
-    public void setId(int id)
+    /**
+     * 
+     * @param id 
+     */
+    public void setId(Integer id)
     {
         this.id = id;
     }
 
-    public Person getStart()
+    /**
+     * 
+     * @return 
+     */
+    public Integer getObject()
     {
-        return start;
+        return object;
     }
 
-    public void setStart(Person start)
+    /**
+     * 
+     * @param object 
+     */
+    public void setObject(Integer object)
     {
-        this.start = start;
+        this.object = object;
     }
 
-    public Person getEnd()
+    /**
+     * 
+     * @return 
+     */
+    public Integer getSubject()
     {
-        return end;
+        return subject;
     }
 
-    public void setEnd(Person end)
+    /**
+     * 
+     * @param subject 
+     */
+    public void setSubject(Integer subject)
     {
-        this.end = end;
+        this.subject = subject;
     }
 
-    public List<String> getSource()
+    /**
+     * 
+     * @return 
+     */
+    public String getType()
     {
-        return source;
+        return type;
     }
 
-    public void setSource(List<String> source)
+    /**
+     * 
+     * @param type 
+     */
+    public void setType(String type)
     {
-        this.source = source;
+        this.type = type;
     }
+
+    /**
+     * 
+     * @return 
+     */
+    public List<URI> getSources()
+    {
+        return sources;
+    }
+
+    /**
+     * 
+     * @param sources 
+     */
+    public void setSources(List<URI> sources)
+    {
+        this.sources = sources;
+    }
+
+    /**
+     * 
+     * @param uri 
+     */
+    public void addSource(URI uri)
+    {
+        if (sources == null)
+        {
+            sources = new ArrayList<URI>();
+        }
+
+        sources.add(uri);
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public Map<String, String> getProperties()
+    {
+        return properties;
+    }
+
+    /**
+     * 
+     * @param properties 
+     */
+    public void setProperties(Map<String, String> properties)
+    {
+        this.properties = properties;
+    }
+
+    /**
+     * 
+     * @param property
+     * @param value 
+     */
+    public void addProperty(String property, String value)
+    {
+        if (properties == null)
+        {
+            properties = new HashMap<String, String>();
+        }
+
+        properties.put(property, value);
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public boolean isValid()
+    {
+        if (object == null)
+        {
+            return false;
+        }
+        
+        if (subject == null)
+        {
+            return false;
+        }
+        
+        if (type == null)
+        {
+            return false;
+        }
+        
+        if (sources == null || sources.isEmpty())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+        
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        
+        final Relation other = (Relation) obj;
+        
+        if (this.object != other.object)
+        {
+            return false;
+        }
+        
+        if (this.subject != other.subject)
+        {
+            return false;
+        }
+        
+        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type))
+        {
+            return false;
+        }
+        
+        if (this.sources != other.sources && (this.sources == null || !this.sources.equals(other.sources)))
+        {
+            return false;
+        }
+        
+        if (this.properties != other.properties && (this.properties == null || !this.properties.equals(other.properties)))
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public int hashCode()
+    {
+        return id;
+    }
+    
+    
 }

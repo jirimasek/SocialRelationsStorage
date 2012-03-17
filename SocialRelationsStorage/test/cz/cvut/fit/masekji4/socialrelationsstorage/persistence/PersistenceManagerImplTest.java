@@ -35,14 +35,14 @@ public class PersistenceManagerImplTest
     
     private PersistenceManagerImpl pm;
     
-    private static int fbJirima5ek;
-    private static int twJirimasek;
-    private static int ctuMasekji4;
-    private static int fbBartonekLukas;
-    private static int twXmorfeus;
-    private static int ctuBartolu5;
-    private static int foafKnows;
-    private static int owlSameAs;
+    private static Integer fbJirima5ek;
+    private static Integer twJirimasek;
+    private static Integer ctuMasekji4;
+    private static Integer fbBartonekLukas;
+    private static Integer twXmorfeus;
+    private static Integer ctuBartolu5;
+    private static Integer foafKnows;
+    private static Integer owlSameAs;
     
     private JSONObject fbJirima5ekProperties;
     private JSONObject fbBartonekLukasProperties;
@@ -125,7 +125,7 @@ public class PersistenceManagerImplTest
 
         fbJirima5ek = pm.createNode();
 
-        assertTrue(fbJirima5ek > 0);
+        assertNotNull(fbJirima5ek);
 
         System.out.println("    Uzel: " + fbJirima5ek);
 
@@ -136,7 +136,7 @@ public class PersistenceManagerImplTest
 
         fbBartonekLukas = pm.createNode(emptyProperties);
 
-        assertTrue(fbBartonekLukas > 0);
+        assertNotNull(fbBartonekLukas);
 
         System.out.println("    Uzel: " + fbBartonekLukas);
     }
@@ -155,13 +155,13 @@ public class PersistenceManagerImplTest
 
         twJirimasek = pm.createNode(twJirimasekProperties);
 
-        assertTrue(twJirimasek > 0);
+        assertNotNull(twJirimasek);
 
         System.out.println("    Uzel: " + twJirimasek);
 
         twXmorfeus = pm.createNode(twXmorfeusProperties);
 
-        assertTrue(twXmorfeus > 0);
+        assertNotNull(twXmorfeus);
 
         System.out.println("    Uzel: " + twXmorfeus);
     }
@@ -230,7 +230,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test získávání informací o neexistujících uzlech");
 
-        pm.retrieveNode(98968769);
+        pm.retrieveNode(new Integer(98968769));
     }
 
     /**
@@ -263,7 +263,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test získávání vlastností neexistujícího uzlu");
 
-        pm.retrieveProperties(98968769);
+        pm.retrieveProperties(new Integer(98968769));
     }
 
     /**
@@ -329,7 +329,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test přidání vlastností neexistujícímu uzlu");
 
-        pm.addProperties(98968769, fbJirima5ekProperties);
+        pm.addProperties(new Integer(98968769), fbJirima5ekProperties);
     }
 
     /**
@@ -410,7 +410,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test smazání vlastností neexistujícího uzlu");
 
-        pm.deleteProperties(98968769);
+        pm.deleteProperties(new Integer(98968769));
     }
 
     /**
@@ -443,7 +443,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test vytváření hrany z neexistujícího uzlu");
 
-        pm.createRelationship(98968769, fbBartonekLukas, "foaf:knows");
+        pm.createRelationship(new Integer(98968769), fbBartonekLukas, "foaf:knows");
     }
 
     /**
@@ -459,7 +459,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test vytváření hrany do neexistujícího uzlu");
 
-        pm.createRelationship(fbJirima5ek, 98968769, "foaf:knows");
+        pm.createRelationship(fbJirima5ek, new Integer(98968769), "foaf:knows");
     }
 
     /**
@@ -485,7 +485,7 @@ public class PersistenceManagerImplTest
 
         invalidMetadata.put("foaf:name", nestedValue);
 
-        pm.createRelationship(fbJirima5ek, 98968769, "foaf:knows", invalidMetadata);
+        pm.createRelationship(fbJirima5ek, new Integer(98968769), "foaf:knows", invalidMetadata);
     }
 
     /**
@@ -524,7 +524,7 @@ public class PersistenceManagerImplTest
 
         owlSameAs = pm.createRelationship(twJirimasek, fbJirima5ek, "owl:sameAs", owlSameAsProperties);
         
-        assertTrue(owlSameAs > 0);
+        assertNotNull(owlSameAs);
         
         System.out.println("    Hrana: " + owlSameAs);
     }
@@ -559,7 +559,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test vytváření hrany z neexistujícího uzlu");
 
-        pm.createRelationship(98968769, fbJirima5ek, "foaf:knows");
+        pm.createRelationship(new Integer(98968769), fbJirima5ek, "foaf:knows");
     }
 
     /**
@@ -575,7 +575,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test vytváření hrany do neexistujícího uzlu");
         
-        pm.createRelationship(fbJirima5ek, 98968769, "foaf:knows");
+        pm.createRelationship(fbJirima5ek, new Integer(98968769), "foaf:knows");
     }
 
     /**
@@ -604,7 +604,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test získávání informací o neexistující hraně");
         
-        pm.retrieveRelationship(98968769);
+        pm.retrieveRelationship(new Integer(98968769));
     }
 
     /**
@@ -679,7 +679,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test získávání informací o hranách vedoucích z neexistujícího uzlu");
 
-        pm.retrieveRelationships(98968769, OUT);
+        pm.retrieveRelationships(new Integer(98968769), OUT);
     }
 
     /**
@@ -691,7 +691,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test získávání informací o hranách vedoucích do neexistujícího uzlu");
 
-        pm.retrieveRelationships(98968769, IN);
+        pm.retrieveRelationships(new Integer(98968769), IN);
     }
 
     /**
@@ -732,7 +732,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test získávání informací o specifických hranách vedoucích z neexistujícího uzlu");
 
-        pm.retrieveRelationships(98968769, OUT, "foaf:knows");
+        pm.retrieveRelationships(new Integer(98968769), OUT, "foaf:knows");
 
     }
 
@@ -745,7 +745,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test získávání informací o specifických hranách vedoucích do neexistujícího uzlu");
 
-        pm.retrieveRelationships(98968769, IN, "foaf:knows");
+        pm.retrieveRelationships(new Integer(98968769), IN, "foaf:knows");
     }
 
     /**
@@ -824,7 +824,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test získávání metadat neexistující hrany");
 
-        pm.retrieveRelationshipMetadata(98968769);
+        pm.retrieveRelationshipMetadata(new Integer(98968769));
     }
 
     /**
@@ -912,7 +912,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test smazání metadat neexistující hrany");
 
-        pm.deleteRelationshipMetadata(98968769);
+        pm.deleteRelationshipMetadata(new Integer(98968769));
     }
     
     /**
@@ -957,7 +957,7 @@ public class PersistenceManagerImplTest
         
         TraversalDescription t = new TraversalDescription();
         
-        pm.traverse(98968769, t, TypeEnum.NODE);
+        pm.traverse(new Integer(98968769), t, TypeEnum.NODE);
     }
     
     /**
@@ -1039,7 +1039,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test smazání uzlu z indexu");
         
-        pm.deleteNodeFromIndex("fb", fbJirima5ek, "username", "jirima5ek");
+        pm.deleteNodeFromIndex("fb", "username", "jirima5ek", fbJirima5ek);
         
         JSONObject node = pm.retrieveNodeFromIndex("fb", "username", "jirima5ek");
         
@@ -1055,7 +1055,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test smazání uzlu z neexistujícího indexu");
         
-        pm.deleteNodeFromIndex("ctu", 98968769, "username", "masekji4");
+        pm.deleteNodeFromIndex("ctu", "username", "masekji4", new Integer(98968769));
     }
     
     /**

@@ -8,7 +8,8 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyE
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.SamenessAlreadySetException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public interface GraphDAO
      * @return
      * @throws PersonAlreadyExistsException 
      */
-    public Person createPerson(Person person) throws PersonAlreadyExistsException;
+    public Integer createPerson(Person person) throws PersonAlreadyExistsException;
     
     /**
      * 
@@ -68,27 +69,40 @@ public interface GraphDAO
      *                                SAMENESS                                *
      * ********************************************************************** */
     
-    public void declareSameness(Person person, Person alterEgo) throws SamenessAlreadySetException;
+    public void declareSameness(Integer person, Integer alterEgo, List<URI> sources)
+            throws PersonNotFoundException;
     
-    public void declareSameness(Key key, Key alterEgo) throws PersonNotFoundException, SamenessAlreadySetException;
+    public void declareSameness(Key person, Key alterEgo, List<URI> sources)
+            throws PersonNotFoundException;
     
     public Path retrieveAlterEgos(Person person) throws PersonNotFoundException;
     
     public Path retrieveAlterEgos(Key key) throws PersonNotFoundException;
     
-    public boolean refuseSameness(Person person, Person alterEgo);
+    public boolean refuseSameness(Integer person, Integer alterEgo);
     
-    public boolean refuseSameness(Key key, Key alterEgo) throws PersonNotFoundException;
+    public boolean refuseSameness(Key person, Key alterEgo) throws PersonNotFoundException;
     
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
     
-    public void createRelation(Relation relation) throws RelationAlreadyExistsException;
+    public Integer createRelation(Relation relation)
+            throws PersonNotFoundException, RelationAlreadyExistsException;
     
-    public Relation retrieveRelation() throws RelationNotFoundException;
+    public Relation retrieveRelation(Integer id) throws RelationNotFoundException;
     
-    public List<Relation> retrieveRelations();
+    public List<Relation> retrieveRelations(Integer person, DirectionEnum direction)
+            throws PersonNotFoundException;
+    
+    public List<Relation> retrieveRelations(Key key, DirectionEnum direction)
+            throws PersonNotFoundException;
+    
+    public List<Relation> retrieveRelations(Integer person, DirectionEnum direction, String type)
+            throws PersonNotFoundException;
+    
+    public List<Relation> retrieveRelations(Key key, DirectionEnum direction, String type)
+            throws PersonNotFoundException;
     
     public void updateRelation(Relation relation);
     

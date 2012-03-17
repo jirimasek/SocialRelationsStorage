@@ -1,10 +1,16 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
+import static org.junit.Assert.*;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.ALL;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.IN;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.OUT;
+
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.ConfigurationFactory;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
-import static org.junit.Assert.*;
-
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.KeyFactory;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
@@ -12,8 +18,9 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManage
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManagerImpl;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -26,8 +33,12 @@ public class GraphDAOImplTest
 
     private static final String DATABASE_URI = "http://localhost:7474/db/data";
     
-    private static int fbJiriMa5ekId;
-    private static int fbBartonekLukasId;
+    private static Integer fbJiriMa5ekId;
+    private static Integer fbBartonekLukasId;
+    private static Integer twJiriMasekId;
+    private static Integer twXMorfeusId;
+    
+    private static Integer foafKnows;
     
     private ConfigurationFactory confFactory;
     
@@ -37,7 +48,13 @@ public class GraphDAOImplTest
     
     private Person fbJiriMa5ek;
     private Person fbBartonekLukas;
+    private Person twJiriMasek;
+    private Person twXMorfeus;
 
+    /**
+     * 
+     * @throws URISyntaxException 
+     */
     @Before
     public void init() throws URISyntaxException
     {
@@ -57,29 +74,49 @@ public class GraphDAOImplTest
         
         fbBartonekLukas.setProfile(new URI("http://www.facebook.com/bartonek.lukas"));
         fbBartonekLukas.addSource(new URI("http://www.facebook.com"));
-        fbJiriMa5ek.addProperty("foaf:name", "Lukáš Bartoněk");
+        fbBartonekLukas.addProperty("foaf:name", "Lukáš Bartoněk");
+        
+        twJiriMasek = new Person();
+        
+        twJiriMasek.setProfile(new URI("http://twitter.com/jirimasek"));
+        twJiriMasek.addSource(new URI("http://twitter.com"));
+        twJiriMasek.addProperty("foaf:name", "Jiří Mašek");
+        
+        twXMorfeus = new Person();
+        
+        twXMorfeus.setProfile(new URI("http://twitter.com/xmorfeus"));
+        twXMorfeus.addSource(new URI("http://twitter.com"));
+        twXMorfeus.addProperty("foaf:name", "Lukáš Bartoněk");
     }
 
+    /**
+     * 
+     * @throws URISyntaxException
+     * @throws PersonAlreadyExistsException 
+     */
     @Test
     public void testCreatePerson() throws URISyntaxException, PersonAlreadyExistsException
     {
         System.out.println("Testing creation of person");
         
-        graphDAO.createPerson(fbJiriMa5ek);
+        fbJiriMa5ekId = graphDAO.createPerson(fbJiriMa5ek);
         
-        fbJiriMa5ekId = fbJiriMa5ek.getId();
+        assertNotNull(fbJiriMa5ekId);
         
-        assertNotNull(fbJiriMa5ek.getId());
-        assertNotNull(fbJiriMa5ek.getKey());
+        fbBartonekLukasId = graphDAO.createPerson(fbBartonekLukas);
         
-        graphDAO.createPerson(fbBartonekLukas);
+        assertNotNull(fbBartonekLukasId);
         
-        fbBartonekLukasId = fbBartonekLukas.getId();
+        twJiriMasekId = graphDAO.createPerson(twJiriMasek);
         
-        assertNotNull(fbBartonekLukas.getId());
-        assertNotNull(fbBartonekLukas.getKey());
+        assertNotNull(twJiriMasekId);
     }
 
+    /**
+     * 
+     * @throws URISyntaxException
+     * @throws PersonAlreadyExistsException 
+     */
     @Test(expected = PersonAlreadyExistsException.class)
     public void testCreateAlreadyCreatedPerson() throws URISyntaxException, PersonAlreadyExistsException
     {
@@ -88,6 +125,29 @@ public class GraphDAOImplTest
         graphDAO.createPerson(fbJiriMa5ek);
     }
     
+    /**
+     * 
+     * @throws URISyntaxException
+     * @throws PersonAlreadyExistsException 
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateIncompletePerson() throws URISyntaxException, PersonAlreadyExistsException
+    {
+        System.out.println("Testing creation of incomplete person");
+        
+        Person person = new Person();
+        
+        person.setProfile(new URI("http://twitter.com/xmorfeus"));
+        
+        graphDAO.createPerson(person);
+        
+    }
+    
+    /**
+     * 
+     * @throws PersonNotFoundException
+     * @throws URISyntaxException 
+     */
     @Test
     public void testRetrievePerson() throws PersonNotFoundException, URISyntaxException
     {
@@ -113,6 +173,147 @@ public class GraphDAOImplTest
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    @Test
+    public void testCreateRelation() throws URISyntaxException, RelationAlreadyExistsException, PersonNotFoundException
+    {
+        System.out.println("Testing creation of relation");
+        
+        Relation relation = new Relation();
+        
+        relation.setObject(fbJiriMa5ekId);
+        relation.setSubject(fbBartonekLukasId);
+        relation.setType("foaf:knows");
+        relation.addSource(new URI("http://www.facebook.com"));
+        relation.addProperty("sts:weight", "1");
+        
+        foafKnows = graphDAO.createRelation(relation);
+        
+        assertNotNull(foafKnows);
+    }
+    
+    @Test
+    public void testRetrieveRelation() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException
+    {
+        System.out.println("Testing retrieve of relation");
+        
+        Relation origRel = new Relation();
+        
+        origRel.setObject(fbJiriMa5ekId);
+        origRel.setSubject(fbBartonekLukasId);
+        origRel.setType("foaf:knows");
+        origRel.addSource(new URI("http://www.facebook.com"));
+        origRel.addProperty("sts:weight", "1");
+        
+        Relation retrRel = graphDAO.retrieveRelation(foafKnows);
+        
+        assertEquals(retrRel, origRel);
+        
+        List<Relation> relations;
+        
+        relations = graphDAO.retrieveRelations(fbJiriMa5ekId, ALL);
+        
+        assertNotNull(relations);
+        assertEquals(relations.size(), 1);
+        assertEquals(relations.get(0), origRel);
+        
+        relations = graphDAO.retrieveRelations(fbBartonekLukasId, IN);
+        
+        assertNotNull(relations);
+        assertEquals(relations.size(), 1);
+        assertEquals(relations.get(0), origRel);
+        
+        relations = graphDAO.retrieveRelations(fbBartonekLukasId, OUT);
+        
+        assertNotNull(relations);
+        assertEquals(relations.size(), 0);
+        
+        Key key;
+        
+        key = keyFactory.createKey(new URI("http://www.facebook.com/jirima5ek"));
+        
+        relations = graphDAO.retrieveRelations(key, OUT);
+        
+        assertNotNull(relations);
+        assertEquals(relations.size(), 1);
+        assertEquals(relations.get(0), origRel);
+        
+        key = keyFactory.createKey(new URI("http://twitter.com/jirimasek"));
+        
+        relations = graphDAO.retrieveRelations(key, ALL);
+        
+        assertNotNull(relations);
+        assertEquals(relations.size(), 0);
+    }
+    
+    @Test
+    public void testDeclareSameness() throws URISyntaxException, PersonNotFoundException
+    {
+        System.out.println("Testing declaration of sameness");
+        
+        Key k1 = keyFactory.createKey(new URI("http://www.facebook.com/jirima5ek"));
+        Key k2 = keyFactory.createKey(new URI("http://twitter.com/jirimasek"));
+        
+        List<URI> sources = new ArrayList<URI>();
+        
+        sources.add(new URI("http://about.me"));
+        
+        graphDAO.declareSameness(k1, k2, sources);
+    }
+    
+    @Test
+    public void testResufeSameness() throws PersonNotFoundException, URISyntaxException
+    {
+        System.out.println("Testing refusal of sameness");
+        
+        Key k1 = keyFactory.createKey(new URI("http://www.facebook.com/jirima5ek"));
+        Key k2 = keyFactory.createKey(new URI("http://twitter.com/jirimasek"));
+        
+        boolean deleted;
+        
+        deleted = graphDAO.refuseSameness(k1, k2);
+        
+        assertTrue(deleted);
+        
+        deleted = graphDAO.refuseSameness(k1, k2);
+        
+        assertFalse(deleted);
+    }
+    
+    @Test
+    public void testDeleteRelation()
+    {
+        System.out.println("Testing deletion of relation");
+        
+        boolean deleted;
+                
+        deleted = graphDAO.deleteRelation(foafKnows);
+        
+        assertTrue(deleted);
+                
+        deleted = graphDAO.deleteRelation(foafKnows);
+        
+        assertFalse(deleted);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * 
+     * @throws URISyntaxException 
+     */
     @Test
     public void testDeletePerson() throws URISyntaxException
     {
@@ -128,7 +329,9 @@ public class GraphDAOImplTest
         
         assertFalse(deleted);
         
-        Key key = keyFactory.createKey(new URI("http://www.facebook.com/bartonek.lukas"));
+        Key key;
+        
+        key = keyFactory.createKey(new URI("http://www.facebook.com/bartonek.lukas"));
         
         deleted = graphDAO.deletePerson(key);
         
@@ -137,5 +340,11 @@ public class GraphDAOImplTest
         deleted = graphDAO.deletePerson(key);
         
         assertFalse(deleted);
+        
+        key = keyFactory.createKey(new URI("http://twitter.com/jirimasek"));
+        
+        deleted = graphDAO.deletePerson(key);
+        
+        assertTrue(deleted);
     }
 }

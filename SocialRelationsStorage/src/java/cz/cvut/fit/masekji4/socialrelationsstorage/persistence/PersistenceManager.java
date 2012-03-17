@@ -32,7 +32,7 @@ public interface PersistenceManager
      * 
      * @return
      */
-    public int createNode();
+    public Integer createNode();
     
     /**
      * 
@@ -40,7 +40,7 @@ public interface PersistenceManager
      * @return
      * @throws InvalidPropertiesException 
      */
-    public int createNode(JSONObject properties) throws InvalidPropertiesException;
+    public Integer createNode(JSONObject properties) throws InvalidPropertiesException;
 
     /**
      * 
@@ -48,7 +48,7 @@ public interface PersistenceManager
      * @return
      * @throws NodeNotFoundException 
      */
-    public JSONObject retrieveNode(int node) throws NodeNotFoundException;
+    public JSONObject retrieveNode(Integer node) throws NodeNotFoundException;
     
     /**
      * 
@@ -56,14 +56,14 @@ public interface PersistenceManager
      * @return
      * @throws CannotDeleteNodeException 
      */
-    public boolean deleteNode(int node) throws CannotDeleteNodeException;
+    public boolean deleteNode(Integer node) throws CannotDeleteNodeException;
     
     /**
      * 
      * @param node
      * @param properties 
      */
-    public void addProperties(int node, JSONObject properties)
+    public void addProperties(Integer node, JSONObject properties)
             throws InvalidPropertiesException, NodeNotFoundException;
     
     /**
@@ -72,7 +72,7 @@ public interface PersistenceManager
      * @return
      * @throws NodeNotFoundException 
      */
-    public JSONObject retrieveProperties(int node)
+    public JSONObject retrieveProperties(Integer node)
             throws NodeNotFoundException;
     
     /**
@@ -83,7 +83,7 @@ public interface PersistenceManager
      * @throws NodeNotFoundException
      * @throws PropertyNotFoundException 
      */
-    public String retrieveProperty(int node, String property)
+    public String retrieveProperty(Integer node, String property)
             throws PropertyNotFoundException;
     
     /**
@@ -93,14 +93,14 @@ public interface PersistenceManager
      * @return
      * @throws NodeNotFoundException 
      */
-    public boolean deleteProperty(int node, String property)
+    public boolean deleteProperty(Integer node, String property)
             throws PropertyNotFoundException;
     /**
      * 
      * @param node
      * @throws NodeNotFoundException 
      */
-    public void deleteProperties(int node) throws NodeNotFoundException;
+    public void deleteProperties(Integer node) throws NodeNotFoundException;
     
     /* ********************************************************************** *
      *                                  Hrany                                 *
@@ -112,10 +112,12 @@ public interface PersistenceManager
      * @param endNode
      * @param relationship
      * @return
-     * @throws InvalidPropertiesException
+     * @throws InvalidMetadataException
+     * @throws InvalidRelationshipException
+     * @throws JSONException
      * @throws NodeNotFoundException 
      */
-    public int createRelationship(int startNode, int endNode,
+    public Integer createRelationship(Integer startNode, Integer endNode,
             String relationship) throws InvalidMetadataException,
             InvalidRelationshipException, JSONException, NodeNotFoundException;
     
@@ -126,10 +128,12 @@ public interface PersistenceManager
      * @param relationship
      * @param metadata
      * @return
-     * @throws InvalidPropertiesException
+     * @throws InvalidMetadataException
+     * @throws InvalidRelationshipException
+     * @throws JSONException
      * @throws NodeNotFoundException 
      */
-    public int createRelationship(int startNode, int endNode,
+    public Integer createRelationship(Integer startNode, Integer endNode,
             String relationship, JSONObject metadata)
             throws InvalidMetadataException, InvalidRelationshipException,
             JSONException, NodeNotFoundException;
@@ -140,7 +144,7 @@ public interface PersistenceManager
      * @return
      * @throws RelationshipNotFoundException 
      */
-    public JSONObject retrieveRelationship(int relationship)
+    public JSONObject retrieveRelationship(Integer relationship)
             throws RelationshipNotFoundException;
     
     /**
@@ -150,7 +154,7 @@ public interface PersistenceManager
      * @return
      * @throws NodeNotFoundException 
      */
-    public JSONArray retrieveRelationships(int node, DirectionEnum direction)
+    public JSONArray retrieveRelationships(Integer node, DirectionEnum direction)
         throws NodeNotFoundException;
     
     /**
@@ -161,7 +165,7 @@ public interface PersistenceManager
      * @return
      * @throws NodeNotFoundException 
      */
-    public JSONArray retrieveRelationships(int node, DirectionEnum direction,
+    public JSONArray retrieveRelationships(Integer node, DirectionEnum direction,
             String relationship)
         throws NodeNotFoundException;
     
@@ -170,7 +174,7 @@ public interface PersistenceManager
      * @param relationship
      * @return 
      */
-    public boolean deleteRelationship(int relationship);
+    public boolean deleteRelationship(Integer relationship);
     
     /**
      * 
@@ -179,7 +183,7 @@ public interface PersistenceManager
      * @throws InvalidMetadataException
      * @throws RelationshipNotFoundException 
      */
-    public void addMetadataToRelationship(int relationship, JSONObject metadata)
+    public void addMetadataToRelationship(Integer relationship, JSONObject metadata)
         throws InvalidMetadataException, RelationshipNotFoundException;
     
     /**
@@ -188,7 +192,7 @@ public interface PersistenceManager
      * @return
      * @throws RelationshipNotFoundException 
      */
-    public JSONObject retrieveRelationshipMetadata(int relationship)
+    public JSONObject retrieveRelationshipMetadata(Integer relationship)
             throws RelationshipNotFoundException;
     
     /**
@@ -199,7 +203,7 @@ public interface PersistenceManager
      * @throws MetadataNotFoundException
      * @throws RelationshipNotFoundException 
      */
-    public String retrieveRelationshipMetadata(int relationship, String metadata)
+    public String retrieveRelationshipMetadata(Integer relationship, String metadata)
             throws MetadataNotFoundException;
     
     /**
@@ -208,14 +212,14 @@ public interface PersistenceManager
      * @param metadata
      * @return 
      */
-    public boolean deleteRelationshipMetadata(int relationship, String metadata);
+    public boolean deleteRelationshipMetadata(Integer relationship, String metadata);
     
     /**
      * 
      * @param relationship
      * @throws RelationshipNotFoundException 
      */
-    public void deleteRelationshipMetadata(int relationship)
+    public void deleteRelationshipMetadata(Integer relationship)
             throws RelationshipNotFoundException;
     
     /* ********************************************************************** *
@@ -231,7 +235,7 @@ public interface PersistenceManager
      * @throws JSONException
      * @throws NodeNotFoundException 
      */
-    public JSONArray traverse(int startNode, TraversalDescription t, TypeEnum type)
+    public JSONArray traverse(Integer startNode, TraversalDescription t, TypeEnum type)
             throws JSONException, NodeNotFoundException; 
     
     /* ********************************************************************** *
@@ -247,9 +251,9 @@ public interface PersistenceManager
     
     /**
      * 
-     * @param nodeIndex 
+     * @param name 
      */
-    public void deleteNodeIndex(String nodeIndex);
+    public void deleteNodeIndex(String name);
     
     /**
      * 
@@ -259,35 +263,36 @@ public interface PersistenceManager
     
     /**
      * 
-     * @param nodeIndex
+     * @param name
      * @param key
      * @param value
      * @param node
      * @throws JSONException
      * @throws NodeIndexNotFoundException 
      */
-    public void addNodeToIndex(String nodeIndex, String key, String value, int node)
+    public void addNodeToIndex(String name, String key, String value, Integer node)
             throws JSONException, NodeIndexNotFoundException;
     
     /**
      * 
-     * @param nodeIndex
+     * @param name
      * @param key
      * @param value
      * @return
      * @throws JSONException
      * @throws NodeIndexNotFoundException 
      */
-    public JSONObject retrieveNodeFromIndex(String nodeIndex, String key, String value)
+    public JSONObject retrieveNodeFromIndex(String name, String key, String value)
             throws JSONException, NodeIndexNotFoundException;
     
     /**
      * 
-     * @param nodeIndex
+     * @param name
      * @param key
      * @param value
+     * @param node
      * @throws NodeIndexNotFoundException 
      */
-    public void deleteNodeFromIndex(String nodeIndex, int node, String key, String value)
+    public void deleteNodeFromIndex(String name, String key, String value, Integer node)
             throws NodeIndexNotFoundException;
 }

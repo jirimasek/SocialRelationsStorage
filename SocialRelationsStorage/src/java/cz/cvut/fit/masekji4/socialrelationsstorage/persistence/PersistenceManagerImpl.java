@@ -199,7 +199,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @return 
      */
     @Override
-    public int createNode()
+    public Integer createNode()
     {
         try
         {
@@ -207,7 +207,7 @@ public class PersistenceManagerImpl implements PersistenceManager
         }
         catch (InvalidPropertiesException ex)
         {
-            return 0;
+            return null;
         }
     }
 
@@ -218,7 +218,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws InvalidPropertiesException 
      */
     @Override
-    public int createNode(JSONObject properties) throws InvalidPropertiesException
+    public Integer createNode(JSONObject properties) throws InvalidPropertiesException
     {
         final String nodeEntryPointURI = DATABASE_URI + "/node";
         
@@ -243,8 +243,13 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONObject retrieveNode(int node) throws NodeNotFoundException
+    public JSONObject retrieveNode(Integer node) throws NodeNotFoundException
     {
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
         String nodeURI = DATABASE_URI + "/node/" + node; 
         
         ClientResponse response = get(nodeURI);
@@ -266,8 +271,13 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws CannotDeleteNodeException 
      */
     @Override
-    public boolean deleteNode(int node) throws CannotDeleteNodeException
+    public boolean deleteNode(Integer node) throws CannotDeleteNodeException
     {
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
         String nodeURI = DATABASE_URI + "/node/" + node; 
         
         ClientResponse response = delete(nodeURI);
@@ -292,8 +302,18 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public void addProperties(int node, JSONObject properties) throws InvalidPropertiesException, NodeNotFoundException
+    public void addProperties(Integer node, JSONObject properties) throws InvalidPropertiesException, NodeNotFoundException
     {
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
+        if (properties == null)
+        {
+            throw new IllegalArgumentException("Properties are null.");
+        }
+        
         String propertiesURI = DATABASE_URI + "/node/" + node + "/properties";
         
         ClientResponse response = put(propertiesURI, properties);
@@ -315,8 +335,13 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONObject retrieveProperties(int node) throws NodeNotFoundException
+    public JSONObject retrieveProperties(Integer node) throws NodeNotFoundException
     {
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
         String propertiesURI = DATABASE_URI + "/node/" + node + "/properties";
         
         ClientResponse response = get(propertiesURI);
@@ -343,8 +368,18 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws PropertyNotFoundException 
      */
     @Override
-    public String retrieveProperty(int node, String property) throws PropertyNotFoundException
+    public String retrieveProperty(Integer node, String property) throws PropertyNotFoundException
     {
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
+        if (property == null)
+        {
+            throw new IllegalArgumentException("Property name is null.");
+        }
+        
         String propertyURI = DATABASE_URI + "/node/" + node + "/properties/" + property;
         
         ClientResponse response = get(propertyURI);
@@ -376,8 +411,18 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @return 
      */
     @Override
-    public boolean deleteProperty(int node, String property)
+    public boolean deleteProperty(Integer node, String property)
     {
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
+        if (property == null)
+        {
+            throw new IllegalArgumentException("Property name is null.");
+        }
+        
         String propertyURI = DATABASE_URI + "/node/" + node + "/properties/" + property;
         
         ClientResponse response = delete(propertyURI);
@@ -397,8 +442,13 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public void deleteProperties(int node) throws NodeNotFoundException
+    public void deleteProperties(Integer node) throws NodeNotFoundException
     {
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
         String propertiesURI = DATABASE_URI + "/node/" + node + "/properties";
         
         ClientResponse response = delete(propertiesURI);
@@ -425,7 +475,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public int createRelationship(int startNode, int endNode,
+    public Integer createRelationship(Integer startNode, Integer endNode,
             String relationship) throws InvalidMetadataException, JSONException,
             InvalidRelationshipException, NodeNotFoundException
     {
@@ -444,10 +494,11 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public int createRelationship(int startNode, int endNode,
+    public Integer createRelationship(Integer startNode, Integer endNode,
             String relationship, JSONObject metadata) throws InvalidRelationshipException,
             JSONException, NodeNotFoundException
     {
+        
         String startNodeURI = DATABASE_URI + "/node/" + startNode;
         String endNodeURI = DATABASE_URI + "/node/" + endNode;
         
@@ -495,9 +546,14 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws RelationshipNotFoundException 
      */
     @Override
-    public JSONObject retrieveRelationship(int relationship)
+    public JSONObject retrieveRelationship(Integer relationship)
             throws RelationshipNotFoundException
     {
+        if (relationship == null)
+        {
+            throw new IllegalArgumentException("Relationship ID is null.");
+        }
+        
         String relationshipURI = DATABASE_URI + "/relationship/" + relationship;
         
         ClientResponse response = get(relationshipURI);
@@ -520,7 +576,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONArray retrieveRelationships(int node, DirectionEnum direction)
+    public JSONArray retrieveRelationships(Integer node, DirectionEnum direction)
             throws NodeNotFoundException
     {
         
@@ -536,9 +592,14 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws NodeNotFoundException 
      */
     @Override
-    public JSONArray retrieveRelationships(int node, DirectionEnum direction,
+    public JSONArray retrieveRelationships(Integer node, DirectionEnum direction,
             String relationship) throws NodeNotFoundException
     {
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
         String relationships = DATABASE_URI + "/node/" + node + "/relationships/"
                 + direction.toString().toLowerCase();
         
@@ -565,8 +626,13 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @return 
      */
     @Override
-    public boolean deleteRelationship(int relationship)
+    public boolean deleteRelationship(Integer relationship)
     {
+        if (relationship == null)
+        {
+            throw new IllegalArgumentException("Relationship ID is null.");
+        }
+        
         String relationshipURI = DATABASE_URI + "/relationship/" + relationship;
         
         ClientResponse response = delete(relationshipURI);
@@ -587,10 +653,15 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws RelationshipNotFoundException 
      */
     @Override
-    public void addMetadataToRelationship(int relationship,
+    public void addMetadataToRelationship(Integer relationship,
             JSONObject metadata) throws InvalidMetadataException,
             RelationshipNotFoundException
     {
+        if (relationship == null)
+        {
+            throw new IllegalArgumentException("Relationship ID is null.");
+        }
+        
         String metadataURI = DATABASE_URI + "/relationship/" + relationship + "/properties";
         
         ClientResponse response = put(metadataURI, metadata);
@@ -612,9 +683,14 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws RelationshipNotFoundException 
      */
     @Override
-    public JSONObject retrieveRelationshipMetadata(int relationship)
+    public JSONObject retrieveRelationshipMetadata(Integer relationship)
             throws RelationshipNotFoundException
     {
+        if (relationship == null)
+        {
+            throw new IllegalArgumentException("Relationship ID is null.");
+        }
+        
         String metadataURI = DATABASE_URI + "/relationship/" + relationship + "/properties";
         
         ClientResponse response = get(metadataURI);
@@ -641,9 +717,14 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws MetadataNotFoundException 
      */
     @Override
-    public String retrieveRelationshipMetadata(int relationship,
+    public String retrieveRelationshipMetadata(Integer relationship,
             String metadata) throws MetadataNotFoundException
     {
+        if (relationship == null)
+        {
+            throw new IllegalArgumentException("Relationship ID is null.");
+        }
+        
         String metadataURI = DATABASE_URI + "/relationship/" + relationship
                 + "/properties/" + metadata;
         
@@ -666,8 +747,13 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @return 
      */
     @Override
-    public boolean  deleteRelationshipMetadata(int relationship, String metadata)
+    public boolean  deleteRelationshipMetadata(Integer relationship, String metadata)
     {
+        if (relationship == null)
+        {
+            throw new IllegalArgumentException("Relationship ID is null.");
+        }
+        
         String metadataURI = DATABASE_URI + "/relationship/" + relationship
                 + "/properties/" + metadata;
         
@@ -687,9 +773,14 @@ public class PersistenceManagerImpl implements PersistenceManager
      * @throws RelationshipNotFoundException 
      */
     @Override
-    public void deleteRelationshipMetadata(int relationship)
+    public void deleteRelationshipMetadata(Integer relationship)
             throws RelationshipNotFoundException
     {
+        if (relationship == null)
+        {
+            throw new IllegalArgumentException("Relationship ID is null.");
+        }
+        
         String metadataURI = DATABASE_URI + "/relationship/" + relationship + "/properties";
         
         ClientResponse response = delete(metadataURI);
@@ -705,9 +796,14 @@ public class PersistenceManagerImpl implements PersistenceManager
      * ********************************************************************** */
 
     @Override
-    public JSONArray traverse(int startNode, TraversalDescription t, TypeEnum type)
+    public JSONArray traverse(Integer startNode, TraversalDescription t, TypeEnum type)
             throws JSONException, NodeNotFoundException
     {
+        if (startNode == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
         String traverserURI = DATABASE_URI + "/node/" + startNode + "/traverse/"
                 + type.toString().toLowerCase();
         
@@ -742,6 +838,11 @@ public class PersistenceManagerImpl implements PersistenceManager
     @Override
     public void createNodeIndex(String name) throws JSONException
     {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Index name is null.");
+        }
+        
         String nodeIndexEntryPointURI = DATABASE_URI + "/index/node";
         
         JSONObject entity = new JSONObject();
@@ -753,12 +854,17 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param nodeIndex 
+     * @param name 
      */
     @Override
-    public void deleteNodeIndex(String nodeIndex)
+    public void deleteNodeIndex(String name)
     {
-        String nodeIndexURI = DATABASE_URI + "/index/node/" + nodeIndex;
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Index name is null.");
+        }
+        
+        String nodeIndexURI = DATABASE_URI + "/index/node/" + name;
         
         ClientResponse response = delete(nodeIndexURI);
     }
@@ -781,17 +887,37 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param nodeIndex
+     * @param name
      * @param key
      * @param value
      * @param node
      * @throws JSONException
      */
     @Override
-    public void addNodeToIndex(String nodeIndex, String key, String value,
-            int node) throws JSONException, NodeIndexNotFoundException
+    public void addNodeToIndex(String name, String key, String value,
+            Integer node) throws JSONException, NodeIndexNotFoundException
     {
-        String nodeIndexURI = DATABASE_URI + "/index/node/" + nodeIndex + "?unique";
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Index name is null.");
+        }
+        
+        if (key == null)
+        {
+            throw new IllegalArgumentException("Key is null.");
+        }
+        
+        if (value == null)
+        {
+            throw new IllegalArgumentException("Value is null.");
+        }
+        
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
+        String nodeIndexURI = DATABASE_URI + "/index/node/" + name + "?unique";
         String nodeURI = DATABASE_URI + "/node/" + node;
         
         JSONObject entity = new JSONObject();
@@ -810,17 +936,32 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param nodeIndex
+     * @param name
      * @param key
      * @param value
      * @return
      * @throws JSONException
      */
     @Override
-    public JSONObject retrieveNodeFromIndex(String nodeIndex, String key,
+    public JSONObject retrieveNodeFromIndex(String name, String key,
             String value) throws JSONException, NodeIndexNotFoundException
     {
-        String nodeURI = DATABASE_URI + "/index/node/" + nodeIndex + "/" + key+ "/" + value;
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Index name is null.");
+        }
+        
+        if (key == null)
+        {
+            throw new IllegalArgumentException("Key is null.");
+        }
+        
+        if (value == null)
+        {
+            throw new IllegalArgumentException("Value is null.");
+        }
+        
+        String nodeURI = DATABASE_URI + "/index/node/" + name + "/" + key+ "/" + value;
         
         ClientResponse response = get(nodeURI);
         
@@ -841,16 +982,37 @@ public class PersistenceManagerImpl implements PersistenceManager
 
     /**
      * 
-     * @param nodeIndex
+     * @param name
      * @param key
      * @param value
+     * @param node
      * @throws NodeIndexNotFoundException 
      */
     @Override
-    public void deleteNodeFromIndex(String nodeIndex, int node, String key, String value)
+    public void deleteNodeFromIndex(String name, String key, String value, Integer node)
             throws NodeIndexNotFoundException
     {
-        String indexNodeURI = DATABASE_URI + "/index/node/" + nodeIndex + "/" + key + "/" + value + "/" + node;
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Index name is null.");
+        }
+        
+        if (key == null)
+        {
+            throw new IllegalArgumentException("Key is null.");
+        }
+        
+        if (value == null)
+        {
+            throw new IllegalArgumentException("Value is null.");
+        }
+        
+        if (node == null)
+        {
+            throw new IllegalArgumentException("Node ID is null.");
+        }
+        
+        String indexNodeURI = DATABASE_URI + "/index/node/" + name + "/" + key + "/" + value + "/" + node;
         
         ClientResponse response = delete(indexNodeURI);
         

@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 
 /**
  * Třída <code>Person</code>
@@ -17,7 +15,7 @@ import org.codehaus.jettison.json.JSONObject;
 public class Person
 {
 
-    private int id;
+    private Integer id;
     private Key key;
     private URI profile;
     private List<URI> sources;
@@ -27,7 +25,7 @@ public class Person
      * 
      * @return 
      */
-    public int getId()
+    public Integer getId()
     {
         return id;
     }
@@ -36,7 +34,7 @@ public class Person
      * 
      * @param id 
      */
-    public void setId(int id)
+    public void setId(Integer id)
     {
         this.id = id;
     }
@@ -163,50 +161,43 @@ public class Person
 
     /**
      * 
-     * @param o
+     * @param obj
      * @return 
      */
     @Override
-    public boolean equals(Object o)
+    public boolean equals(Object obj)
     {
-        if (o instanceof Person)
+        if (obj == null)
         {
-            Person person = (Person) o;
-            
-            if (profile == null && person.getProfile() != null)
-            {
-                return false;
-            }
-            
-            if (profile != null && !profile.equals(person.getProfile()))
-            {
-                return false;
-            }
-            
-            if (sources == null && person.getSources() != null)
-            {
-                return false;
-            }
-            
-            if (sources != null && !sources.equals(person.getSources()))
-            {
-                return false;
-            }
-            
-            if (properties == null && person.getProperties() != null)
-            {
-                return false;
-            }
-            
-            if (properties != null && !properties.equals(person.getProperties()))
-            {
-                return false;
-            }
-            
-            return true;
-            
+            return false;
         }
-        
-        return false;
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        final Person other = (Person) obj;
+        if (this.profile != other.profile && (this.profile == null || !this.profile.equals(other.profile)))
+        {
+            return false;
+        }
+        if (this.sources != other.sources && (this.sources == null || !this.sources.equals(other.sources)))
+        {
+            return false;
+        }
+        if (this.properties != other.properties && (this.properties == null || !this.properties.equals(other.properties)))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public int hashCode()
+    {
+        return id;
     }
 }
