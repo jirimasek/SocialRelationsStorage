@@ -6,6 +6,7 @@ import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.Dir
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.OUT;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.ConfigurationFactory;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
@@ -19,9 +20,9 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManage
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -502,36 +503,101 @@ public class GraphDAOImplTest
         graphDAO.declareSameness(k4, k5, sources);
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    /**
+     * 
+     * @throws PersonNotFoundException
+     * @throws URISyntaxException 
+     */
     @Test
-    public void testRetrieveAlterEgos() throws PersonNotFoundException
+    public void testRetrieveAlterEgos() throws PersonNotFoundException, URISyntaxException
     {
         System.out.println("Testing retrieve of alter egos");
         
-        graphDAO.retrieveAlterEgos(fbJiriMa5ekId);
+        Path path;
+        
+        path = graphDAO.retrieveAlterEgos(fbJiriMa5ekId);
+        
+        assertEquals(path.getPerson().getProfile(), fbJiriMa5ek.getProfile());
+        assertEquals(path.getPersons().size(), 1);
+        
+        path = path.getPersons().iterator().next();
+        
+        assertEquals(path.getPerson().getProfile(), twJiriMasek.getProfile());
+        assertEquals(path.getPersons().size(), 1);
+        assertNotNull(path.getSources());
+        
+        path = path.getPersons().iterator().next();
+        
+        assertEquals(path.getPerson().getProfile(), ctuMasekJi4.getProfile());
+        assertEquals(path.getPersons(), null);
+        assertNotNull(path.getSources());
+        
+        Key key;
+        
+        key = keyFactory.createKey(new URI("http://twitter.com/jirimasek"));
+        
+        path = graphDAO.retrieveAlterEgos(key);
+        
+        assertEquals(path.getPerson().getProfile(), twJiriMasek.getProfile());
+        assertEquals(path.getPersons().size(), 2);
+        
+        Iterator<Path> iterator = path.getPersons().iterator();
+        
+        path = iterator.next();
+        
+        assertEquals(path.getPersons(), null);
+        assertNotNull(path.getSources());
+        
+        path = iterator.next();
+        
+        assertEquals(path.getPersons(), null);
+        assertNotNull(path.getSources());
+        
+        key = keyFactory.createKey(new URI("http://twitter.com/xmorfeus"));
+        
+        path = graphDAO.retrieveAlterEgos(key);
+        
+        assertEquals(path.getPerson().getProfile(), twXMorfeus.getProfile());
+        assertEquals(path.getPersons().size(), 1);
+        
+        path = path.getPersons().iterator().next();
+        
+        assertEquals(path.getPerson().getProfile(), fbBartonekLukas.getProfile());
+        assertEquals(path.getPersons(), null);
+        assertNotNull(path.getSources());
+        
+        path = graphDAO.retrieveAlterEgos(ctuBartolu5Id);
+        
+        assertEquals(path.getPerson().getProfile(), ctuBartolu5.getProfile());
+        assertEquals(path.getPersons(), null);
     }
     
+    /**
+     * 
+     * @throws PersonNotFoundException 
+     */
+    @Test(expected = PersonNotFoundException.class)
+    public void testRetrieveAlterEgosForNonexistentPersonById() throws PersonNotFoundException
+    {
+        System.out.println("Testing retrieve of alter egos for nonexistent ID");
+        
+        graphDAO.retrieveAlterEgos(new Integer(98968769));
+    }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    /**
+     * 
+     * @throws PersonNotFoundException
+     * @throws URISyntaxException 
+     */
+    @Test(expected = PersonNotFoundException.class)
+    public void testRetrieveAlterEgosForNonexistentPersonByKey() throws PersonNotFoundException, URISyntaxException
+    {
+        System.out.println("Testing retrieve of alter egos for nonexistent key");
+        
+        Key key = keyFactory.createKey(new URI("http://twitter.com/jakubsamek"));
+        
+        graphDAO.retrieveAlterEgos(key);
+    }
     
     /**
      * 

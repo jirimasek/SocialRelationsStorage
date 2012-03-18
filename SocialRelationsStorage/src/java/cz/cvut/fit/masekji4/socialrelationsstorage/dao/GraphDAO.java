@@ -98,8 +98,20 @@ public interface GraphDAO
     public void declareSameness(Key person, Key alterEgo, List<URI> sources)
             throws PersonNotFoundException;
     
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PersonNotFoundException 
+     */
     public Path retrieveAlterEgos(Integer id) throws PersonNotFoundException;
     
+    /**
+     * 
+     * @param key
+     * @return
+     * @throws PersonNotFoundException 
+     */
     public Path retrieveAlterEgos(Key key) throws PersonNotFoundException;
     
     /**

@@ -81,7 +81,6 @@ public class GraphDAOImpl implements GraphDAO
     /* ********************************************************************** *
      *                            Accessor Methods                            *
      * ********************************************************************** */
-    
     /**
      * 
      * @param key
@@ -370,7 +369,8 @@ public class GraphDAOImpl implements GraphDAO
         {
             for (URI source : sources)
             {
-                pm.addNodeToIndex(srcIndexName, srcIndexKey, source.getHost(), id, false);
+                pm.addNodeToIndex(srcIndexName, srcIndexKey, source.getHost(),
+                        id, false);
             }
         }
         catch (NodeIndexNotFoundException ex)
@@ -384,7 +384,6 @@ public class GraphDAOImpl implements GraphDAO
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
-    
     /**
      * 
      * @param person
@@ -416,8 +415,9 @@ public class GraphDAOImpl implements GraphDAO
 
             Integer id = pm.createNode(toProperties(person));
 
-            pm.addNodeToIndex(key.getPrefix(), usrIndexKey, key.getUsername(), id);
-            
+            pm.addNodeToIndex(key.getPrefix(), usrIndexKey, key.getUsername(),
+                    id);
+
             indexSources(id, person.getSources());
 
             return id;
@@ -525,17 +525,18 @@ public class GraphDAOImpl implements GraphDAO
     public List<Person> retrievePersons(URI source)
     {
         List<Person> persons = new ArrayList<Person>();
-        
+
         try
         {
-            JSONArray nodes = pm.retrieveNodesFromIndex(srcIndexName, srcIndexKey,
+            JSONArray nodes = pm.retrieveNodesFromIndex(srcIndexName,
+                    srcIndexKey,
                     source.getHost());
-            
+
             for (int i = 0 ; i < nodes.length() ; i++)
             {
                 persons.add(toPerson(nodes.getJSONObject(i)));
             }
-            
+
             return persons;
         }
         catch (JSONException ex)
@@ -576,9 +577,9 @@ public class GraphDAOImpl implements GraphDAO
             Key key = keyFactory.createKey(person.getProfile());
 
             Person p = retrievePerson(key);
-            
+
             pm.addProperties(p.getId(), toProperties(person));
-            
+
             indexSources(p.getId(), person.getSources());
 
             return p.getId();
@@ -842,21 +843,118 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PersonNotFoundException 
+     */
     @Override
     public Path retrieveAlterEgos(Integer id) throws PersonNotFoundException
     {
         TraversalDescription t = new TraversalDescription();
-        
+
         t.addRelationship(owlSameAs, OUT);
         t.setMaxDepth(10);
-        
+
         try
         {
-            JSONArray nodes = pm.traverse(id, t, FULLPATH);
+            JSONArray paths = pm.traverse(id, t, FULLPATH);
+
+            // Create start of path
+
+            Path start = new Path();
+
+            start.setPerson(retrievePerson(id));
+
+            // Create map of path parts
+
+            Map<Integer, Path> parts = new HashMap<Integer, Path>();
             
-            System.out.println(nodes.toString());
-            
-            return null;
+            parts.put(id, start);
+
+            // Analyze returned paths
+
+            for (int i = 0 ; i < paths.length() ; i++)
+            {
+                JSONObject path = paths.getJSONObject(i);
+                
+                JSONArray nodes = path.getJSONArray("nodes");
+
+                Map<Integer, Person> persons = new HashMap<Integer, Person>();
+                
+                for (int j = 0 ; j < nodes.length() ; j++)
+                {
+                    Person person = toPerson(nodes.getJSONObject(j));
+                    
+                    persons.put(person.getId(), person);
+                }
+                
+                JSONArray relationships = path.getJSONArray("relationships");
+                
+                List<Relation> relations = new ArrayList<Relation>();
+                
+                for (int j = 0 ; j < relationships.length() ; j++)
+                {
+                    Relation relation = toRelation(relationships.getJSONObject(j));
+                    
+                    relations.add(relation);
+                }
+                
+                for (Relation relation : relations)
+                {
+                    if (relation.getType().equals(owlSameAs))
+                    {
+                        if (relation.getObject().equals(relation.getSubject()))
+                        {
+                            continue;
+                        }
+                        
+                        Path p1;
+                        
+                        if (parts.containsKey(relation.getObject()))
+                        {
+                            p1 = parts.get(relation.getObject());
+                        }
+                        else
+                        {
+                            p1 = new Path();
+                            
+                            p1.setPerson(persons.get(relation.getObject()));
+                            
+                            parts.put(relation.getObject(), p1);
+                        }
+                        
+                        Path p2;
+                        
+                        if (parts.containsKey(relation.getSubject()))
+                        {
+                            p2 = parts.get(relation.getSubject());
+                        }
+                        else
+                        {
+                            p2 = new Path();
+                            
+                            p2.setPerson(persons.get(relation.getSubject()));
+                            
+                            parts.put(relation.getSubject(), p2);
+                        }
+                        
+                        for (URI source : relation.getSources())
+                        {
+                            p2.addSource(source);
+                        }
+                        
+                        p1.addPerson(p2);
+                    }
+                }
+            }
+
+            return start;
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new RuntimeException(ex);
         }
         catch (JSONException ex)
         {
@@ -1265,11 +1363,11 @@ public class GraphDAOImpl implements GraphDAO
                 {
                     pm.addMetadataToRelationship(rel.getId(),
                             toProperties(relation));
-                    
+
                     return rel.getId();
                 }
             }
-            
+
             Integer id = pm.createRelationship(relation.getObject(),
                     relation.getSubject(), relation.getType(),
                     toProperties(relation));
