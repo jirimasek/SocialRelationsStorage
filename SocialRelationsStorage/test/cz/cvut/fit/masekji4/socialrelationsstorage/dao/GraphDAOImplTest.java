@@ -164,6 +164,31 @@ public class GraphDAOImplTest
         assertEquals(person, fbBartonekLukas);
     }
     
+    @Test
+    public void testUpdatePerson() throws URISyntaxException, PersonNotFoundException
+    {
+        System.out.println("Testing update of person");
+        
+        fbJiriMa5ek.addSource(new URI("http://www.jirimasek.cz"));
+        fbJiriMa5ek.addProperty("foaf:birthday", "1988-07-11");
+        
+        Integer oldId = graphDAO.updatePerson(fbJiriMa5ek);
+        
+        assertNotNull(oldId);
+        assertEquals(oldId, fbJiriMa5ekId);
+        
+        Person person;
+        
+        person = graphDAO.retrievePerson(fbJiriMa5ekId);
+        
+        assertTrue(person.getSources().contains(new URI("http://www.jirimasek.cz")));
+        assertTrue(person.getProperties().containsKey("foaf:birthday"));
+        
+        twXMorfeusId = graphDAO.updatePerson(twXMorfeus);
+        
+        assertNotNull(twXMorfeusId);
+    }
+    
     
     
     
@@ -342,6 +367,12 @@ public class GraphDAOImplTest
         assertFalse(deleted);
         
         key = keyFactory.createKey(new URI("http://twitter.com/jirimasek"));
+        
+        deleted = graphDAO.deletePerson(key);
+        
+        assertTrue(deleted);
+        
+        key = keyFactory.createKey(new URI("http://twitter.com/xmorfeus"));
         
         deleted = graphDAO.deletePerson(key);
         

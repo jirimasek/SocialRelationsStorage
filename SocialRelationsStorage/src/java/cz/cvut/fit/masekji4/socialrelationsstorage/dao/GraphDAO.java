@@ -49,7 +49,12 @@ public interface GraphDAO
     
     public List<Person> retrievePersons();
     
-    public void updatePerson(Person person);
+    /**
+     * 
+     * @param person
+     * @return 
+     */
+    public Integer updatePerson(Person person);
     
     /**
      * 
