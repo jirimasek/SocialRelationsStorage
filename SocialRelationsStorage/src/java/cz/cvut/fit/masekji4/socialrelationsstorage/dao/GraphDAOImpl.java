@@ -54,8 +54,12 @@ public class GraphDAOImpl implements GraphDAO
     private PersistenceManager pm;
     @Inject
     private KeyFactory keyFactory;
-    private String index = "username";
+    private String usrIndexKey = "username";
+    private String srcIndexName = "sources";
+    private String srcIndexKey = "source";
     private String owlSameAs = "owl:sameAs";
+    private String foafHomepage = "profile";
+    private String siocNote = "sources";
 
     public GraphDAOImpl()
     {
@@ -71,6 +75,7 @@ public class GraphDAOImpl implements GraphDAO
     /* ********************************************************************** *
      *                            Accessor Methods                            *
      * ********************************************************************** */
+    
     /**
      * 
      * @param key
@@ -83,7 +88,7 @@ public class GraphDAOImpl implements GraphDAO
 
         try
         {
-            node = pm.retrieveNodeFromIndex(key.getPrefix(), index, key.
+            node = pm.retrieveNodeFromIndex(key.getPrefix(), usrIndexKey, key.
                     getUsername());
 
             if (node != null)
@@ -130,20 +135,28 @@ public class GraphDAOImpl implements GraphDAO
      */
     private JSONObject toProperties(Person person) throws JSONException
     {
-        JSONObject node = new JSONObject();
+        JSONObject data = new JSONObject();
 
-        node.put("foaf:homepage", person.getProfile().toString());
-        node.put("sioc:note", new JSONArray(person.getSources()));
+        data.put(foafHomepage, person.getProfile().toString());
+
+        List<String> sources = new ArrayList<String>();
+
+        for (URI source : person.getSources())
+        {
+            sources.add(source.getHost());
+        }
+
+        data.put(siocNote, new JSONArray(sources));
 
         if (person.getProperties() != null)
         {
             for (String property : person.getProperties().keySet())
             {
-                node.put(property, person.getProperties().get(property));
+                data.put(property, person.getProperties().get(property));
             }
         }
 
-        return node;
+        return data;
     }
 
     /**
@@ -154,19 +167,26 @@ public class GraphDAOImpl implements GraphDAO
      */
     private JSONObject toProperties(Relation relation) throws JSONException
     {
-        JSONObject node = new JSONObject();
-        
-        node.put("sioc:note", new JSONArray(relation.getSources()));
+        JSONObject data = new JSONObject();
+
+        List<String> sources = new ArrayList<String>();
+
+        for (URI source : relation.getSources())
+        {
+            sources.add(source.getHost());
+        }
+
+        data.put(siocNote, new JSONArray(sources));
 
         if (relation.getProperties() != null)
         {
             for (String property : relation.getProperties().keySet())
             {
-                node.put(property, relation.getProperties().get(property));
+                data.put(property, relation.getProperties().get(property));
             }
         }
 
-        return node;
+        return data;
     }
 
     /**
@@ -195,34 +215,34 @@ public class GraphDAOImpl implements GraphDAO
 
         // Retrieve profile URI
 
-        if (data.has("foaf:homepage"))
+        if (data.has(foafHomepage))
         {
-            URI profile = new URI(data.getString("foaf:homepage"));
+            URI profile = new URI(data.getString(foafHomepage));
 
             person.setProfile(profile);
             person.setKey(keyFactory.createKey(profile));
 
-            data.remove("foaf:homepage");
+            data.remove(foafHomepage);
         }
 
         // Retrieve sources of the node information
 
-        if (data.has("sioc:note"))
+        if (data.has(siocNote))
         {
-            JSONArray array = data.getJSONArray("sioc:note");
+            JSONArray array = data.getJSONArray(siocNote);
 
             List<URI> sources = new ArrayList<URI>();
 
             for (int i = 0 ; i < array.length() ; i++)
             {
-                URI source = new URI(array.getString(i));
+                URI source = new URI("http://" + array.getString(i));
 
                 sources.add(source);
             }
 
             person.setSources(sources);
 
-            data.remove("sioc:note");
+            data.remove(siocNote);
         }
 
         // Retrieve other information about person
@@ -295,22 +315,22 @@ public class GraphDAOImpl implements GraphDAO
 
         // Retrieve sources of the node information
 
-        if (data.has("sioc:note"))
+        if (data.has(siocNote))
         {
-            JSONArray array = data.getJSONArray("sioc:note");
+            JSONArray array = data.getJSONArray(siocNote);
 
             List<URI> sources = new ArrayList<URI>();
 
             for (int i = 0 ; i < array.length() ; i++)
             {
-                URI source = new URI(array.getString(i));
+                URI source = new URI("http://" + array.getString(i));
 
                 sources.add(source);
             }
 
             relation.setSources(sources);
 
-            data.remove("sioc:note");
+            data.remove(siocNote);
         }
 
         // Retrieve other information about person
@@ -330,11 +350,35 @@ public class GraphDAOImpl implements GraphDAO
         }
 
         return relation;
+    }
+
+    /**
+     * 
+     * @param id
+     * @param sources
+     * @throws JSONException 
+     */
+    private void indexSources(Integer id, List<URI> sources) throws JSONException
+    {
+        try
+        {
+            for (URI source : sources)
+            {
+                pm.addNodeToIndex(srcIndexName, srcIndexKey, source.getHost(), id, false);
+            }
+        }
+        catch (NodeIndexNotFoundException ex)
+        {
+            pm.createNodeIndex(srcIndexName);
+
+            indexSources(id, sources);
+        }
     }// </editor-fold>
 
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
+    
     /**
      * 
      * @param person
@@ -366,7 +410,12 @@ public class GraphDAOImpl implements GraphDAO
 
             Integer id = pm.createNode(toProperties(person));
 
-            pm.addNodeToIndex(key.getPrefix(), index, key.getUsername(), id);
+            person.setId(id);
+            person.setKey(key);
+
+            pm.addNodeToIndex(key.getPrefix(), usrIndexKey, key.getUsername(), id);
+            
+            indexSources(id, person.getSources());
 
             return id;
         }
@@ -440,8 +489,8 @@ public class GraphDAOImpl implements GraphDAO
 
         try
         {
-            JSONObject node = pm.retrieveNodeFromIndex(key.getPrefix(), index,
-                    key.getUsername());
+            JSONObject node = pm.retrieveNodeFromIndex(key.getPrefix(),
+                    usrIndexKey, key.getUsername());
 
             if (node == null)
             {
@@ -464,10 +513,40 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
+    /**
+     * 
+     * @param source
+     * @return 
+     */
     @Override
-    public List<Person> retrievePersons()
+    public List<Person> retrievePersons(URI source)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<Person> persons = new ArrayList<Person>();
+        
+        try
+        {
+            JSONArray nodes = pm.retrieveNodesFromIndex(srcIndexName, srcIndexKey,
+                    source.getHost());
+            
+            for (int i = 0 ; i < nodes.length() ; i++)
+            {
+                persons.add(toPerson(nodes.getJSONObject(i)));
+            }
+            
+            return persons;
+        }
+        catch (JSONException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (NodeIndexNotFoundException ex)
+        {
+            return persons;
+        }
     }
 
     /**
@@ -494,9 +573,11 @@ public class GraphDAOImpl implements GraphDAO
             Key key = keyFactory.createKey(person.getProfile());
 
             Person p = retrievePerson(key);
-            ;
+            
             pm.addProperties(p.getId(), toProperties(person));
             
+            indexSources(p.getId(), person.getSources());
+
             return p.getId();
         }
         catch (PersonNotFoundException ex)
@@ -586,8 +667,8 @@ public class GraphDAOImpl implements GraphDAO
 
         try
         {
-            JSONObject node = pm.retrieveNodeFromIndex(key.getPrefix(), index,
-                    key.getUsername());
+            JSONObject node = pm.retrieveNodeFromIndex(key.getPrefix(),
+                    usrIndexKey, key.getUsername());
 
             if (node == null)
             {
@@ -724,7 +805,8 @@ public class GraphDAOImpl implements GraphDAO
 
         try
         {
-            JSONObject n1 = pm.retrieveNodeFromIndex(person.getPrefix(), index,
+            JSONObject n1 = pm.retrieveNodeFromIndex(person.getPrefix(),
+                    usrIndexKey,
                     person.getUsername());
 
             if (n1 == null)
@@ -732,7 +814,8 @@ public class GraphDAOImpl implements GraphDAO
                 throw new PersonNotFoundException();
             }
 
-            JSONObject n2 = pm.retrieveNodeFromIndex(alterEgo.getPrefix(), index,
+            JSONObject n2 = pm.retrieveNodeFromIndex(alterEgo.getPrefix(),
+                    usrIndexKey,
                     alterEgo.getUsername());
 
             if (n2 == null)
@@ -830,7 +913,8 @@ public class GraphDAOImpl implements GraphDAO
 
         try
         {
-            JSONObject n1 = pm.retrieveNodeFromIndex(person.getPrefix(), index,
+            JSONObject n1 = pm.retrieveNodeFromIndex(person.getPrefix(),
+                    usrIndexKey,
                     person.getUsername());
 
             if (n1 == null)
@@ -838,7 +922,8 @@ public class GraphDAOImpl implements GraphDAO
                 throw new PersonNotFoundException();
             }
 
-            JSONObject n2 = pm.retrieveNodeFromIndex(alterEgo.getPrefix(), index,
+            JSONObject n2 = pm.retrieveNodeFromIndex(alterEgo.getPrefix(),
+                    usrIndexKey,
                     alterEgo.getUsername());
 
             if (n2 == null)
@@ -897,6 +982,8 @@ public class GraphDAOImpl implements GraphDAO
             Integer id = pm.createRelationship(relation.getObject(),
                     relation.getSubject(), relation.getType(), toProperties(
                     relation));
+
+            relation.setId(id);
 
             return id;
         }
@@ -1050,7 +1137,8 @@ public class GraphDAOImpl implements GraphDAO
 
         try
         {
-            JSONObject node = pm.retrieveNodeFromIndex(key.getPrefix(), index,
+            JSONObject node = pm.retrieveNodeFromIndex(key.getPrefix(),
+                    usrIndexKey,
                     key.getUsername());
 
             if (node == null)

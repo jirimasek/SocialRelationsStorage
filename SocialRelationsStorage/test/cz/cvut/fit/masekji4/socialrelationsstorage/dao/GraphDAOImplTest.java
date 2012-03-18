@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -155,21 +156,53 @@ public class GraphDAOImplTest
         
         Person person = graphDAO.retrievePerson(fbJiriMa5ekId);
         
-        assertEquals(person, fbJiriMa5ek);
+        assertTrue(person.equals(fbJiriMa5ek));
         
         Key key = keyFactory.createKey(new URI("http://www.facebook.com/bartonek.lukas"));
         
         person = graphDAO.retrievePerson(key);
         
-        assertEquals(person, fbBartonekLukas);
+        assertTrue(person.equals(fbBartonekLukas));
     }
     
+    @Test
+    public void testRetrievePersons() throws URISyntaxException
+    {
+        System.out.println("Testing retrieve of persons");
+        
+        List<Person> persons;
+        
+        persons = graphDAO.retrievePersons(new URI("http://www.facebook.com"));
+        
+        assertEquals(persons.size(), 2);
+        assertTrue(persons.contains(fbJiriMa5ek));
+        assertTrue(persons.contains(fbBartonekLukas));
+        
+        persons = graphDAO.retrievePersons(new URI("http://twitter.com"));
+        
+        assertEquals(persons.size(), 1);
+        assertTrue(persons.contains(twJiriMasek));
+        
+        persons = graphDAO.retrievePersons(new URI("http://www.twitter.com"));
+        
+        assertEquals(persons.size(), 0);
+        
+        persons = graphDAO.retrievePersons(new URI("http://usermap.cvut.cz"));
+        
+        assertEquals(persons.size(), 0);
+    }
+    
+    /**
+     * 
+     * @throws URISyntaxException
+     * @throws PersonNotFoundException 
+     */
     @Test
     public void testUpdatePerson() throws URISyntaxException, PersonNotFoundException
     {
         System.out.println("Testing update of person");
         
-        fbJiriMa5ek.addSource(new URI("http://www.jirimasek.cz"));
+        fbJiriMa5ek.addSource(new URI("http://jirimasek.cz"));
         fbJiriMa5ek.addProperty("foaf:birthday", "1988-07-11");
         
         Integer oldId = graphDAO.updatePerson(fbJiriMa5ek);
@@ -181,7 +214,7 @@ public class GraphDAOImplTest
         
         person = graphDAO.retrievePerson(fbJiriMa5ekId);
         
-        assertTrue(person.getSources().contains(new URI("http://www.jirimasek.cz")));
+        assertTrue(person.getSources().contains(new URI("http://jirimasek.cz")));
         assertTrue(person.getProperties().containsKey("foaf:birthday"));
         
         twXMorfeusId = graphDAO.updatePerson(twXMorfeus);
@@ -189,22 +222,12 @@ public class GraphDAOImplTest
         assertNotNull(twXMorfeusId);
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    /**
+     * 
+     * @throws URISyntaxException
+     * @throws RelationAlreadyExistsException
+     * @throws PersonNotFoundException 
+     */
     @Test
     public void testCreateRelation() throws URISyntaxException, RelationAlreadyExistsException, PersonNotFoundException
     {
@@ -223,6 +246,12 @@ public class GraphDAOImplTest
         assertNotNull(foafKnows);
     }
     
+    /**
+     * 
+     * @throws RelationNotFoundException
+     * @throws URISyntaxException
+     * @throws PersonNotFoundException 
+     */
     @Test
     public void testRetrieveRelation() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException
     {
@@ -277,6 +306,11 @@ public class GraphDAOImplTest
         assertEquals(relations.size(), 0);
     }
     
+    /**
+     * 
+     * @throws URISyntaxException
+     * @throws PersonNotFoundException 
+     */
     @Test
     public void testDeclareSameness() throws URISyntaxException, PersonNotFoundException
     {
@@ -292,6 +326,31 @@ public class GraphDAOImplTest
         graphDAO.declareSameness(k1, k2, sources);
     }
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * 
+     * @throws PersonNotFoundException
+     * @throws URISyntaxException 
+     */
     @Test
     public void testResufeSameness() throws PersonNotFoundException, URISyntaxException
     {
@@ -311,6 +370,9 @@ public class GraphDAOImplTest
         assertFalse(deleted);
     }
     
+    /**
+     * 
+     */
     @Test
     public void testDeleteRelation()
     {
@@ -326,14 +388,6 @@ public class GraphDAOImplTest
         
         assertFalse(deleted);
     }
-    
-    
-    
-    
-    
-    
-    
-    
     
     /**
      * 

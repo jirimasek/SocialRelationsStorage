@@ -278,11 +278,36 @@ public interface PersistenceManager
      * @param name
      * @param key
      * @param value
+     * @param node
+     * @param unique
+     * @throws JSONException
+     * @throws NodeIndexNotFoundException 
+     */
+    public void addNodeToIndex(String name, String key, String value, Integer node, boolean unique)
+            throws JSONException, NodeIndexNotFoundException;
+    
+    /**
+     * 
+     * @param name
+     * @param key
+     * @param value
      * @return
      * @throws JSONException
      * @throws NodeIndexNotFoundException 
      */
     public JSONObject retrieveNodeFromIndex(String name, String key, String value)
+            throws JSONException, NodeIndexNotFoundException;
+    
+    /**
+     * 
+     * @param name
+     * @param key
+     * @param value
+     * @return
+     * @throws JSONException
+     * @throws NodeIndexNotFoundException 
+     */
+    public JSONArray retrieveNodesFromIndex(String name, String key, String value)
             throws JSONException, NodeIndexNotFoundException;
     
     /**

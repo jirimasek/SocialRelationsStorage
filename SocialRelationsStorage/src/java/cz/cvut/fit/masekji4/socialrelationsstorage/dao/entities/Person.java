@@ -171,23 +171,29 @@ public class Person
         {
             return false;
         }
+        
         if (getClass() != obj.getClass())
         {
             return false;
         }
+        
         final Person other = (Person) obj;
+        
         if (this.profile != other.profile && (this.profile == null || !this.profile.equals(other.profile)))
         {
             return false;
         }
+        
         if (this.sources != other.sources && (this.sources == null || !this.sources.equals(other.sources)))
         {
             return false;
         }
+        
         if (this.properties != other.properties && (this.properties == null || !this.properties.equals(other.properties)))
         {
             return false;
         }
+        
         return true;
     }
 

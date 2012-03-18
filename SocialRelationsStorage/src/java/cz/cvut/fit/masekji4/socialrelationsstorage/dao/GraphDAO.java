@@ -47,7 +47,12 @@ public interface GraphDAO
      */
     public Person retrievePerson(Key key) throws PersonNotFoundException;
     
-    public List<Person> retrievePersons();
+    /**
+     * 
+     * @param source
+     * @return 
+     */
+    public List<Person> retrievePersons(URI source);
     
     /**
      * 

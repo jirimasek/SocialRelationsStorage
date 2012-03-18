@@ -897,6 +897,23 @@ public class PersistenceManagerImpl implements PersistenceManager
     public void addNodeToIndex(String name, String key, String value,
             Integer node) throws JSONException, NodeIndexNotFoundException
     {
+        addNodeToIndex(name, key, value, node, true);
+    }
+
+    /**
+     * 
+     * @param name
+     * @param key
+     * @param value
+     * @param node
+     * @param unique
+     * @throws JSONException
+     * @throws NodeIndexNotFoundException 
+     */
+    @Override
+    public void addNodeToIndex(String name, String key, String value,
+            Integer node, boolean unique) throws JSONException, NodeIndexNotFoundException
+    {
         if (name == null)
         {
             throw new IllegalArgumentException("Index name is null.");
@@ -917,8 +934,13 @@ public class PersistenceManagerImpl implements PersistenceManager
             throw new IllegalArgumentException("Node ID is null.");
         }
         
-        String nodeIndexURI = DATABASE_URI + "/index/node/" + name + "?unique";
+        String nodeIndexURI = DATABASE_URI + "/index/node/" + name;
         String nodeURI = DATABASE_URI + "/node/" + node;
+        
+        if (unique)
+        {
+            nodeIndexURI += "?unique";
+        }
         
         JSONObject entity = new JSONObject();
         
@@ -944,6 +966,28 @@ public class PersistenceManagerImpl implements PersistenceManager
      */
     @Override
     public JSONObject retrieveNodeFromIndex(String name, String key,
+            String value) throws JSONException, NodeIndexNotFoundException
+    {
+        JSONArray nodes = retrieveNodesFromIndex(name, key, value);
+        
+        if (nodes.length() > 0)
+        {
+            return nodes.getJSONObject(0);
+        }
+        
+        return null;
+    }
+
+    /**
+     * 
+     * @param name
+     * @param key
+     * @param value
+     * @return
+     * @throws JSONException
+     */
+    @Override
+    public JSONArray retrieveNodesFromIndex(String name, String key,
             String value) throws JSONException, NodeIndexNotFoundException
     {
         if (name == null)
@@ -972,12 +1016,7 @@ public class PersistenceManagerImpl implements PersistenceManager
         
         JSONArray nodes = response.getEntity(JSONArray.class);
         
-        if (nodes.length() > 0)
-        {
-            return nodes.getJSONObject(0);
-        }
-        
-        return null;
+        return nodes;
     }
 
     /**
