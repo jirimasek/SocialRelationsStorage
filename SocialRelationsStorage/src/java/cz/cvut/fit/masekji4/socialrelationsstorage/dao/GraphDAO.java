@@ -78,43 +78,123 @@ public interface GraphDAO
     /* ********************************************************************** *
      *                                SAMENESS                                *
      * ********************************************************************** */
-    
+    /**
+     * 
+     * @param person
+     * @param alterEgo
+     * @param sources
+     * @throws PersonNotFoundException 
+     */
     public void declareSameness(Integer person, Integer alterEgo, List<URI> sources)
             throws PersonNotFoundException;
     
+    /**
+     * 
+     * @param person
+     * @param alterEgo
+     * @param sources
+     * @throws PersonNotFoundException 
+     */
     public void declareSameness(Key person, Key alterEgo, List<URI> sources)
             throws PersonNotFoundException;
     
-    public Path retrieveAlterEgos(Person person) throws PersonNotFoundException;
+    public Path retrieveAlterEgos(Integer id) throws PersonNotFoundException;
     
     public Path retrieveAlterEgos(Key key) throws PersonNotFoundException;
     
+    /**
+     * 
+     * @param person
+     * @param alterEgo
+     * @return 
+     */
     public boolean refuseSameness(Integer person, Integer alterEgo);
     
+    /**
+     * 
+     * @param person
+     * @param alterEgo
+     * @return
+     * @throws PersonNotFoundException 
+     */
     public boolean refuseSameness(Key person, Key alterEgo) throws PersonNotFoundException;
     
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
     
+    /**
+     * 
+     * @param relation
+     * @return
+     * @throws PersonNotFoundException
+     * @throws RelationAlreadyExistsException 
+     */
     public Integer createRelation(Relation relation)
             throws PersonNotFoundException, RelationAlreadyExistsException;
     
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws RelationNotFoundException 
+     */
     public Relation retrieveRelation(Integer id) throws RelationNotFoundException;
     
+    /**
+     * 
+     * @param person
+     * @param direction
+     * @return
+     * @throws PersonNotFoundException 
+     */
     public List<Relation> retrieveRelations(Integer person, DirectionEnum direction)
             throws PersonNotFoundException;
     
+    /**
+     * 
+     * @param key
+     * @param direction
+     * @return
+     * @throws PersonNotFoundException 
+     */
     public List<Relation> retrieveRelations(Key key, DirectionEnum direction)
             throws PersonNotFoundException;
     
+    /**
+     * 
+     * @param person
+     * @param direction
+     * @param type
+     * @return
+     * @throws PersonNotFoundException 
+     */
     public List<Relation> retrieveRelations(Integer person, DirectionEnum direction, String type)
             throws PersonNotFoundException;
     
+    /**
+     * 
+     * @param key
+     * @param direction
+     * @param type
+     * @return
+     * @throws PersonNotFoundException 
+     */
     public List<Relation> retrieveRelations(Key key, DirectionEnum direction, String type)
             throws PersonNotFoundException;
     
-    public void updateRelation(Relation relation);
+    /**
+     * 
+     * @param relation
+     * @return
+     * @throws PersonNotFoundException 
+     */
+    public Integer updateRelation(Relation relation) throws PersonNotFoundException;
     
+    /**
+     * 
+     * @param id
+     * @return 
+     */
     public boolean deleteRelation(Integer id);
 }

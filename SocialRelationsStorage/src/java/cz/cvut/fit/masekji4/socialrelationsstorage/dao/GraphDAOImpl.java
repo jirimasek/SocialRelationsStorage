@@ -1,9 +1,13 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.ALL;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.IN;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.OUT;
+
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum.FULLPATH;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum.NODE;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum.PATH;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum.RELATIONSHIP;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
@@ -16,6 +20,8 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlread
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.Neo4j;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManager;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidPropertiesException;
@@ -409,9 +415,6 @@ public class GraphDAOImpl implements GraphDAO
             }
 
             Integer id = pm.createNode(toProperties(person));
-
-            person.setId(id);
-            person.setKey(key);
 
             pm.addNodeToIndex(key.getPrefix(), usrIndexKey, key.getUsername(), id);
             
@@ -840,15 +843,70 @@ public class GraphDAOImpl implements GraphDAO
     }
 
     @Override
-    public Path retrieveAlterEgos(Person person) throws PersonNotFoundException
+    public Path retrieveAlterEgos(Integer id) throws PersonNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        TraversalDescription t = new TraversalDescription();
+        
+        t.addRelationship(owlSameAs, OUT);
+        t.setMaxDepth(10);
+        
+        try
+        {
+            JSONArray nodes = pm.traverse(id, t, FULLPATH);
+            
+            System.out.println(nodes.toString());
+            
+            return null;
+        }
+        catch (JSONException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (NodeNotFoundException ex)
+        {
+            throw new PersonNotFoundException();
+        }
     }
 
+    /**
+     * 
+     * @param key
+     * @return
+     * @throws PersonNotFoundException 
+     */
     @Override
     public Path retrieveAlterEgos(Key key) throws PersonNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (key == null)
+        {
+            throw new IllegalArgumentException("Person key is null.");
+        }
+
+        try
+        {
+            JSONObject node = pm.retrieveNodeFromIndex(key.getPrefix(),
+                    usrIndexKey, key.getUsername());
+
+            if (node == null)
+            {
+                throw new PersonNotFoundException();
+            }
+
+            String relURI = node.getString("self");
+
+            int slash = relURI.lastIndexOf("/");
+            Integer nodeId = Integer.valueOf(relURI.substring(slash + 1));
+
+            return retrieveAlterEgos(nodeId);
+        }
+        catch (JSONException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (NodeIndexNotFoundException ex)
+        {
+            throw new PersonNotFoundException();
+        }
     }
 
     /**
@@ -950,6 +1008,13 @@ public class GraphDAOImpl implements GraphDAO
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
+    /**
+     * 
+     * @param relation
+     * @return
+     * @throws PersonNotFoundException
+     * @throws RelationAlreadyExistsException 
+     */
     @Override
     public Integer createRelation(Relation relation) throws PersonNotFoundException, RelationAlreadyExistsException
     {
@@ -982,8 +1047,6 @@ public class GraphDAOImpl implements GraphDAO
             Integer id = pm.createRelationship(relation.getObject(),
                     relation.getSubject(), relation.getType(), toProperties(
                     relation));
-
-            relation.setId(id);
 
             return id;
         }
@@ -1164,10 +1227,75 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
+    /**
+     * 
+     * @param relation
+     * @return
+     * @throws PersonNotFoundException 
+     */
     @Override
-    public void updateRelation(Relation relation)
+    public Integer updateRelation(Relation relation) throws PersonNotFoundException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (relation == null)
+        {
+            throw new IllegalArgumentException(
+                    "Relation object is null.");
+        }
+
+        if (!relation.isValid())
+        {
+            throw new IllegalArgumentException(
+                    "Relation is not declarated properly. Persons are not referred correctly or information source of relation is missing.");
+        }
+
+        if (relation.getType().equals(owlSameAs))
+        {
+            throw new IllegalArgumentException(String.format(
+                    "Relation type cannot be %s.", owlSameAs));
+        }
+
+        try
+        {
+            List<Relation> relations = retrieveRelations(relation.getObject(),
+                    OUT, relation.getType());
+
+            for (Relation rel : relations)
+            {
+                if (rel.getSubject().equals(relation.getSubject()))
+                {
+                    pm.addMetadataToRelationship(rel.getId(),
+                            toProperties(relation));
+                    
+                    return rel.getId();
+                }
+            }
+            
+            Integer id = pm.createRelationship(relation.getObject(),
+                    relation.getSubject(), relation.getType(),
+                    toProperties(relation));
+
+            return id;
+        }
+        catch (InvalidRelationshipException ex)
+        {
+            throw new PersonNotFoundException();
+        }
+        catch (NodeNotFoundException ex)
+        {
+            throw new PersonNotFoundException();
+        }
+        catch (RelationshipNotFoundException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (JSONException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (InvalidMetadataException ex)
+        {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
