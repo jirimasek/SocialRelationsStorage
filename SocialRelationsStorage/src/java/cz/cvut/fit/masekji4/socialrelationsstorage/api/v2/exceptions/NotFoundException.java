@@ -1,11 +1,13 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.exceptions;
+package cz.cvut.fit.masekji4.socialrelationsstorage.api.v2.exceptions;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v2.entities.EntityFactory;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.codehaus.jettison.json.JSONException;
 
 /**
- * 
+ * <code>NotFoundException</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -21,12 +23,12 @@ public class NotFoundException extends WebApplicationException {
 
     /**
      * Constructs an instance of <code>NotFoundException</code> with the specified detail message.
-     * @param msg the detail message.
+     * @param msg
      */
-    public NotFoundException(String msg) {
+    public NotFoundException(Throwable th) throws JSONException {
         super(Response.status(
                 Response.Status.NOT_FOUND)
-                    .entity("[ { \"error\" : { \"message\" : \"" + msg +"\" } } ]")
+                    .entity((new EntityFactory()).serialize(th))
                     .type(MediaType.APPLICATION_JSON)
                     .build()
              );

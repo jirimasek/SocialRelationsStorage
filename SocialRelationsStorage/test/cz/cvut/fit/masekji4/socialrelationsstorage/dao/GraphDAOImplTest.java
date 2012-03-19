@@ -1,9 +1,9 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
 import static org.junit.Assert.*;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.ALL;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.IN;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.OUT;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.ALL;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.IN;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.OUT;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.ConfigurationFactory;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
@@ -239,7 +239,7 @@ public class GraphDAOImplTest
         
         persons = graphDAO.retrievePersons(new URI("http://usermap.cvut.cz"));
         
-        assertEquals(persons.size(), 2);
+        assertEquals(persons.size(), 0);
     }
     
     /**
@@ -680,6 +680,18 @@ public class GraphDAOImplTest
         assertTrue(deleted);
         
         key = keyFactory.createKey(new URI("http://twitter.com/xmorfeus"));
+        
+        deleted = graphDAO.deletePerson(key);
+        
+        assertTrue(deleted);
+        
+        key = keyFactory.createKey(new URI("http://usermap.cvut.cz/profile/masekji4"));
+        
+        deleted = graphDAO.deletePerson(key);
+        
+        assertTrue(deleted);
+        
+        key = keyFactory.createKey(new URI("http://usermap.cvut.cz/profile/bartolu5"));
         
         deleted = graphDAO.deletePerson(key);
         

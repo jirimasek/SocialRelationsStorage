@@ -1,13 +1,13 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.ALL;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.IN;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.OUT;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.ALL;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.IN;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.OUT;
 
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum.FULLPATH;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum.NODE;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum.PATH;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum.RELATIONSHIP;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum.FULLPATH;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum.NODE;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum.PATH;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum.RELATIONSHIP;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
@@ -20,8 +20,8 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlread
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.Neo4j;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManager;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TraversalDescription;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidPropertiesException;
@@ -36,8 +36,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -525,7 +523,7 @@ public class GraphDAOImpl implements GraphDAO
     public List<Person> retrievePersons(URI source)
     {
         List<Person> persons = new ArrayList<Person>();
-
+        
         try
         {
             JSONArray nodes = pm.retrieveNodesFromIndex(srcIndexName,

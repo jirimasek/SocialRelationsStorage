@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config;
+package cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal;
 
 /**
  * Výčet <code>TypeEnum</code>

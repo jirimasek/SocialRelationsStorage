@@ -1,8 +1,8 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TraversalDescription;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidPropertiesException;

@@ -8,7 +8,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyE
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
 import java.net.URI;
 import java.util.List;
 

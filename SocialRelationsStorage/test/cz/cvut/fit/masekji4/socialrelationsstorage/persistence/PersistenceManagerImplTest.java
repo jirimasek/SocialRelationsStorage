@@ -1,12 +1,12 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TraversalDescription;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.TypeEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TraversalDescription;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeIndexNotFoundException;
 import static org.junit.Assert.*;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.ALL;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.IN;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.config.DirectionEnum.OUT;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.ALL;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.IN;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.OUT;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
