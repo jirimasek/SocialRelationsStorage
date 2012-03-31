@@ -6,8 +6,8 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.api.v2.exceptions.NotFoundExc
 import cz.cvut.fit.masekji4.socialrelationsstorage.business.StorageService;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.utils.Filter;
-import cz.cvut.fit.masekji4.socialrelationsstorage.utils.FilterService;
+import cz.cvut.fit.masekji4.socialrelationsstorage.common.Filter;
+import cz.cvut.fit.masekji4.socialrelationsstorage.common.FilterService;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -21,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -84,7 +85,7 @@ public class APIv2
 
     @GET
     @Path("persons/{uid}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public JSONObject retrievePerson(@PathParam("uid") String uid) throws JSONException
     {
         try
