@@ -1,6 +1,6 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.api.v2.exceptions;
+package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.exceptions;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.api.v2.entities.EntityFactory;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.entities.EntityFactory;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

@@ -1,5 +1,6 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.api.v2.serialization;
+package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.serialization;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.APIv1;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -15,13 +16,13 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
- * <code>JsonProvider</code>
+ * <code>JsonHalProvider</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(APIv1.APPLICATION_JSON_HAL)
 @Provider
-public class JsonProvider implements MessageBodyWriter<JSONObject>
+public class JsonHalProvider implements MessageBodyWriter<JSONObject>
 {
 
     private final String encoding = "UTF-8";
@@ -50,7 +51,7 @@ public class JsonProvider implements MessageBodyWriter<JSONObject>
     {
         if (JSONObject.class.isAssignableFrom(type)
                 && mediaType.getType().equals("application")
-                && mediaType.getSubtype().equals("json"))
+                && mediaType.getSubtype().equals("hal+json"))
         {
             return true;
         }

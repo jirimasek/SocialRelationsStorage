@@ -1,8 +1,8 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.api.v2;
+package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.api.v2.entities.EntityFactory;
-import cz.cvut.fit.masekji4.socialrelationsstorage.api.v2.exceptions.BadRequestException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.api.v2.exceptions.NotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.entities.EntityFactory;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.exceptions.BadRequestException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.exceptions.NotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.business.StorageService;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
@@ -31,10 +31,12 @@ import org.codehaus.jettison.json.JSONObject;
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
-@Path("v2")
+@Path("v1")
 @RequestScoped
-public class APIv2
+public class APIv1
 {
+    
+    public static final String APPLICATION_JSON_HAL = "application/hal+json";
 
     @Context
     private UriInfo context;
@@ -48,10 +50,14 @@ public class APIv2
     @Inject
     private EntityFactory entityFactory;
 
+    /* ********************************************************************** *
+     *                                PERSONS                                 *
+     * ********************************************************************** */
+    
     @POST
     @Path("persons")
-    @Consumes("application/json")
-    @Produces("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(APPLICATION_JSON_HAL)
     public String createPerson(String content)
     {   
         throw new UnsupportedOperationException("Not supported yet.");
@@ -59,7 +65,7 @@ public class APIv2
 
     @GET
     @Path("sources/{source}")
-    @Produces("application/json")
+    @Produces(APPLICATION_JSON_HAL)
     public JSONArray retrievePersons(@PathParam("source") String source) throws JSONException, PersonNotFoundException
     {
         try
@@ -84,21 +90,26 @@ public class APIv2
     }
 
     @GET
-    @Path("persons/{uid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject retrievePerson(@PathParam("uid") String uid) throws JSONException
+    @Path("persons/{profile}")
+    @Produces(APPLICATION_JSON_HAL)
+    public JSONObject retrievePerson(@PathParam("profile") String profile) throws JSONException
     {
         try
         {
-            int index = uid.indexOf(":");
+            String[] array = profile.split(":");
             
-            String prefix = uid.substring(0, index);
-            String username = uid.substring(index + 1);
+            if (array.length != 2)
+            {
+                // TODO - Add exception message.
+                throw new BadRequestException();
+            }
             
-            Person person = storageService.retrievePerson(prefix, username);
-            List<Person> alterEgos = storageService.retrieveAlterEgos(prefix, username);
+            Person person = storageService.retrievePerson(array[0], array[1]);
+            List<Person> alterEgos = storageService.retrieveAlterEgos(array[0], array[1]);
             
-            return entityFactory.serialize(person, alterEgos);
+            JSONObject p = entityFactory.serialize(person, alterEgos);
+            
+            return p;
         }
         catch (PersonNotFoundException ex)
         {
@@ -108,8 +119,8 @@ public class APIv2
 
     @PUT
     @Path("persons/{uid}")
-    @Consumes("application/json")
-    @Produces("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(APPLICATION_JSON_HAL)
     public String updatePerson(@PathParam("uid") String uid)
     {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -117,17 +128,23 @@ public class APIv2
 
     @DELETE
     @Path("persons/{uid}")
-    @Consumes("application/json")
-    @Produces("application/json")
     public String deletePerson(@PathParam("uid") String uid)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /* ********************************************************************** *
+     *                                SAMENESS                                *
+     * ********************************************************************** */
+    
+    /* ********************************************************************** *
+     *                               REALTIONS                                *
+     * ********************************************************************** */
+    
     @POST
     @Path("relations")
-    @Consumes("application/json")
-    @Produces("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(APPLICATION_JSON_HAL)
     public String createRelation(String content)
     {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -135,7 +152,7 @@ public class APIv2
 
     @GET
     @Path("relations/{object}")
-    @Produces("application/json")
+    @Produces(APPLICATION_JSON_HAL)
     public String retrieveRelations(@PathParam("object") String object)
     {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -143,7 +160,7 @@ public class APIv2
 
     @GET
     @Path("relations/{object}/{relation}")
-    @Produces("application/json")
+    @Produces(APPLICATION_JSON_HAL)
     public String retrieveRelations(@PathParam("object") String object,
             @PathParam("relation") String relation)
     {
@@ -152,7 +169,7 @@ public class APIv2
 
     @GET
     @Path("relations/{object}/{relation}/{subject}")
-    @Produces("application/json")
+    @Produces(APPLICATION_JSON_HAL)
     public String retrieveRelation(@PathParam("object") String object,
             @PathParam("relation") String relation,
             @PathParam("subject") String subject)
@@ -162,7 +179,8 @@ public class APIv2
 
     @PUT
     @Path("relations")
-    //@Produces("application/xml")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(APPLICATION_JSON_HAL)
     public String updateRelation()
     {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -170,8 +188,7 @@ public class APIv2
 
     @DELETE
     @Path("relations")
-    //@Produces("application/xml")
-    public String removeRelation()
+    public String deleteRelation()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
