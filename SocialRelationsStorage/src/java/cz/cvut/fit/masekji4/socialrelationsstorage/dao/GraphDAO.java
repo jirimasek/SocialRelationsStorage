@@ -149,9 +149,11 @@ public interface GraphDAO
      * 
      * @param id
      * @return
-     * @throws RelationNotFoundException 
+     * @throws RelationNotFoundException
+     * @throws IllegalAccessException 
      */
-    public Relation retrieveRelation(Integer id) throws RelationNotFoundException;
+    public Relation retrieveRelation(Integer id)
+            throws RelationNotFoundException, IllegalAccessException;
     
     /**
      * 
@@ -199,14 +201,17 @@ public interface GraphDAO
      * 
      * @param relation
      * @return
-     * @throws PersonNotFoundException 
+     * @throws PersonNotFoundException
+     * @throws IllegalAccessException 
      */
-    public Integer updateRelation(Relation relation) throws PersonNotFoundException;
+    public Integer updateRelation(Relation relation)
+            throws PersonNotFoundException, IllegalAccessException;
     
     /**
      * 
      * @param id
-     * @return 
+     * @return
+     * @throws IllegalAccessException 
      */
-    public boolean deleteRelation(Integer id);
+    public boolean deleteRelation(Integer id) throws IllegalAccessException;
 }

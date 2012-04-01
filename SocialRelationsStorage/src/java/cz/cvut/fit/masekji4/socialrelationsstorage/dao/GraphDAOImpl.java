@@ -1,13 +1,9 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.ALL;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.IN;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.OUT;
 
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum.FULLPATH;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum.NODE;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum.PATH;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum.RELATIONSHIP;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
@@ -1168,10 +1164,12 @@ public class GraphDAOImpl implements GraphDAO
      * 
      * @param id
      * @return
-     * @throws RelationNotFoundException 
+     * @throws RelationNotFoundException
+     * @throws IllegalAccessException 
      */
     @Override
-    public Relation retrieveRelation(Integer id) throws RelationNotFoundException
+    public Relation retrieveRelation(Integer id)
+            throws RelationNotFoundException, IllegalAccessException
     {
         if (id == null)
         {
@@ -1181,8 +1179,16 @@ public class GraphDAOImpl implements GraphDAO
         try
         {
             JSONObject relationship = pm.retrieveRelationship(id);
+            
+            Relation relation = toRelation(relationship);
+            
+            if (relation.getType().equals(owlSameAs))
+            {
+                // TODO - Add exception message.
+                throw new IllegalAccessException();
+            }
 
-            return toRelation(relationship);
+            return relation;
         }
         catch (RelationshipNotFoundException ex)
         {
@@ -1255,7 +1261,7 @@ public class GraphDAOImpl implements GraphDAO
             {
                 Relation relation = toRelation(relationships.getJSONObject(i));
 
-                if (!relation.getType().equals(owlSameAs));
+                if (!relation.getType().equals(owlSameAs))
                 {
                     relations.add(relation);
                 }
@@ -1327,10 +1333,12 @@ public class GraphDAOImpl implements GraphDAO
      * 
      * @param relation
      * @return
-     * @throws PersonNotFoundException 
+     * @throws PersonNotFoundException
+     * @throws IllegalAccessException 
      */
     @Override
-    public Integer updateRelation(Relation relation) throws PersonNotFoundException
+    public Integer updateRelation(Relation relation)
+            throws PersonNotFoundException, IllegalAccessException
     {
         if (relation == null)
         {
@@ -1346,8 +1354,8 @@ public class GraphDAOImpl implements GraphDAO
 
         if (relation.getType().equals(owlSameAs))
         {
-            throw new IllegalArgumentException(String.format(
-                    "Relation type cannot be %s.", owlSameAs));
+            // TODO - Add exception message.
+            throw new IllegalAccessException();
         }
 
         try
@@ -1397,10 +1405,11 @@ public class GraphDAOImpl implements GraphDAO
     /**
      * 
      * @param id
-     * @return 
+     * @return
+     * @throws IllegalAccessException 
      */
     @Override
-    public boolean deleteRelation(Integer id)
+    public boolean deleteRelation(Integer id) throws IllegalAccessException
     {
         if (id == null)
         {
@@ -1413,9 +1422,8 @@ public class GraphDAOImpl implements GraphDAO
 
             if (relation.getType().equals(owlSameAs))
             {
-                throw new IllegalArgumentException(
-                        String.format("Relation with type %s cannot be deleted.",
-                        owlSameAs));
+                // TODO - Add exception message.
+                throw new IllegalAccessException();
             }
         }
         catch (RelationNotFoundException ex)

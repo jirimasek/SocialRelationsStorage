@@ -1,7 +1,9 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.business;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import java.util.List;
 
 /**
@@ -11,6 +13,10 @@ import java.util.List;
  */
 public interface StorageService
 {
+    /* ********************************************************************** *
+     *                                PERSONS                                 *
+     * ********************************************************************** */
+    
     public Person retrievePerson(Integer id) throws PersonNotFoundException;
     
     public Person retrievePerson(String prefix, String username) throws PersonNotFoundException;
@@ -20,4 +26,14 @@ public interface StorageService
     public List<Person> retrieveAlterEgos(Integer id) throws PersonNotFoundException;
     
     public List<Person> retrieveAlterEgos(String prefix, String username) throws PersonNotFoundException;
+
+    /* ********************************************************************** *
+     *                               REALTIONS                                *
+     * ********************************************************************** */
+
+    public Relation retrieveRelation(Integer id) throws RelationNotFoundException, IllegalAccessException;
+    
+    public List<Relation> retrieveRelations(Integer id) throws PersonNotFoundException;
+    
+    public List<Relation> retrieveRelations(String prefix, String username) throws PersonNotFoundException;
 }
