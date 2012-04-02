@@ -125,6 +125,27 @@ public class DataProvider
         return persons;
     }
     
+    /**
+     * 
+     * @param id
+     * @return 
+     */
+    public boolean deletePerson(Integer id)
+    {
+        return storageService.deletePerson(id);
+    }
+    
+    /**
+     * 
+     * @param prefix
+     * @param username
+     * @return 
+     */
+    public boolean deletePerson(String prefix, String username)
+    {
+        return storageService.deletePerson(prefix, username);
+    }
+    
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
@@ -191,6 +212,17 @@ public class DataProvider
         JSONObject relations = getRelations(uri, list);
 
         return relations;
+    }
+    
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws IllegalAccessException 
+     */
+    public boolean deleteRelation(Integer id) throws IllegalAccessException
+    {
+        return storageService.deleteRelation(id);
     }
     
     // <editor-fold defaultstate="collapsed" desc="Accessor Methods">

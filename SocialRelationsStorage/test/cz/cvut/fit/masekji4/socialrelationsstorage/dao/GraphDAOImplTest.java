@@ -332,7 +332,7 @@ public class GraphDAOImplTest
      * @throws PersonNotFoundException 
      */
     @Test
-    public void testRetrieveRelations() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException
+    public void testRetrieveRelations() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException, IllegalAccessException
     {
         System.out.println("Testing retrieve of relation");
         
@@ -392,7 +392,7 @@ public class GraphDAOImplTest
      * @throws PersonNotFoundException 
      */
     @Test(expected = RelationNotFoundException.class)
-    public void testRetrieveNonexistentRelation() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException
+    public void testRetrieveNonexistentRelation() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException, IllegalAccessException
     {
         graphDAO.retrieveRelation(new Integer(98968769));
     }
@@ -431,7 +431,7 @@ public class GraphDAOImplTest
      * @throws RelationNotFoundException 
      */
     @Test
-    public void testUpdateRelation() throws URISyntaxException, PersonNotFoundException, RelationNotFoundException
+    public void testUpdateRelation() throws URISyntaxException, PersonNotFoundException, RelationNotFoundException, IllegalAccessException
     {
         System.out.println("Testing update of relation");
         
@@ -627,7 +627,7 @@ public class GraphDAOImplTest
      * 
      */
     @Test
-    public void testDeleteRelation()
+    public void testDeleteRelation() throws IllegalAccessException
     {
         System.out.println("Testing deletion of relation");
         

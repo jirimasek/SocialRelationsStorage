@@ -87,6 +87,23 @@ public class StorageServiceImpl implements StorageService
         return filterAlterAgos(alterEgos, null);
     }
     
+    @Override
+    public boolean deletePerson(Integer id)
+    {
+        return graphDAO.deletePerson(id);
+    }
+
+    @Override
+    public boolean deletePerson(String prefix, String username)
+    {
+        Key key = new Key();
+        
+        key.setPrefix(prefix);
+        key.setUsername(username);
+        
+        return graphDAO.deletePerson(key);
+    }
+    
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
@@ -134,6 +151,17 @@ public class StorageServiceImpl implements StorageService
         key.setUsername(username);
         
         return graphDAO.retrieveRelations(key, DirectionEnum.ALL);
+    }
+
+    /**
+     * 
+     * @param id
+     * @throws IllegalAccessException 
+     */
+    @Override
+    public boolean deleteRelation(Integer id) throws IllegalAccessException
+    {
+        return graphDAO.deleteRelation(id);
     }
     
     // <editor-fold defaultstate="collapsed" desc="Accessor Methods">

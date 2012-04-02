@@ -7,6 +7,8 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.common.NumberUtils;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.ForbiddenException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
@@ -36,20 +38,18 @@ public class APIv1
 
     @Context
     private UriInfo context;
-    
     @Inject
     private DataProvider dataProvider;
 
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
-    
     @POST
     @Path("persons")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String createPerson(String content)
-    {   
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -80,10 +80,11 @@ public class APIv1
     @GET
     @Path("persons/{uid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject retrievePerson(@PathParam("uid") String uid, @QueryParam("fields") String fields) throws JSONException
+    public JSONObject retrievePerson(@PathParam("uid") String uid,
+            @QueryParam("fields") String fields) throws JSONException
     {
         JSONObject person;
-        
+
         try
         {
             if (NumberUtils.isInt(uid))
@@ -93,18 +94,18 @@ public class APIv1
             else
             {
                 String[] key = uid.split(":");
-                
+
                 if (key.length != 2)
                 {
                     // TODO - Add exception message.
                     throw new BadRequestException();
                 }
-                
+
                 person = dataProvider.retrievePerson(key[0], key[1], fields);
             }
-            
+
             return person;
-            
+
         }
         catch (PersonNotFoundException ex)
         {
@@ -116,26 +117,47 @@ public class APIv1
     @Path("persons/{uid}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String updatePerson(@PathParam("uid") String uid)
+    public void updatePerson(@PathParam("uid") String uid)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @DELETE
     @Path("persons/{uid}")
-    public String deletePerson(@PathParam("uid") String uid)
+    public void deletePerson(@PathParam("uid") String uid)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        boolean deleted;
+
+        if (NumberUtils.isInt(uid))
+        {
+            deleted = dataProvider.deletePerson(new Integer(uid));
+        }
+        else
+        {
+            String[] key = uid.split(":");
+
+            if (key.length != 2)
+            {
+                // TODO - Add exception message.
+                throw new BadRequestException();
+            }
+
+            deleted = dataProvider.deletePerson(key[0], key[1]);
+        }
+
+        if (!deleted)
+        {
+            // TODO - Add exception message.
+            throw new NotFoundException();
+        }
     }
 
     /* ********************************************************************** *
      *                                SAMENESS                                *
      * ********************************************************************** */
-    
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
-    
     @POST
     @Path("relations")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -159,7 +181,7 @@ public class APIv1
         try
         {
             JSONObject relation = dataProvider.retrieveRelation(id);
-            
+
             return relation;
         }
         catch (RelationNotFoundException ex)
@@ -184,32 +206,35 @@ public class APIv1
     @GET
     @Path("persons/{uid}/relations")
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject retrieveRelations(@PathParam("uid") String uid, @QueryParam("fields") String fields)
+    public JSONObject retrieveRelations(@PathParam("uid") String uid,
+            @QueryParam("fields") String fields)
             throws JSONException
     {
         JSONObject relations;
-        
+
         try
         {
             if (NumberUtils.isInt(uid))
             {
-                relations = dataProvider.retrieveRelations(new Integer(uid), fields);
+                relations = dataProvider.retrieveRelations(new Integer(uid),
+                        fields);
             }
             else
             {
                 String[] key = uid.split(":");
-                
+
                 if (key.length != 2)
                 {
                     // TODO - Add exception message.
                     throw new BadRequestException();
                 }
-                
-                relations = dataProvider.retrieveRelations(key[0], key[1], fields);
+
+                relations = dataProvider.retrieveRelations(key[0], key[1],
+                        fields);
             }
-            
+
             return relations;
-            
+
         }
         catch (PersonNotFoundException ex)
         {
@@ -226,10 +251,27 @@ public class APIv1
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * 
+     * @param id
+     * @return 
+     */
     @DELETE
-    @Path("relations")
-    public String deleteRelation()
+    @Path("relations/{id}")
+    public void deleteRelation(@PathParam("id") Integer id) throws JSONException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            if (!dataProvider.deleteRelation(id))
+            {
+                // TODO - Add exception message.
+                throw new NotFoundException();
+            }
+        }
+        catch (IllegalAccessException ex)
+        {
+            // TODO - Add exception message.
+            throw new ForbiddenException(ex);
+        }
     }
 }

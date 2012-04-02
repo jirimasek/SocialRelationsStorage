@@ -26,6 +26,10 @@ public interface StorageService
     public List<Person> retrieveAlterEgos(Integer id) throws PersonNotFoundException;
     
     public List<Person> retrieveAlterEgos(String prefix, String username) throws PersonNotFoundException;
+    
+    public boolean deletePerson(Integer id);
+    
+    public boolean deletePerson(String prefix, String username);
 
     /* ********************************************************************** *
      *                               REALTIONS                                *
@@ -36,4 +40,6 @@ public interface StorageService
     public List<Relation> retrieveRelations(Integer id) throws PersonNotFoundException;
     
     public List<Relation> retrieveRelations(String prefix, String username) throws PersonNotFoundException;
+
+    public boolean deleteRelation(Integer id) throws IllegalAccessException;
 }

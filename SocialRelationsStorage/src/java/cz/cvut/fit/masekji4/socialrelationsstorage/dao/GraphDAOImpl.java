@@ -722,8 +722,7 @@ public class GraphDAOImpl implements GraphDAO
             Integer in = null;
             Integer out = null;
 
-            List<Relation> relations = retrieveRelations(sameness.getObject(),
-                    ALL, sameness.getType());
+            List<Relation> relations = retrieveSameness(sameness.getObject());
 
             for (Relation relation : relations)
             {
@@ -1019,7 +1018,7 @@ public class GraphDAOImpl implements GraphDAO
 
         try
         {
-            List<Relation> relations = retrieveRelations(person, ALL, owlSameAs);
+            List<Relation> relations = retrieveSameness(person);
 
             int deleted = 0;
 
@@ -1035,7 +1034,7 @@ public class GraphDAOImpl implements GraphDAO
                     deleted++;
                 }
             }
-
+            
             return deleted > 0;
         }
         catch (PersonNotFoundException ex)
@@ -1064,8 +1063,7 @@ public class GraphDAOImpl implements GraphDAO
         try
         {
             JSONObject n1 = pm.retrieveNodeFromIndex(person.getPrefix(),
-                    usrIndexKey,
-                    person.getUsername());
+                    usrIndexKey, person.getUsername());
 
             if (n1 == null)
             {
@@ -1073,8 +1071,7 @@ public class GraphDAOImpl implements GraphDAO
             }
 
             JSONObject n2 = pm.retrieveNodeFromIndex(alterEgo.getPrefix(),
-                    usrIndexKey,
-                    alterEgo.getUsername());
+                    usrIndexKey, alterEgo.getUsername());
 
             if (n2 == null)
             {
@@ -1432,5 +1429,47 @@ public class GraphDAOImpl implements GraphDAO
         }
 
         return pm.deleteRelationship(id);
+    }
+    
+    /**
+     * 
+     * @param person
+     * @return
+     * @throws PersonNotFoundException 
+     */
+    private List<Relation> retrieveSameness(Integer person) throws PersonNotFoundException
+    {
+        if (person == null)
+        {
+            throw new IllegalArgumentException("Person ID is null.");
+        }
+
+        try
+        {
+            JSONArray relationships = pm.retrieveRelationships(person, ALL, owlSameAs);
+
+            List<Relation> relations = new ArrayList<Relation>();
+
+            for (int i = 0 ; i < relationships.length() ; i++)
+            {
+                Relation relation = toRelation(relationships.getJSONObject(i));
+
+                relations.add(relation);
+            }
+
+            return relations;
+        }
+        catch (NodeNotFoundException ex)
+        {
+            throw new PersonNotFoundException();
+        }
+        catch (JSONException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new RuntimeException(ex);
+        }
     }
 }
