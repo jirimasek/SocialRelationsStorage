@@ -1,12 +1,20 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.data.DataProvider;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.BadRequestException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.NotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.NumberUtils;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.ConflictException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.ForbiddenException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
@@ -23,6 +31,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -44,15 +53,56 @@ public class APIv1
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
+    /**
+     * 
+     * @param person
+     * @return
+     * @throws JSONException 
+     */
     @POST
     @Path("persons")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String createPerson(String content)
+    public Response createPerson(JSONObject person) throws JSONException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            JSONObject obj = dataProvider.createPerson(person);
+            
+            URI uri = new URI(obj.getString("@id"));
+            
+            return Response.created(uri).entity(obj).build();
+        }    
+        catch (InvalidProfileException ex)
+        {
+            throw new BadRequestException(ex);
+        }
+        catch (PersonAlreadyExistsException ex)
+        {
+            // TODO - Add exception message.
+            throw new ConflictException(ex);
+        }
+        catch (PersonNotFoundException ex)
+        {
+            throw new NotFoundException(ex);
+        }
+        catch (InvalidPersonException ex)
+        {
+            throw new BadRequestException(ex);
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new BadRequestException(ex);
+        }
     }
 
+    /**
+     * 
+     * @param source
+     * @return
+     * @throws JSONException
+     * @throws PersonNotFoundException 
+     */
     @GET
     @Path("sources/{source}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -117,11 +167,32 @@ public class APIv1
     @Path("persons/{uid}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void updatePerson(@PathParam("uid") String uid)
+    public JSONObject updatePerson(@PathParam("uid") String uid, JSONObject person)
     {
+        if (NumberUtils.isInt(uid))
+        {
+            //person = dataProvider.retrievePerson(new Integer(uid), fields);
+        }
+        else
+        {
+            String[] key = uid.split(":");
+
+            if (key.length != 2)
+            {
+                // TODO - Add exception message.
+                throw new BadRequestException();
+            }
+
+            //person = dataProvider.retrievePerson(key[0], key[1]);
+        }
+
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * 
+     * @param uid 
+     */
     @DELETE
     @Path("persons/{uid}")
     public void deletePerson(@PathParam("uid") String uid)
@@ -155,16 +226,71 @@ public class APIv1
     /* ********************************************************************** *
      *                                SAMENESS                                *
      * ********************************************************************** */
+    
+    @POST
+    @Path("persons/{uid}/sameas")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void declareSameness(@PathParam("uid") String uid, JSONObject alterEgo)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @DELETE
+    @Path("persons/{uid1}/sameas/{uid2}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void refuseSameness(@PathParam("uid1") String uid1, @PathParam("uid2") Integer uid2)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
+    
+    /**
+     * 
+     * @param relation
+     * @return
+     * @throws JSONException 
+     */
     @POST
     @Path("relations")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject createRelation(String content)
+    public Response createRelation(JSONObject relation) throws JSONException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            JSONObject obj = dataProvider.createRelation(relation);
+                
+            URI uri = new URI(obj.getString("@id"));
+                
+            return Response.created(uri).entity(obj).build();
+        }
+        catch (PersonNotFoundException ex)
+        {
+            throw new NotFoundException(ex);
+        }
+        catch (RelationAlreadyExistsException ex)
+        {
+            throw new ConflictException(ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+            throw new ForbiddenException(ex);
+        }
+        catch (InvalidRelationshipException ex)
+        {
+            throw new BadRequestException(ex);
+        }
+        catch (RelationNotFoundException ex)
+        {
+            throw new NotFoundException(ex);
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new BadRequestException(ex);
+        }
     }
 
     /**
@@ -243,10 +369,11 @@ public class APIv1
     }
 
     @PUT
-    @Path("relations")
+    @Path("relations/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String updateRelation()
+    public JSONObject updateRelation(@PathParam("id") Integer id,
+            JSONObject relation)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -254,7 +381,7 @@ public class APIv1
     /**
      * 
      * @param id
-     * @return 
+     * @throws JSONException 
      */
     @DELETE
     @Path("relations/{id}")

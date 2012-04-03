@@ -5,8 +5,13 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,6 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -35,6 +42,12 @@ public class StorageServiceImpl implements StorageService
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
+    
+    @Override
+    public Integer createPerson(Person person) throws InvalidPersonException, InvalidProfileException, PersonAlreadyExistsException
+    {
+        return graphDAO.createPerson(person);
+    }
     
     @Override
     public List<Person> retrievePersons(String source)
@@ -105,9 +118,19 @@ public class StorageServiceImpl implements StorageService
     }
     
     /* ********************************************************************** *
+     *                                SAMENESS                                *
+     * ********************************************************************** */
+    
+    /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
 
+    @Override
+    public Integer createRelation(Relation relation) throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException
+    {
+        return graphDAO.createRelation(relation);
+    }
+    
     /**
      * 
      * @param id

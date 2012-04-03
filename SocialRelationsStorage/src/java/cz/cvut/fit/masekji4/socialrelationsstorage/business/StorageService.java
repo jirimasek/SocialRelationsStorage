@@ -2,8 +2,13 @@ package cz.cvut.fit.masekji4.socialrelationsstorage.business;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import java.util.List;
 
 /**
@@ -16,6 +21,8 @@ public interface StorageService
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
+    
+    public Integer createPerson(Person person) throws InvalidPersonException, InvalidProfileException, PersonAlreadyExistsException;
     
     public Person retrievePerson(Integer id) throws PersonNotFoundException;
     
@@ -30,10 +37,16 @@ public interface StorageService
     public boolean deletePerson(Integer id);
     
     public boolean deletePerson(String prefix, String username);
+    
+    /* ********************************************************************** *
+     *                                SAMENESS                                *
+     * ********************************************************************** */
 
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
+
+    public Integer createRelation(Relation relation) throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException;
 
     public Relation retrieveRelation(Integer id) throws RelationNotFoundException, IllegalAccessException;
     

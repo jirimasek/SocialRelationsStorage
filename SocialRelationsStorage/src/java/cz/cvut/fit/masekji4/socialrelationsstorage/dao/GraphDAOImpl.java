@@ -10,6 +10,8 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.KeyFactory;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
@@ -71,310 +73,6 @@ public class GraphDAOImpl implements GraphDAO
         this.keyFactory = keyFactory;
     }
 
-    // <editor-fold defaultstate="collapsed" desc="Accessor Methods">
-    /* ********************************************************************** *
-     *                            Accessor Methods                            *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param key
-     * @return
-     * @throws JSONException 
-     */
-    private boolean isPersonAlreadyCreated(Key key) throws JSONException
-    {
-        JSONObject node;
-
-        try
-        {
-            node = pm.retrieveNodeFromIndex(key.getPrefix(), usrIndexKey, key.
-                    getUsername());
-
-            if (node != null)
-            {
-                return true;
-            }
-        }
-        catch (NodeIndexNotFoundException ex)
-        {
-        }
-
-        return false;
-    }
-
-    /**
-     * 
-     * @param object
-     * @param subject
-     * @param type
-     * @return
-     * @throws PersonNotFoundException 
-     */
-    private boolean isRelationAlreadyCreated(Integer object, Integer subject,
-            String type) throws PersonNotFoundException
-    {
-        List<Relation> relations = retrieveRelations(object, OUT, type);
-
-        for (Relation relation : relations)
-        {
-            if (relation.getSubject().equals(subject))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * 
-     * @param person
-     * @return
-     * @throws JSONException 
-     */
-    private JSONObject toProperties(Person person) throws JSONException
-    {
-        JSONObject data = new JSONObject();
-
-        data.put(foafHomepage, person.getProfile().toString());
-
-        List<String> sources = new ArrayList<String>();
-
-        for (URI source : person.getSources())
-        {
-            sources.add(source.getHost());
-        }
-
-        data.put(siocNote, new JSONArray(sources));
-
-        if (person.getProperties() != null)
-        {
-            for (String property : person.getProperties().keySet())
-            {
-                data.put(property, person.getProperties().get(property));
-            }
-        }
-
-        return data;
-    }
-
-    /**
-     * 
-     * @param relation
-     * @return
-     * @throws JSONException 
-     */
-    private JSONObject toProperties(Relation relation) throws JSONException
-    {
-        JSONObject data = new JSONObject();
-
-        List<String> sources = new ArrayList<String>();
-
-        for (URI source : relation.getSources())
-        {
-            sources.add(source.getHost());
-        }
-
-        data.put(siocNote, new JSONArray(sources));
-
-        if (relation.getProperties() != null)
-        {
-            for (String property : relation.getProperties().keySet())
-            {
-                data.put(property, relation.getProperties().get(property));
-            }
-        }
-
-        return data;
-    }
-
-    /**
-     * 
-     * @param node
-     * @return
-     * @throws JSONException
-     * @throws URISyntaxException 
-     */
-    private Person toPerson(JSONObject node) throws JSONException, URISyntaxException
-    {
-        Person person = new Person();
-
-        // Retrieve ID of the person
-
-        String relURI = node.getString("self");
-
-        int slash = relURI.lastIndexOf("/");
-        Integer nodeId = Integer.valueOf(relURI.substring(slash + 1));
-
-        person.setId(nodeId);
-
-        // Retrieve data object from the node
-
-        JSONObject data = node.getJSONObject("data");
-
-        // Retrieve profile URI
-
-        if (data.has(foafHomepage))
-        {
-            URI profile = new URI(data.getString(foafHomepage));
-
-            person.setProfile(profile);
-            person.setKey(keyFactory.createKey(profile));
-
-            data.remove(foafHomepage);
-        }
-
-        // Retrieve sources of the node information
-
-        if (data.has(siocNote))
-        {
-            JSONArray array = data.getJSONArray(siocNote);
-
-            List<URI> sources = new ArrayList<URI>();
-
-            for (int i = 0 ; i < array.length() ; i++)
-            {
-                URI source = new URI("http://" + array.getString(i));
-
-                sources.add(source);
-            }
-
-            person.setSources(sources);
-
-            data.remove(siocNote);
-        }
-
-        // Retrieve other information about person
-
-        if (data.length() > 0)
-        {
-            Map<String, String> properties = new HashMap<String, String>();
-
-            for (Iterator it = data.keys() ; it.hasNext() ;)
-            {
-                String key = (String) it.next();
-
-                properties.put(key, data.getString(key));
-            }
-
-            person.setProperties(properties);
-        }
-
-        return person;
-    }
-
-    /**
-     * 
-     * @param node
-     * @return
-     * @throws JSONException
-     * @throws URISyntaxException 
-     */
-    private Relation toRelation(JSONObject node) throws JSONException, URISyntaxException
-    {
-        Relation relation = new Relation();
-
-        int slash;
-        Integer nodeId;
-
-        // Retrieve ID of the relation
-
-        String relURI = node.getString("self");
-
-        slash = relURI.lastIndexOf("/");
-        nodeId = Integer.valueOf(relURI.substring(slash + 1));
-
-        relation.setId(nodeId);
-
-        // Retrieve ID of the object
-
-        String objectURI = node.getString("start");
-
-        slash = objectURI.lastIndexOf("/");
-        nodeId = Integer.valueOf(objectURI.substring(slash + 1));
-
-        relation.setObject(nodeId);
-
-        // Retrieve ID of the subject
-
-        String subjectURI = node.getString("end");
-
-        slash = subjectURI.lastIndexOf("/");
-        nodeId = Integer.valueOf(subjectURI.substring(slash + 1));
-
-        relation.setSubject(nodeId);
-
-        // Retrieve type of the relation
-
-        relation.setType(node.getString("type"));
-
-        // Retrieve data object from the node
-
-        JSONObject data = node.getJSONObject("data");
-
-        // Retrieve sources of the node information
-
-        if (data.has(siocNote))
-        {
-            JSONArray array = data.getJSONArray(siocNote);
-
-            List<URI> sources = new ArrayList<URI>();
-
-            for (int i = 0 ; i < array.length() ; i++)
-            {
-                URI source = new URI("http://" + array.getString(i));
-
-                sources.add(source);
-            }
-
-            relation.setSources(sources);
-
-            data.remove(siocNote);
-        }
-
-        // Retrieve other information about person
-
-        if (data.length() > 0)
-        {
-            Map<String, String> properties = new HashMap<String, String>();
-
-            for (Iterator it = data.keys() ; it.hasNext() ;)
-            {
-                String key = (String) it.next();
-
-                properties.put(key, data.getString(key));
-            }
-
-            relation.setProperties(properties);
-        }
-
-        return relation;
-    }
-
-    /**
-     * 
-     * @param id
-     * @param sources
-     * @throws JSONException 
-     */
-    private void indexSources(Integer id, List<URI> sources) throws JSONException
-    {
-        try
-        {
-            for (URI source : sources)
-            {
-                pm.addNodeToIndex(srcIndexName, srcIndexKey, source.getHost(),
-                        id, false);
-            }
-        }
-        catch (NodeIndexNotFoundException ex)
-        {
-            pm.createNodeIndex(srcIndexName);
-
-            indexSources(id, sources);
-        }
-    }// </editor-fold>
-
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
@@ -382,10 +80,12 @@ public class GraphDAOImpl implements GraphDAO
      * 
      * @param person
      * @return
+     * @throws InvalidPersonException
+     * @throws InvalidProfileException
      * @throws PersonAlreadyExistsException 
      */
     @Override
-    public Integer createPerson(Person person) throws PersonAlreadyExistsException
+    public Integer createPerson(Person person) throws InvalidPersonException, InvalidProfileException, PersonAlreadyExistsException
     {
         if (person == null)
         {
@@ -394,8 +94,8 @@ public class GraphDAOImpl implements GraphDAO
 
         if (!person.isValid())
         {
-            throw new IllegalArgumentException(
-                    "Person is not declarated properly. Person's profile are not referred correctly or information source of person is missing.");
+            throw new InvalidPersonException(
+                    "Person is not declarated properly. Person's profile is not referred correctly or information source of person is missing.");
         }
 
         try
@@ -456,6 +156,10 @@ public class GraphDAOImpl implements GraphDAO
 
             return toPerson(node);
         }
+        catch (InvalidProfileException ex)
+        {
+            throw new RuntimeException(ex);
+        }
         catch (JSONException ex)
         {
             throw new RuntimeException(ex);
@@ -496,6 +200,10 @@ public class GraphDAOImpl implements GraphDAO
 
             return toPerson(node);
         }
+        catch (InvalidProfileException ex)
+        {
+            throw new RuntimeException(ex);
+        }
         catch (JSONException ex)
         {
             throw new RuntimeException(ex);
@@ -519,7 +227,7 @@ public class GraphDAOImpl implements GraphDAO
     public List<Person> retrievePersons(URI source)
     {
         List<Person> persons = new ArrayList<Person>();
-        
+
         try
         {
             JSONArray nodes = pm.retrieveNodesFromIndex(srcIndexName,
@@ -532,6 +240,10 @@ public class GraphDAOImpl implements GraphDAO
             }
 
             return persons;
+        }
+        catch (InvalidProfileException ex)
+        {
+            throw new RuntimeException(ex);
         }
         catch (JSONException ex)
         {
@@ -550,10 +262,12 @@ public class GraphDAOImpl implements GraphDAO
     /**
      * 
      * @param person
-     * @return 
+     * @return
+     * @throws InvalidPersonException
+     * @throws InvalidProfileException 
      */
     @Override
-    public Integer updatePerson(Person person)
+    public Integer updatePerson(Person person) throws InvalidPersonException, InvalidProfileException
     {
         if (person == null)
         {
@@ -562,7 +276,7 @@ public class GraphDAOImpl implements GraphDAO
 
         if (!person.isValid())
         {
-            throw new IllegalArgumentException(
+            throw new InvalidPersonException(
                     "Person is not declarated properly. Person's profile are not referred correctly or information source of person is missing.");
         }
 
@@ -822,6 +536,10 @@ public class GraphDAOImpl implements GraphDAO
 
             declareSameness(toPerson(n1).getId(), toPerson(n2).getId(), sources);
         }
+        catch (InvalidProfileException ex)
+        {
+            throw new RuntimeException(ex);
+        }
         catch (JSONException ex)
         {
             throw new RuntimeException(ex);
@@ -863,7 +581,7 @@ public class GraphDAOImpl implements GraphDAO
             // Create map of path parts
 
             Map<Integer, Path> parts = new HashMap<Integer, Path>();
-            
+
             parts.put(id, start);
 
             // Analyze returned paths
@@ -871,29 +589,30 @@ public class GraphDAOImpl implements GraphDAO
             for (int i = 0 ; i < paths.length() ; i++)
             {
                 JSONObject path = paths.getJSONObject(i);
-                
+
                 JSONArray nodes = path.getJSONArray("nodes");
 
                 Map<Integer, Person> persons = new HashMap<Integer, Person>();
-                
+
                 for (int j = 0 ; j < nodes.length() ; j++)
                 {
                     Person person = toPerson(nodes.getJSONObject(j));
-                    
+
                     persons.put(person.getId(), person);
                 }
-                
+
                 JSONArray relationships = path.getJSONArray("relationships");
-                
+
                 List<Relation> relations = new ArrayList<Relation>();
-                
+
                 for (int j = 0 ; j < relationships.length() ; j++)
                 {
-                    Relation relation = toRelation(relationships.getJSONObject(j));
-                    
+                    Relation relation = toRelation(
+                            relationships.getJSONObject(j));
+
                     relations.add(relation);
                 }
-                
+
                 for (Relation relation : relations)
                 {
                     if (relation.getType().equals(owlSameAs))
@@ -902,9 +621,9 @@ public class GraphDAOImpl implements GraphDAO
                         {
                             continue;
                         }
-                        
+
                         Path p1;
-                        
+
                         if (parts.containsKey(relation.getObject()))
                         {
                             p1 = parts.get(relation.getObject());
@@ -912,14 +631,14 @@ public class GraphDAOImpl implements GraphDAO
                         else
                         {
                             p1 = new Path();
-                            
+
                             p1.setPerson(persons.get(relation.getObject()));
-                            
+
                             parts.put(relation.getObject(), p1);
                         }
-                        
+
                         Path p2;
-                        
+
                         if (parts.containsKey(relation.getSubject()))
                         {
                             p2 = parts.get(relation.getSubject());
@@ -927,23 +646,27 @@ public class GraphDAOImpl implements GraphDAO
                         else
                         {
                             p2 = new Path();
-                            
+
                             p2.setPerson(persons.get(relation.getSubject()));
-                            
+
                             parts.put(relation.getSubject(), p2);
                         }
-                        
+
                         for (URI source : relation.getSources())
                         {
                             p2.addSource(source);
                         }
-                        
+
                         p1.addPerson(p2);
                     }
                 }
             }
 
             return start;
+        }
+        catch (InvalidProfileException ex)
+        {
+            throw new RuntimeException(ex);
         }
         catch (URISyntaxException ex)
         {
@@ -1034,7 +757,7 @@ public class GraphDAOImpl implements GraphDAO
                     deleted++;
                 }
             }
-            
+
             return deleted > 0;
         }
         catch (PersonNotFoundException ex)
@@ -1088,6 +811,10 @@ public class GraphDAOImpl implements GraphDAO
         {
             throw new RuntimeException(ex);
         }
+        catch (InvalidProfileException ex)
+        {
+            throw new RuntimeException(ex);
+        }
         catch (NodeIndexNotFoundException ex)
         {
             throw new RuntimeException(ex);
@@ -1102,10 +829,12 @@ public class GraphDAOImpl implements GraphDAO
      * @param relation
      * @return
      * @throws PersonNotFoundException
-     * @throws RelationAlreadyExistsException 
+     * @throws RelationAlreadyExistsException
+     * @throws IllegalAccessException
+     * @throws InvalidRelationshipException 
      */
     @Override
-    public Integer createRelation(Relation relation) throws PersonNotFoundException, RelationAlreadyExistsException
+    public Integer createRelation(Relation relation) throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException
     {
         if (relation == null)
         {
@@ -1115,13 +844,13 @@ public class GraphDAOImpl implements GraphDAO
 
         if (!relation.isValid())
         {
-            throw new IllegalArgumentException(
+            throw new InvalidRelationshipException(
                     "Relation is not declarated properly. Persons are not referred correctly or information source of relation is missing.");
         }
 
         if (relation.getType().equals(owlSameAs))
         {
-            throw new IllegalArgumentException(String.format(
+            throw new IllegalAccessException(String.format(
                     "Relation type cannot be %s.", owlSameAs));
         }
 
@@ -1138,10 +867,6 @@ public class GraphDAOImpl implements GraphDAO
                     relation));
 
             return id;
-        }
-        catch (InvalidRelationshipException ex)
-        {
-            throw new PersonNotFoundException();
         }
         catch (NodeNotFoundException ex)
         {
@@ -1176,9 +901,9 @@ public class GraphDAOImpl implements GraphDAO
         try
         {
             JSONObject relationship = pm.retrieveRelationship(id);
-            
+
             Relation relation = toRelation(relationship);
-            
+
             if (relation.getType().equals(owlSameAs))
             {
                 // TODO - Add exception message.
@@ -1312,6 +1037,10 @@ public class GraphDAOImpl implements GraphDAO
 
             return retrieveRelations(person.getId(), direction, type);
         }
+        catch (InvalidProfileException ex)
+        {
+            throw new RuntimeException(ex);
+        }
         catch (NodeIndexNotFoundException ex)
         {
             throw new PersonNotFoundException();
@@ -1430,7 +1159,7 @@ public class GraphDAOImpl implements GraphDAO
 
         return pm.deleteRelationship(id);
     }
-    
+
     /**
      * 
      * @param person
@@ -1446,7 +1175,8 @@ public class GraphDAOImpl implements GraphDAO
 
         try
         {
-            JSONArray relationships = pm.retrieveRelationships(person, ALL, owlSameAs);
+            JSONArray relationships = pm.retrieveRelationships(person, ALL,
+                    owlSameAs);
 
             List<Relation> relations = new ArrayList<Relation>();
 
@@ -1472,4 +1202,308 @@ public class GraphDAOImpl implements GraphDAO
             throw new RuntimeException(ex);
         }
     }
+
+    // <editor-fold defaultstate="collapsed" desc="Accessor Methods">
+    /* ********************************************************************** *
+     *                            Accessor Methods                            *
+     * ********************************************************************** */
+    /**
+     * 
+     * @param key
+     * @return
+     * @throws JSONException 
+     */
+    private boolean isPersonAlreadyCreated(Key key) throws JSONException
+    {
+        JSONObject node;
+
+        try
+        {
+            node = pm.retrieveNodeFromIndex(key.getPrefix(), usrIndexKey, key.
+                    getUsername());
+
+            if (node != null)
+            {
+                return true;
+            }
+        }
+        catch (NodeIndexNotFoundException ex)
+        {
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param object
+     * @param subject
+     * @param type
+     * @return
+     * @throws PersonNotFoundException 
+     */
+    private boolean isRelationAlreadyCreated(Integer object, Integer subject,
+            String type) throws PersonNotFoundException
+    {
+        List<Relation> relations = retrieveRelations(object, OUT, type);
+
+        for (Relation relation : relations)
+        {
+            if (relation.getSubject().equals(subject))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param person
+     * @return
+     * @throws JSONException 
+     */
+    private JSONObject toProperties(Person person) throws JSONException
+    {
+        JSONObject data = new JSONObject();
+
+        data.put(foafHomepage, person.getProfile().toString());
+
+        List<String> sources = new ArrayList<String>();
+
+        for (URI source : person.getSources())
+        {
+            sources.add(source.getHost());
+        }
+
+        data.put(siocNote, new JSONArray(sources));
+
+        if (person.getProperties() != null)
+        {
+            for (String property : person.getProperties().keySet())
+            {
+                data.put(property, person.getProperties().get(property));
+            }
+        }
+
+        return data;
+    }
+
+    /**
+     * 
+     * @param relation
+     * @return
+     * @throws JSONException 
+     */
+    private JSONObject toProperties(Relation relation) throws JSONException
+    {
+        JSONObject data = new JSONObject();
+
+        List<String> sources = new ArrayList<String>();
+
+        for (URI source : relation.getSources())
+        {
+            sources.add(source.getHost());
+        }
+
+        data.put(siocNote, new JSONArray(sources));
+
+        if (relation.getProperties() != null)
+        {
+            for (String property : relation.getProperties().keySet())
+            {
+                data.put(property, relation.getProperties().get(property));
+            }
+        }
+
+        return data;
+    }
+
+    /**
+     * 
+     * @param node
+     * @return
+     * @throws JSONException
+     * @throws URISyntaxException 
+     */
+    private Person toPerson(JSONObject node) throws JSONException, URISyntaxException, InvalidProfileException
+    {
+        Person person = new Person();
+
+        // Retrieve ID of the person
+
+        String relURI = node.getString("self");
+
+        int slash = relURI.lastIndexOf("/");
+        Integer nodeId = Integer.valueOf(relURI.substring(slash + 1));
+
+        person.setId(nodeId);
+
+        // Retrieve data object from the node
+
+        JSONObject data = node.getJSONObject("data");
+
+        // Retrieve profile URI
+
+        if (data.has(foafHomepage))
+        {
+            URI profile = new URI(data.getString(foafHomepage));
+
+            person.setProfile(profile);
+            person.setKey(keyFactory.createKey(profile));
+
+            data.remove(foafHomepage);
+        }
+
+        // Retrieve sources of the node information
+
+        if (data.has(siocNote))
+        {
+            JSONArray array = data.getJSONArray(siocNote);
+
+            List<URI> sources = new ArrayList<URI>();
+
+            for (int i = 0 ; i < array.length() ; i++)
+            {
+                URI source = new URI("http://" + array.getString(i));
+
+                sources.add(source);
+            }
+
+            person.setSources(sources);
+
+            data.remove(siocNote);
+        }
+
+        // Retrieve other information about person
+
+        if (data.length() > 0)
+        {
+            Map<String, String> properties = new HashMap<String, String>();
+
+            for (Iterator it = data.keys() ; it.hasNext() ;)
+            {
+                String key = (String) it.next();
+
+                properties.put(key, data.getString(key));
+            }
+
+            person.setProperties(properties);
+        }
+
+        return person;
+    }
+
+    /**
+     * 
+     * @param node
+     * @return
+     * @throws JSONException
+     * @throws URISyntaxException 
+     */
+    private Relation toRelation(JSONObject node) throws JSONException, URISyntaxException
+    {
+        Relation relation = new Relation();
+
+        int slash;
+        Integer nodeId;
+
+        // Retrieve ID of the relation
+
+        String relURI = node.getString("self");
+
+        slash = relURI.lastIndexOf("/");
+        nodeId = Integer.valueOf(relURI.substring(slash + 1));
+
+        relation.setId(nodeId);
+
+        // Retrieve ID of the object
+
+        String objectURI = node.getString("start");
+
+        slash = objectURI.lastIndexOf("/");
+        nodeId = Integer.valueOf(objectURI.substring(slash + 1));
+
+        relation.setObject(nodeId);
+
+        // Retrieve ID of the subject
+
+        String subjectURI = node.getString("end");
+
+        slash = subjectURI.lastIndexOf("/");
+        nodeId = Integer.valueOf(subjectURI.substring(slash + 1));
+
+        relation.setSubject(nodeId);
+
+        // Retrieve type of the relation
+
+        relation.setType(node.getString("type"));
+
+        // Retrieve data object from the node
+
+        JSONObject data = node.getJSONObject("data");
+
+        // Retrieve sources of the node information
+
+        if (data.has(siocNote))
+        {
+            JSONArray array = data.getJSONArray(siocNote);
+
+            List<URI> sources = new ArrayList<URI>();
+
+            for (int i = 0 ; i < array.length() ; i++)
+            {
+                URI source = new URI("http://" + array.getString(i));
+
+                sources.add(source);
+            }
+
+            relation.setSources(sources);
+
+            data.remove(siocNote);
+        }
+
+        // Retrieve other information about person
+
+        if (data.length() > 0)
+        {
+            Map<String, String> properties = new HashMap<String, String>();
+
+            for (Iterator it = data.keys() ; it.hasNext() ;)
+            {
+                String key = (String) it.next();
+
+                properties.put(key, data.getString(key));
+            }
+
+            relation.setProperties(properties);
+        }
+
+        return relation;
+    }
+
+    /**
+     * 
+     * @param id
+     * @param sources
+     * @throws JSONException 
+     */
+    private void indexSources(Integer id, List<URI> sources) throws JSONException
+    {
+        try
+        {
+            for (URI source : sources)
+            {
+                pm.addNodeToIndex(srcIndexName, srcIndexKey, source.getHost(),
+                        id, false);
+            }
+        }
+        catch (NodeIndexNotFoundException ex)
+        {
+            pm.createNodeIndex(srcIndexName);
+
+            indexSources(id, sources);
+        }
+    }// </editor-fold>
 }

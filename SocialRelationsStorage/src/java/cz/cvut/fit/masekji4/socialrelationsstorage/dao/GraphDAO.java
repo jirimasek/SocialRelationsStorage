@@ -4,10 +4,13 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
 import java.net.URI;
 import java.util.List;
@@ -27,9 +30,11 @@ public interface GraphDAO
      * 
      * @param person
      * @return
+     * @throws InvalidPersonException
+     * @throws InvalidProfileException
      * @throws PersonAlreadyExistsException 
      */
-    public Integer createPerson(Person person) throws PersonAlreadyExistsException;
+    public Integer createPerson(Person person) throws InvalidPersonException, InvalidProfileException, PersonAlreadyExistsException;
     
     /**
      * 
@@ -57,9 +62,11 @@ public interface GraphDAO
     /**
      * 
      * @param person
-     * @return 
+     * @return
+     * @throws InvalidPersonException
+     * @throws InvalidProfileException 
      */
-    public Integer updatePerson(Person person);
+    public Integer updatePerson(Person person) throws InvalidPersonException, InvalidProfileException;
     
     /**
      * 
@@ -140,10 +147,12 @@ public interface GraphDAO
      * @param relation
      * @return
      * @throws PersonNotFoundException
-     * @throws RelationAlreadyExistsException 
+     * @throws RelationAlreadyExistsException
+     * @throws IllegalAccessException
+     * @throws InvalidRelationshipException 
      */
     public Integer createRelation(Relation relation)
-            throws PersonNotFoundException, RelationAlreadyExistsException;
+            throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException;
     
     /**
      * 

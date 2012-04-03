@@ -1,6 +1,7 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import java.net.URI;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -32,7 +33,7 @@ public class KeyFactory
         this.namespaces = namespaces;
     }
     
-    public Key createKey(URI uri) throws IllegalArgumentException
+    public Key createKey(URI uri) throws InvalidProfileException
     {
         for (String prefix : namespaces.keySet())
         {
@@ -55,6 +56,6 @@ public class KeyFactory
             }
         }
 
-        throw new IllegalArgumentException();
+        throw new InvalidProfileException("Profile from this site is not supported.");
     }
 }
