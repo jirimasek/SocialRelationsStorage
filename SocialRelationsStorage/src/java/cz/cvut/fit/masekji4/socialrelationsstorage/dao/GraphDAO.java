@@ -90,9 +90,10 @@ public interface GraphDAO
      * @param person
      * @param alterEgo
      * @param sources
+     * @return
      * @throws PersonNotFoundException 
      */
-    public void declareSameness(Integer person, Integer alterEgo, List<URI> sources)
+    public boolean declareSameness(Integer person, Integer alterEgo, List<URI> sources)
             throws PersonNotFoundException;
     
     /**
@@ -100,9 +101,10 @@ public interface GraphDAO
      * @param person
      * @param alterEgo
      * @param sources
+     * @return
      * @throws PersonNotFoundException 
      */
-    public void declareSameness(Key person, Key alterEgo, List<URI> sources)
+    public boolean declareSameness(Key person, Key alterEgo, List<URI> sources)
             throws PersonNotFoundException;
     
     /**
@@ -125,9 +127,10 @@ public interface GraphDAO
      * 
      * @param person
      * @param alterEgo
-     * @return 
+     * @return
+     * @throws PersonNotFoundException 
      */
-    public boolean refuseSameness(Integer person, Integer alterEgo);
+    public boolean refuseSameness(Integer person, Integer alterEgo) throws PersonNotFoundException;
     
     /**
      * 

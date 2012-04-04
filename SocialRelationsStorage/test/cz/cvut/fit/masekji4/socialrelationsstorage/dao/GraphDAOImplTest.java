@@ -1,5 +1,8 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import static org.junit.Assert.*;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.ALL;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.IN;
@@ -114,7 +117,7 @@ public class GraphDAOImplTest
      * @throws PersonAlreadyExistsException 
      */
     @Test
-    public void testCreatePerson() throws URISyntaxException, PersonAlreadyExistsException
+    public void testCreatePerson() throws URISyntaxException, PersonAlreadyExistsException, InvalidPersonException, InvalidProfileException
     {
         System.out.println("Testing creation of person");
         
@@ -137,7 +140,7 @@ public class GraphDAOImplTest
      * @throws PersonAlreadyExistsException 
      */
     @Test(expected = PersonAlreadyExistsException.class)
-    public void testCreateAlreadyCreatedPerson() throws URISyntaxException, PersonAlreadyExistsException
+    public void testCreateAlreadyCreatedPerson() throws URISyntaxException, PersonAlreadyExistsException, InvalidPersonException, InvalidProfileException
     {
         System.out.println("Testing creation of already created person");
         
@@ -150,7 +153,7 @@ public class GraphDAOImplTest
      * @throws PersonAlreadyExistsException 
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateIncompletePerson() throws URISyntaxException, PersonAlreadyExistsException
+    public void testCreateIncompletePerson() throws URISyntaxException, PersonAlreadyExistsException, InvalidPersonException, InvalidProfileException
     {
         System.out.println("Testing creation of incomplete person");
         
@@ -168,7 +171,7 @@ public class GraphDAOImplTest
      * @throws URISyntaxException 
      */
     @Test
-    public void testRetrievePerson() throws PersonNotFoundException, URISyntaxException
+    public void testRetrievePerson() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
         System.out.println("Testing retrieve of person");
         
@@ -202,7 +205,7 @@ public class GraphDAOImplTest
      * @throws URISyntaxException 
      */
     @Test(expected = PersonNotFoundException.class)
-    public void testRetrieveNonexistentPersonByKey() throws PersonNotFoundException, URISyntaxException
+    public void testRetrieveNonexistentPersonByKey() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
         System.out.println("Testing retrieve of nonexistent person by key");
         
@@ -248,7 +251,7 @@ public class GraphDAOImplTest
      * @throws PersonNotFoundException 
      */
     @Test
-    public void testUpdatePerson() throws URISyntaxException, PersonNotFoundException
+    public void testUpdatePerson() throws URISyntaxException, PersonNotFoundException, InvalidPersonException, InvalidProfileException
     {
         System.out.println("Testing update of person");
         
@@ -287,7 +290,7 @@ public class GraphDAOImplTest
      * @throws PersonNotFoundException 
      */
     @Test
-    public void testCreateRelation() throws URISyntaxException, RelationAlreadyExistsException, PersonNotFoundException
+    public void testCreateRelation() throws URISyntaxException, RelationAlreadyExistsException, PersonNotFoundException, IllegalAccessException, InvalidRelationshipException
     {
         System.out.println("Testing creation of relation");
         
@@ -311,7 +314,7 @@ public class GraphDAOImplTest
      * @throws PersonNotFoundException 
      */
     @Test(expected = RelationAlreadyExistsException.class)
-    public void testCreateAlreadyCreatedRelation() throws URISyntaxException, RelationAlreadyExistsException, PersonNotFoundException
+    public void testCreateAlreadyCreatedRelation() throws URISyntaxException, RelationAlreadyExistsException, PersonNotFoundException, IllegalAccessException, InvalidRelationshipException
     {
         System.out.println("Testing creation of already created relation");
         
@@ -332,7 +335,7 @@ public class GraphDAOImplTest
      * @throws PersonNotFoundException 
      */
     @Test
-    public void testRetrieveRelations() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException, IllegalAccessException
+    public void testRetrieveRelations() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException, IllegalAccessException, InvalidProfileException
     {
         System.out.println("Testing retrieve of relation");
         
@@ -416,7 +419,7 @@ public class GraphDAOImplTest
      * @throws PersonNotFoundException 
      */
     @Test(expected = PersonNotFoundException.class)
-    public void testRetrieveRelationsOfNonexistentByKey() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException
+    public void testRetrieveRelationsOfNonexistentByKey() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException, InvalidProfileException
     {
         Key key = keyFactory.createKey(new URI("http://twitter.com/jakubsamek"));
         
@@ -472,7 +475,7 @@ public class GraphDAOImplTest
      * @throws PersonNotFoundException 
      */
     @Test
-    public void testDeclareSameness() throws URISyntaxException, PersonNotFoundException
+    public void testDeclareSameness() throws URISyntaxException, PersonNotFoundException, InvalidProfileException
     {
         System.out.println("Testing declaration of sameness");
         
@@ -509,7 +512,7 @@ public class GraphDAOImplTest
      * @throws URISyntaxException 
      */
     @Test
-    public void testRetrieveAlterEgos() throws PersonNotFoundException, URISyntaxException
+    public void testRetrieveAlterEgos() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
         System.out.println("Testing retrieve of alter egos");
         
@@ -590,7 +593,7 @@ public class GraphDAOImplTest
      * @throws URISyntaxException 
      */
     @Test(expected = PersonNotFoundException.class)
-    public void testRetrieveAlterEgosForNonexistentPersonByKey() throws PersonNotFoundException, URISyntaxException
+    public void testRetrieveAlterEgosForNonexistentPersonByKey() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
         System.out.println("Testing retrieve of alter egos for nonexistent key");
         
@@ -605,7 +608,7 @@ public class GraphDAOImplTest
      * @throws URISyntaxException 
      */
     @Test
-    public void testResufeSameness() throws PersonNotFoundException, URISyntaxException
+    public void testResufeSameness() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
         System.out.println("Testing refusal of sameness");
         
@@ -647,7 +650,7 @@ public class GraphDAOImplTest
      * @throws URISyntaxException 
      */
     @Test
-    public void testDeletePerson() throws URISyntaxException
+    public void testDeletePerson() throws URISyntaxException, InvalidProfileException
     {
         System.out.println("Testing deletion of person");
         

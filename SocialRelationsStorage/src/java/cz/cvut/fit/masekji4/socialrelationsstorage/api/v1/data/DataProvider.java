@@ -8,6 +8,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidSamenessException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
@@ -71,9 +72,12 @@ public class DataProvider
      * 
      * @param person
      * @return
+     * @throws InvalidPersonException
+     * @throws InvalidProfileException
      * @throws PersonAlreadyExistsException
      * @throws PersonNotFoundException
-     * @throws JSONException 
+     * @throws JSONException
+     * @throws URISyntaxException 
      */
     public JSONObject createPerson(JSONObject person) throws InvalidPersonException,
             InvalidProfileException, PersonAlreadyExistsException,
@@ -183,6 +187,129 @@ public class DataProvider
     public boolean deletePerson(String prefix, String username)
     {
         return storageService.deletePerson(prefix, username);
+    }
+
+    /* ********************************************************************** *
+     *                                SAMENESS                                *
+     * ********************************************************************** */
+    /**
+     * 
+     * @param id
+     * @param sameness
+     * @throws JSONException
+     * @throws URISyntaxException
+     * @throws InvalidSamenessException
+     * @throws PersonNotFoundException 
+     */
+    public URI declareSameness(Integer id, JSONObject sameness)
+            throws JSONException, URISyntaxException, InvalidSamenessException, PersonNotFoundException
+    {
+        if (sameness.has(owlSameAs) && sameness.has(siocNote))
+        {
+            List<URI> sources = getSources(sameness);
+
+            String uid = sameness.getString(owlSameAs);
+
+            Integer alterEgo;
+
+            if (NumberUtils.isInt(uid))
+            {
+                alterEgo = new Integer(uid);
+            }
+            else
+            {
+                String[] key = uid.split(":");
+
+                if (key.length != 2)
+                {
+                    // TODO - Add exception message.
+                    throw new InvalidSamenessException();
+                }
+
+                Person person = storageService.retrievePerson(key[0], key[1]);
+                
+                alterEgo = person.getId();
+            }
+
+            if (storageService.declareSameness(id, alterEgo, sources))
+            {
+                URI uri = new URI(getSamenessURI(id.toString(), uid));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        // TODO - Add exception message.
+        throw new InvalidSamenessException();
+    }
+
+    /**
+     * 
+     * @param prefix
+     * @param username
+     * @param sameness
+     * @return
+     * @throws JSONException
+     * @throws URISyntaxException
+     * @throws PersonNotFoundException
+     * @throws InvalidSamenessException 
+     */
+    public URI declareSameness(String prefix, String username, JSONObject sameness)
+            throws JSONException, URISyntaxException, PersonNotFoundException, InvalidSamenessException
+    {
+        if (sameness.has(owlSameAs) && sameness.has(siocNote))
+        {
+            Person person = storageService.retrievePerson(prefix, username);
+            
+            Integer id = person.getId();
+            
+            List<URI> sources = getSources(sameness);
+
+            String uid = sameness.getString(owlSameAs);
+
+            Integer alterEgo;
+
+            if (NumberUtils.isInt(uid))
+            {
+                alterEgo = new Integer(uid);
+            }
+            else
+            {
+                String[] key = uid.split(":");
+
+                if (key.length != 2)
+                {
+                    // TODO - Add exception message.
+                    throw new InvalidSamenessException();
+                }
+
+                person = storageService.retrievePerson(key[0], key[1]);
+                
+                alterEgo = person.getId();
+            }
+            
+            if (storageService.declareSameness(id, alterEgo, sources))
+            {
+                String key = String.format("%s:%s", prefix, username);
+                
+                return new URI(getSamenessURI(key, uid));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        // TODO - Add exception message.
+        throw new InvalidSamenessException();
+    }
+    
+    public boolean refuseSameness(Integer person, Integer alterEgo)
+            throws PersonNotFoundException
+    {
+        return storageService.refuseSameness(person, alterEgo);
     }
 
     /* ********************************************************************** *
@@ -400,6 +527,20 @@ public class DataProvider
 
         return uri;
     }
+    
+    /**
+     * 
+     * @param person
+     * @param alterEgo
+     * @return 
+     */
+    private String getSamenessURI(String person, String alterEgo)
+    {
+        String uri = String.format("%s%s%s/%s/sameas/%s", ROOT_URI, API_V1_URI,
+                API_V1_PERSONS, person, alterEgo);
+
+        return uri;   
+    }
 
     private Person getPerson(JSONObject person) throws JSONException, URISyntaxException
     {
@@ -420,27 +561,7 @@ public class DataProvider
 
         if (person.has(siocNote))
         {
-            List<URI> sources = new LinkedList<URI>();
-
-            try
-            {
-
-                JSONArray array = new JSONArray(person.getString(siocNote));
-
-                for (int i = 0 ; i < array.length() ; i++)
-                {
-                    URI source = new URI(array.getString(i));
-
-                    sources.add(source);
-                }
-            }
-            catch (JSONException ex)
-            {
-
-                URI source = new URI(person.getString(siocNote));
-
-                sources.add(source);
-            }
+            List<URI> sources = getSources(person);
 
             obj.setSources(sources);
 
@@ -602,8 +723,9 @@ public class DataProvider
                             // TODO - Add exception message.
                             throw new InvalidRelationshipException();
                         }
-                        
-                        Person person = storageService.retrievePerson(key[0], key[1]);
+
+                        Person person = storageService.retrievePerson(key[0],
+                                key[1]);
 
                         obj.setSubject(person.getId());
                     }
@@ -611,7 +733,7 @@ public class DataProvider
 
                 break;
             }
-            
+
             relation.remove(relParticipant);
         }
 
@@ -619,34 +741,8 @@ public class DataProvider
 
         if (relation.has(siocNote))
         {
-            List<URI> sources = new LinkedList<URI>();
+            List<URI> sources = getSources(relation);
 
-            try
-            {
-
-                JSONArray array = new JSONArray(relation.getString(siocNote));
-
-                for (int i = 0 ; i < array.length() ; i++)
-                {
-                    URI source = new URI(array.getString(i));
-
-                    sources.add(source);
-                }
-            }
-            catch (JSONException ex)
-            {
-
-                URI source = new URI(relation.getString(siocNote));
-                
-                if (source.getHost() == null)
-                {
-                    throw new URISyntaxException(relation.getString(siocNote),
-                            "Protocol must be specified.");
-                }
-
-                sources.add(source);
-            }
-            
             obj.setSources(sources);
 
             relation.remove(siocNote);
@@ -737,5 +833,43 @@ public class DataProvider
         }
 
         return rels;
+    }
+
+    /**
+     * 
+     * @param object
+     * @return
+     * @throws JSONException
+     * @throws URISyntaxException 
+     */
+    private List<URI> getSources(JSONObject object) throws JSONException, URISyntaxException
+    {
+        List<URI> sources = new LinkedList<URI>();
+
+        try
+        {
+            JSONArray array = new JSONArray(object.getString(siocNote));
+
+            for (int i = 0 ; i < array.length() ; i++)
+            {
+                URI source = new URI(array.getString(i));
+
+                sources.add(source);
+            }
+        }
+        catch (JSONException ex)
+        {
+            URI source = new URI(object.getString(siocNote));
+
+            if (source.getHost() == null)
+            {
+                throw new URISyntaxException(object.getString(siocNote),
+                        "Protocol must be specified.");
+            }
+
+            sources.add(source);
+        }
+
+        return sources;
     }// </editor-fold>
 }

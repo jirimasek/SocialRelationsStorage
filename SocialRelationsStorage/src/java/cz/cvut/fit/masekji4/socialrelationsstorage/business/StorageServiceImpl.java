@@ -20,8 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -43,12 +41,25 @@ public class StorageServiceImpl implements StorageService
      *                                PERSONS                                 *
      * ********************************************************************** */
     
+    /**
+     * 
+     * @param person
+     * @return
+     * @throws InvalidPersonException
+     * @throws InvalidProfileException
+     * @throws PersonAlreadyExistsException 
+     */
     @Override
     public Integer createPerson(Person person) throws InvalidPersonException, InvalidProfileException, PersonAlreadyExistsException
     {
         return graphDAO.createPerson(person);
     }
     
+    /**
+     * 
+     * @param source
+     * @return 
+     */
     @Override
     public List<Person> retrievePersons(String source)
     {
@@ -62,12 +73,25 @@ public class StorageServiceImpl implements StorageService
         }
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PersonNotFoundException 
+     */
     @Override
     public Person retrievePerson(Integer id) throws PersonNotFoundException
     {
         return graphDAO.retrievePerson(id);
     }
     
+    /**
+     * 
+     * @param prefix
+     * @param username
+     * @return
+     * @throws PersonNotFoundException 
+     */
     @Override
     public Person retrievePerson(String prefix, String username) throws PersonNotFoundException
     {
@@ -79,6 +103,12 @@ public class StorageServiceImpl implements StorageService
         return graphDAO.retrievePerson(key);
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PersonNotFoundException 
+     */
     @Override
     public List<Person> retrieveAlterEgos(Integer id) throws PersonNotFoundException
     {
@@ -87,6 +117,13 @@ public class StorageServiceImpl implements StorageService
         return filterAlterAgos(alterEgos, null);
     }
 
+    /**
+     * 
+     * @param prefix
+     * @param username
+     * @return
+     * @throws PersonNotFoundException 
+     */
     @Override
     public List<Person> retrieveAlterEgos(String prefix, String username) throws PersonNotFoundException
     {
@@ -100,12 +137,23 @@ public class StorageServiceImpl implements StorageService
         return filterAlterAgos(alterEgos, null);
     }
     
+    /**
+     * 
+     * @param id
+     * @return 
+     */
     @Override
     public boolean deletePerson(Integer id)
     {
         return graphDAO.deletePerson(id);
     }
 
+    /**
+     * 
+     * @param prefix
+     * @param username
+     * @return 
+     */
     @Override
     public boolean deletePerson(String prefix, String username)
     {
@@ -120,6 +168,35 @@ public class StorageServiceImpl implements StorageService
     /* ********************************************************************** *
      *                                SAMENESS                                *
      * ********************************************************************** */
+    
+    /**
+     * 
+     * @param person
+     * @param alterEgo
+     * @param sources
+     * @return
+     * @throws PersonNotFoundException 
+     */
+    @Override
+    public boolean declareSameness(Integer person, Integer alterEgo, List<URI> sources)
+            throws PersonNotFoundException
+    {
+        return graphDAO.declareSameness(person, alterEgo, sources);   
+    }
+    
+    /**
+     * 
+     * @param person
+     * @param alterEgo
+     * @return
+     * @throws PersonNotFoundException 
+     */
+    @Override
+    public boolean refuseSameness(Integer person, Integer alterEgo)
+            throws PersonNotFoundException
+    {
+        return graphDAO.refuseSameness(person, alterEgo);
+    }
     
     /* ********************************************************************** *
      *                               REALTIONS                                *

@@ -9,6 +9,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFound
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -41,6 +42,12 @@ public interface StorageService
     /* ********************************************************************** *
      *                                SAMENESS                                *
      * ********************************************************************** */
+    
+    public boolean declareSameness(Integer person, Integer alterEgo, List<URI> sorces)
+            throws PersonNotFoundException;
+    
+    public boolean refuseSameness(Integer person, Integer alterEgo)
+            throws PersonNotFoundException;
 
     /* ********************************************************************** *
      *                               REALTIONS                                *

@@ -412,10 +412,11 @@ public class GraphDAOImpl implements GraphDAO
      * @param person
      * @param alterEgo
      * @param sources
+     * @return
      * @throws PersonNotFoundException 
      */
     @Override
-    public void declareSameness(Integer person, Integer alterEgo,
+    public boolean declareSameness(Integer person, Integer alterEgo,
             List<URI> sources) throws PersonNotFoundException
     {
         Relation sameness = new Relation();
@@ -473,6 +474,8 @@ public class GraphDAOImpl implements GraphDAO
                         sameness.getSubject(),
                         sameness.getType(), toProperties(sameness));
             }
+
+            return (in == null) && (out == null);
         }
         catch (InvalidRelationshipException ex)
         {
@@ -501,10 +504,11 @@ public class GraphDAOImpl implements GraphDAO
      * @param person
      * @param alterEgo
      * @param sources
+     * @return
      * @throws PersonNotFoundException 
      */
     @Override
-    public void declareSameness(Key person, Key alterEgo, List<URI> sources)
+    public boolean declareSameness(Key person, Key alterEgo, List<URI> sources)
             throws PersonNotFoundException
     {
 
@@ -534,7 +538,8 @@ public class GraphDAOImpl implements GraphDAO
                 throw new PersonNotFoundException();
             }
 
-            declareSameness(toPerson(n1).getId(), toPerson(n2).getId(), sources);
+            return declareSameness(toPerson(n1).getId(), toPerson(n2).getId(),
+                    sources);
         }
         catch (InvalidProfileException ex)
         {
@@ -727,10 +732,12 @@ public class GraphDAOImpl implements GraphDAO
      * 
      * @param person
      * @param alterEgo
-     * @return 
+     * @return
+     * @throws PersonNotFoundException 
      */
     @Override
     public boolean refuseSameness(Integer person, Integer alterEgo)
+            throws PersonNotFoundException
     {
 
         if (person == null || alterEgo == null)
@@ -739,31 +746,24 @@ public class GraphDAOImpl implements GraphDAO
                     "Persons are not referred correctly. One or both IDs are null.");
         }
 
-        try
+        List<Relation> relations = retrieveSameness(person);
+
+        int deleted = 0;
+
+        for (Relation relation : relations)
         {
-            List<Relation> relations = retrieveSameness(person);
-
-            int deleted = 0;
-
-            for (Relation relation : relations)
+            if ((relation.getObject().equals(person)
+                    && relation.getSubject().equals(alterEgo))
+                    || (relation.getObject().equals(alterEgo)
+                    && relation.getSubject().equals(person)))
             {
-                if ((relation.getObject().equals(person)
-                        && relation.getSubject().equals(alterEgo))
-                        || (relation.getObject().equals(alterEgo)
-                        && relation.getSubject().equals(person)))
-                {
-                    pm.deleteRelationship(relation.getId());
+                pm.deleteRelationship(relation.getId());
 
-                    deleted++;
-                }
+                deleted++;
             }
+        }
 
-            return deleted > 0;
-        }
-        catch (PersonNotFoundException ex)
-        {
-            return false;
-        }
+        return deleted > 0;
     }
 
     /**

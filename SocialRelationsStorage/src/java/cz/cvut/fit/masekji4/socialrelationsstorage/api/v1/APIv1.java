@@ -8,6 +8,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.NotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.NumberUtils;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidSamenessException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.ConflictException;
@@ -68,11 +69,11 @@ public class APIv1
         try
         {
             JSONObject obj = dataProvider.createPerson(person);
-            
+
             URI uri = new URI(obj.getString("@id"));
-            
+
             return Response.created(uri).entity(obj).build();
-        }    
+        }
         catch (InvalidProfileException ex)
         {
             throw new BadRequestException(ex);
@@ -167,7 +168,8 @@ public class APIv1
     @Path("persons/{uid}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject updatePerson(@PathParam("uid") String uid, JSONObject person)
+    public JSONObject updatePerson(@PathParam("uid") String uid,
+            JSONObject person)
     {
         if (NumberUtils.isInt(uid))
         {
@@ -226,27 +228,134 @@ public class APIv1
     /* ********************************************************************** *
      *                                SAMENESS                                *
      * ********************************************************************** */
-    
+    /**
+     * 
+     * @param uid
+     * @param alterEgo
+     * @throws JSONException 
+     */
     @POST
-    @Path("persons/{uid}/sameas")
+    @Path("persons/{uid}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void declareSameness(@PathParam("uid") String uid, JSONObject alterEgo)
+    public Response declareSameness(@PathParam("uid") String uid,
+            JSONObject alterEgo)
+            throws JSONException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            URI sameness;
+
+            if (NumberUtils.isInt(uid))
+            {
+                sameness = dataProvider.declareSameness(new Integer(uid),
+                        alterEgo);
+            }
+            else
+            {
+                String[] key = uid.split(":");
+
+                if (key.length != 2)
+                {
+                    // TODO - Add exception message.
+                    throw new BadRequestException();
+                }
+
+                sameness = dataProvider.declareSameness(key[0], key[1], alterEgo);
+            }
+
+            if (sameness != null)
+            {
+                return Response.created(sameness).build();
+            }
+            else
+            {
+                // TODO - Add exception message.
+                throw new ConflictException();
+            }
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new BadRequestException(ex);
+        }
+        catch (InvalidSamenessException ex)
+        {
+            throw new BadRequestException(ex);
+        }
+        catch (PersonNotFoundException ex)
+        {
+            throw new NotFoundException(ex);
+        }
     }
 
     @DELETE
     @Path("persons/{uid1}/sameas/{uid2}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void refuseSameness(@PathParam("uid1") String uid1, @PathParam("uid2") Integer uid2)
+    public void refuseSameness(@PathParam("uid1") String uid1,
+            @PathParam("uid2") String uid2) throws JSONException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Integer person;
+        Integer alterEgo;
+
+        try
+        {
+            if (NumberUtils.isInt(uid1))
+            {
+                person = new Integer(uid1);
+            }
+            else
+            {
+                String[] key = uid1.split(":");
+
+                if (key.length != 2)
+                {
+                    // TODO - Add exception message.
+                    throw new BadRequestException();
+                }
+
+                JSONObject obj = dataProvider.retrievePerson(key[0], key[1], null);
+
+                String uri = obj.getString("@id");
+
+                person = new Integer(uri.substring(uri.lastIndexOf("/") + 1));
+            }
+
+            if (NumberUtils.isInt(uid2))
+            {
+                alterEgo = new Integer(uid2);
+            }
+            else
+            {
+                String[] key = uid2.split(":");
+
+                if (key.length != 2)
+                {
+                    // TODO - Add exception message.
+                    throw new BadRequestException();
+                }
+
+                JSONObject obj = dataProvider.retrievePerson(key[0], key[1],
+                        null);
+
+                String uri = obj.getString("@id");
+
+                alterEgo = new Integer(uri.substring(uri.lastIndexOf("/") + 1));
+            }
+            
+            if (!dataProvider.refuseSameness(person, alterEgo))
+            {
+                // TODO - Add exception message.
+                throw new NotFoundException();
+            }
+        }
+        catch (PersonNotFoundException ex)
+        {
+            throw new NotFoundException(ex);
+        }
+
     }
 
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
-    
     /**
      * 
      * @param relation
@@ -262,9 +371,9 @@ public class APIv1
         try
         {
             JSONObject obj = dataProvider.createRelation(relation);
-                
+
             URI uri = new URI(obj.getString("@id"));
-                
+
             return Response.created(uri).entity(obj).build();
         }
         catch (PersonNotFoundException ex)
