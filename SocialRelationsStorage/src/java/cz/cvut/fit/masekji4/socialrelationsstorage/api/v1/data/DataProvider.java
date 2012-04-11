@@ -6,6 +6,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.KeyFactory;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidSamenessException;
@@ -13,6 +14,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyE
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.BadRequestException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -56,7 +58,12 @@ public class DataProvider
     @Config
     private String API_V1_RELATIONS;
     @Inject
+    @Config
+    private String API_V1_SOURCES;
+    @Inject
     private StorageService storageService;
+    @Inject
+    private KeyFactory keyFactory;
     private String foafHomepage = "foaf:homepage";
     private String foafPerson = "foaf:Person";
     private String siocNote = "sioc:note";
@@ -152,6 +159,22 @@ public class DataProvider
 
     /**
      * 
+     * @return
+     * @throws JSONException 
+     */
+    public JSONObject retrievePersons() throws JSONException
+    {
+        List<Person> list = storageService.retrievePersons();
+
+        String uri = String.format("%s%s%s", ROOT_URI, API_V1_URI, API_V1_PERSONS);
+
+        JSONObject persons = getPersons(list, uri);
+
+        return persons;
+    }
+
+    /**
+     * 
      * @param source
      * @return
      * @throws JSONException 
@@ -168,6 +191,151 @@ public class DataProvider
         return persons;
     }
 
+    /**
+     * 
+     * @param id
+     * @param person
+     * @return
+     * @throws JSONException
+     * @throws URISyntaxException
+     * @throws InvalidPersonException
+     * @throws InvalidProfileException
+     * @throws PersonNotFoundException 
+     */
+    public JSONObject updatePerson(Integer id, JSONObject person)
+            throws JSONException, URISyntaxException, InvalidPersonException,
+            InvalidProfileException, PersonNotFoundException
+    {
+        Person obj = getPerson(person);
+        
+        Person e = storageService.retrievePerson(id);
+        
+        if (person.has("@id")) 
+        {
+            String uri = person.getString("@id");
+            String uid = uri.substring(uri.lastIndexOf("/") + 1);
+            
+            if (NumberUtils.isInt(uid))
+            {
+                if (!e.getId().equals(new Integer(uid)))
+                {
+                    throw new InvalidPersonException("ID in attribute @id is not corresponding to ID of this resource.");
+                }
+            }
+            else
+            {
+                String[] key = uid.split(":");
+
+                if (key.length != 2)
+                {
+                    throw new InvalidPersonException("ID in attribute @id is not valid.");
+                }
+                
+                if (!e.getKey().getPrefix().equals(key[0])
+                        || !e.getKey().getUsername().equals(key[1]))
+                {
+                    throw new InvalidPersonException("ID in attribute @id is not corresponding to ID of this resource.");
+                }
+            }
+        }
+        
+        if (obj.getProfile() != null)
+        {
+            Key key = keyFactory.createKey(obj.getProfile());
+            
+            if (!e.getKey().equals(key))
+            {
+                throw new InvalidProfileException("Profile URI cannot be changed.");
+            }
+        }
+        else
+        {
+            obj.setProfile(e.getProfile());
+        }
+        
+        if (obj.getSources() == null || obj.getSources().isEmpty())
+        {
+            obj.setSources(e.getSources());
+        }
+        
+        id = storageService.updatePerson(obj);
+
+        return retrievePerson(id, null);
+    }
+    
+    /**
+     * 
+     * @param prefix
+     * @param username
+     * @param person
+     * @return
+     * @throws JSONException
+     * @throws InvalidProfileException
+     * @throws URISyntaxException
+     * @throws PersonNotFoundException
+     * @throws InvalidPersonException 
+     */
+    public JSONObject updatePerson(String prefix, String username, JSONObject person)
+            throws JSONException, InvalidProfileException, URISyntaxException,
+            PersonNotFoundException, InvalidPersonException
+    {
+        Person obj = getPerson(person);
+        
+        Person e = storageService.retrievePerson(prefix, username);
+        
+        if (person.has("@id")) 
+        {
+            String uri = person.getString("@id");
+            String uid = uri.substring(uri.lastIndexOf("/") + 1);
+            
+            if (NumberUtils.isInt(uid))
+            {
+                if (!e.getId().equals(new Integer(uid)))
+                {
+                    throw new InvalidPersonException("ID in attribute @id is not corresponding to ID of this resource.");
+                }
+            }
+            else
+            {
+                String[] key = uid.split(":");
+
+                if (key.length != 2)
+                {
+                    throw new InvalidPersonException("ID in attribute @id is not valid.");
+                }
+                
+                if (!e.getKey().getPrefix().equals(key[0])
+                        || !e.getKey().getUsername().equals(key[1]))
+                {
+                    throw new InvalidPersonException("ID in attribute @id is not corresponding to ID of this resource.");
+                }
+            }
+        }
+        
+        if (obj.getProfile() != null)
+        {
+            Key key = keyFactory.createKey(obj.getProfile());
+
+            if (!e.getKey().equals(key))
+            {
+                throw new InvalidProfileException("Profile URI cannot be changed.");
+            }
+        }
+        else
+        {
+            obj.setProfile(e.getProfile());
+        }
+        
+        if (obj.getSources() == null || obj.getSources().isEmpty())
+        {
+            obj.setSources(e.getSources());
+        }
+        
+        Integer id = storageService.updatePerson(obj);
+
+        return retrievePerson(id, null);
+    }
+    
     /**
      * 
      * @param id
@@ -306,6 +474,13 @@ public class DataProvider
         throw new InvalidSamenessException();
     }
     
+    /**
+     * 
+     * @param person
+     * @param alterEgo
+     * @return
+     * @throws PersonNotFoundException 
+     */
     public boolean refuseSameness(Integer person, Integer alterEgo)
             throws PersonNotFoundException
     {
@@ -540,6 +715,19 @@ public class DataProvider
                 API_V1_PERSONS, person, alterEgo);
 
         return uri;   
+    }
+
+    /**
+     * 
+     * @param source
+     * @return 
+     */
+    private String getSourceURI(String source)
+    {
+        String uri = String.format("%s%s%s/%s", ROOT_URI, API_V1_URI,
+                API_V1_SOURCES, source);
+
+        return uri;
     }
 
     private Person getPerson(JSONObject person) throws JSONException, URISyntaxException

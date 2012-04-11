@@ -7,6 +7,7 @@ package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key;
  */
 public class Key
 {
+
     private String prefix;
     private String username;
 
@@ -28,5 +29,42 @@ public class Key
     public void setUsername(String username)
     {
         this.username = username;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+
+        final Key other = (Key) obj;
+
+        if ((this.prefix == null) ? (other.prefix != null) : !this.prefix.equals(
+                other.prefix))
+        {
+            return false;
+        }
+
+        if ((this.username == null) ? (other.username != null) : !this.username.
+                equals(other.username))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 5;
+        return hash;
     }
 }

@@ -54,24 +54,6 @@ public class StorageServiceImpl implements StorageService
     {
         return graphDAO.createPerson(person);
     }
-    
-    /**
-     * 
-     * @param source
-     * @return 
-     */
-    @Override
-    public List<Person> retrievePersons(String source)
-    {
-        try
-        {
-            return graphDAO.retrievePersons(new URI(source));
-        }
-        catch (URISyntaxException ex)
-        {
-            throw new IllegalArgumentException(ex);
-        }
-    }
 
     /**
      * 
@@ -101,6 +83,35 @@ public class StorageServiceImpl implements StorageService
         key.setUsername(username);
         
         return graphDAO.retrievePerson(key);
+    }
+    
+    /**
+     * 
+     * 
+     * @return 
+     */
+    @Override
+    public List<Person> retrievePersons()
+    {
+        return graphDAO.retrievePersons();
+    }
+    
+    /**
+     * 
+     * @param source
+     * @return 
+     */
+    @Override
+    public List<Person> retrievePersons(String source)
+    {
+        try
+        {
+            return graphDAO.retrievePersons(new URI(source));
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     /**
@@ -135,6 +146,12 @@ public class StorageServiceImpl implements StorageService
         Path alterEgos = graphDAO.retrieveAlterEgos(key);
         
         return filterAlterAgos(alterEgos, null);
+    }
+    
+    @Override
+    public Integer updatePerson(Person person) throws InvalidPersonException, InvalidProfileException
+    {
+        return graphDAO.updatePerson(person);
     }
     
     /**

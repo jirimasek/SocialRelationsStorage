@@ -10,6 +10,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlread
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -29,11 +30,15 @@ public interface StorageService
     
     public Person retrievePerson(String prefix, String username) throws PersonNotFoundException;
     
+    public List<Person> retrievePersons();
+    
     public List<Person> retrievePersons(String source);
     
     public List<Person> retrieveAlterEgos(Integer id) throws PersonNotFoundException;
     
     public List<Person> retrieveAlterEgos(String prefix, String username) throws PersonNotFoundException;
+    
+    public Integer updatePerson(Person person) throws InvalidPersonException, InvalidProfileException;
     
     public boolean deletePerson(Integer id);
     

@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -62,6 +64,9 @@ public class GraphDAOImpl implements GraphDAO
     private String owlSameAs = "owl:sameAs";
     private String foafHomepage = "profile";
     private String siocNote = "sources";
+    private String globalIndexName = "global";
+    private String globalIndexKey = "all";
+    private String globalIndexValue = "persons";
 
     public GraphDAOImpl()
     {
@@ -109,8 +114,8 @@ public class GraphDAOImpl implements GraphDAO
 
             Integer id = pm.createNode(toProperties(person));
 
-            pm.addNodeToIndex(key.getPrefix(), usrIndexKey, key.getUsername(),
-                    id);
+            pm.addNodeToIndex(key.getPrefix(), usrIndexKey, key.getUsername(), id);
+            pm.addNodeToIndex(globalIndexName, globalIndexKey, globalIndexValue, id, false);
 
             indexSources(id, person.getSources());
 
@@ -217,6 +222,45 @@ public class GraphDAOImpl implements GraphDAO
             throw new PersonNotFoundException();
         }
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public List<Person> retrievePersons()
+    {
+        List<Person> persons = new ArrayList<Person>();
+
+        try
+        {
+            JSONArray nodes = pm.retrieveNodesFromIndex(globalIndexName,
+                    globalIndexKey, globalIndexValue);
+
+            for (int i = 0 ; i < nodes.length() ; i++)
+            {
+                persons.add(toPerson(nodes.getJSONObject(i)));
+            }
+
+            return persons;
+        }
+        catch (InvalidProfileException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (JSONException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (NodeIndexNotFoundException ex)
+        {
+            return persons;
+        }
+    }
 
     /**
      * 
@@ -287,8 +331,8 @@ public class GraphDAOImpl implements GraphDAO
             Person p = retrievePerson(key);
 
             pm.addProperties(p.getId(), toProperties(person));
-
-            indexSources(p.getId(), person.getSources());
+            
+            reindexSources(p.getId(), p.getSources(), person.getSources());
 
             return p.getId();
         }
@@ -1490,7 +1534,7 @@ public class GraphDAOImpl implements GraphDAO
      * @throws JSONException 
      */
     private void indexSources(Integer id, List<URI> sources) throws JSONException
-    {
+    {   
         try
         {
             for (URI source : sources)
@@ -1505,5 +1549,28 @@ public class GraphDAOImpl implements GraphDAO
 
             indexSources(id, sources);
         }
+    }
+
+    /**
+     * 
+     * @param id
+     * @param sources
+     * @throws JSONException 
+     */
+    private void reindexSources(Integer id, List<URI> oldSources, List<URI> newSources) throws JSONException
+    {   
+        for (URI source : oldSources)
+        {
+            try
+            {
+                pm.deleteNodeFromIndex(srcIndexName, srcIndexKey, source.getHost(), id);
+            }
+            catch (NodeIndexNotFoundException ex)
+            {
+                // TODO - Nothing to do.
+            }
+        }
+        
+        indexSources(id, newSources);
     }// </editor-fold>
 }

@@ -25,7 +25,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
- * Třída <code>PersistenceManagerImpl</code> implementuje ... a zajišťuje ...
+ * Class <code>PersistenceManagerImpl</code> implements ... and provides ...
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -191,7 +191,7 @@ public class PersistenceManagerImpl implements PersistenceManager
      * ********************************************************************** */
     
     /* ********************************************************************** *
-     *                                  Uzly                                  *
+     *                                 NODES                                  *
      * ********************************************************************** */
     
     /**
@@ -827,7 +827,7 @@ public class PersistenceManagerImpl implements PersistenceManager
     }
     
     /* ********************************************************************** *
-     *                                Indexes                                 *
+     *                                INDEXES                                 *
      * ********************************************************************** */
 
     /**
