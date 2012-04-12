@@ -66,5 +66,7 @@ public interface StorageService
     
     public List<Relation> retrieveRelations(String prefix, String username) throws PersonNotFoundException;
 
+    public Integer updateRelation(Relation relation) throws PersonNotFoundException, IllegalAccessException;
+
     public boolean deleteRelation(Integer id) throws IllegalAccessException;
 }

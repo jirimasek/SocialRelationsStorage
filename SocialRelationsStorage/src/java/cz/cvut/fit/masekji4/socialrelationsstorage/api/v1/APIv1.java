@@ -541,9 +541,32 @@ public class APIv1
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public JSONObject updateRelation(@PathParam("id") Integer id,
-            JSONObject relation)
+            JSONObject relation) throws JSONException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            return dataProvider.updateRelation(id, relation);
+        }
+        catch (RelationNotFoundException ex)
+        {
+            throw new NotFoundException(ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+            throw new ForbiddenException(ex);
+        }
+        catch (PersonNotFoundException ex)
+        {
+            throw new NotFoundException(ex);
+        }
+        catch (InvalidRelationshipException ex)
+        {
+            throw new BadRequestException(ex);
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new BadRequestException(ex);
+        }
     }
 
     /**

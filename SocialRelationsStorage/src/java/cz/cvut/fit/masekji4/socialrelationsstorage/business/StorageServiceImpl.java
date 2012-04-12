@@ -272,6 +272,20 @@ public class StorageServiceImpl implements StorageService
 
     /**
      * 
+     * @param relation
+     * @return
+     * @throws PersonNotFoundException
+     * @throws IllegalAccessException 
+     */
+    @Override
+    public Integer updateRelation(Relation relation)
+            throws PersonNotFoundException, IllegalAccessException
+    {
+        return graphDAO.updateRelation(relation);
+    }
+
+    /**
+     * 
      * @param id
      * @throws IllegalAccessException 
      */

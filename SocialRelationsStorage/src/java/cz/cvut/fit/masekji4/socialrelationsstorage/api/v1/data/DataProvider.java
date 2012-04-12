@@ -14,7 +14,6 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyE
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.BadRequestException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -574,6 +573,54 @@ public class DataProvider
         JSONObject relations = getRelations(uri, list);
 
         return relations;
+    }
+    
+    public JSONObject updateRelation(Integer id, JSONObject relation)
+            throws RelationNotFoundException, IllegalAccessException,
+            JSONException, PersonNotFoundException, InvalidRelationshipException,
+            URISyntaxException
+    {
+        Relation obj = getRelation(relation);
+        
+        Relation e = storageService.retrieveRelation(id);
+        
+        // Osetrit @id a @type
+        
+        if (obj.getObject() != null && !e.getObject().equals(obj.getObject()))
+        {
+            throw new InvalidRelationshipException("Participants of the relation cannot be changed.");
+        }
+        else
+        {
+            obj.setObject(e.getObject());
+        }
+        
+        if (obj.getType() != null && !e.getType().equals(obj.getType()))
+        {
+            throw new InvalidRelationshipException("Relation type cannot be changed.");
+        }
+        else
+        {
+            obj.setType(e.getType());
+        }
+        
+        if (obj.getSubject() != null && !e.getSubject().equals(obj.getSubject()))
+        {
+            throw new InvalidRelationshipException("Participants of the relation cannot be changed.");
+        }
+        else
+        {
+            obj.setSubject(e.getSubject());
+        }
+        
+        if (obj.getSources() == null || obj.getSources().isEmpty())
+        {
+            obj.setSources(e.getSources());
+        }
+        
+        id = storageService.updateRelation(obj);
+        
+        return retrieveRelation(id);
     }
 
     /**
