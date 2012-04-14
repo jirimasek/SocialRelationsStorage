@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.data;
+package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.serialization;
 
 import java.io.IOException;
 import java.io.OutputStream;

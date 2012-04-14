@@ -1,5 +1,6 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.ALL;
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.OUT;
 
@@ -34,8 +35,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -52,12 +51,8 @@ import org.codehaus.jettison.json.JSONObject;
 @Stateless
 public class GraphDAOImpl implements GraphDAO
 {
-
-    @Inject
-    @Neo4j
-    private PersistenceManager pm;
-    @Inject
-    private KeyFactory keyFactory;
+    
+    
     private String usrIndexKey = "username";
     private String srcIndexName = "sources";
     private String srcIndexKey = "source";
@@ -67,15 +62,26 @@ public class GraphDAOImpl implements GraphDAO
     private String globalIndexName = "global";
     private String globalIndexKey = "all";
     private String globalIndexValue = "persons";
+    
+    @Inject
+    @Config
+    private int ALTEREGO_TRAVERSATION_MAX_DEPTH;
+
+    @Inject
+    @Neo4j
+    private PersistenceManager pm;
+    @Inject
+    private KeyFactory keyFactory;
 
     public GraphDAOImpl()
     {
     }
 
-    protected GraphDAOImpl(PersistenceManager pm, KeyFactory keyFactory)
+    protected GraphDAOImpl(PersistenceManager pm, KeyFactory keyFactory, int ALTEREGO_TRAVERSATION_MAX_DEPTH)
     {
         this.pm = pm;
         this.keyFactory = keyFactory;
+        this.ALTEREGO_TRAVERSATION_MAX_DEPTH = ALTEREGO_TRAVERSATION_MAX_DEPTH;
     }
 
     /* ********************************************************************** *
@@ -615,7 +621,7 @@ public class GraphDAOImpl implements GraphDAO
         TraversalDescription t = new TraversalDescription();
 
         t.addRelationship(owlSameAs, OUT);
-        t.setMaxDepth(10);
+        t.setMaxDepth(ALTEREGO_TRAVERSATION_MAX_DEPTH);
 
         try
         {

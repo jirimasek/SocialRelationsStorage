@@ -1,5 +1,6 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.business;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.common.CollectionUtils;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.GraphDAO;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
@@ -15,10 +16,9 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.Invali
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
@@ -121,31 +121,11 @@ public class StorageServiceImpl implements StorageService
      * @throws PersonNotFoundException 
      */
     @Override
-    public List<Person> retrieveAlterEgos(Integer id) throws PersonNotFoundException
+    public List<Person> retrieveAlterEgos(Integer id, SourceFilter filter) throws PersonNotFoundException
     {
         Path alterEgos = graphDAO.retrieveAlterEgos(id);
         
-        return filterAlterAgos(alterEgos, null);
-    }
-
-    /**
-     * 
-     * @param prefix
-     * @param username
-     * @return
-     * @throws PersonNotFoundException 
-     */
-    @Override
-    public List<Person> retrieveAlterEgos(String prefix, String username) throws PersonNotFoundException
-    {
-        Key key = new Key();
-        
-        key.setPrefix(prefix);
-        key.setUsername(username);
-        
-        Path alterEgos = graphDAO.retrieveAlterEgos(key);
-        
-        return filterAlterAgos(alterEgos, null);
+        return processAlterEgos(alterEgos, filter);
     }
     
     @Override
@@ -163,23 +143,6 @@ public class StorageServiceImpl implements StorageService
     public boolean deletePerson(Integer id)
     {
         return graphDAO.deletePerson(id);
-    }
-
-    /**
-     * 
-     * @param prefix
-     * @param username
-     * @return 
-     */
-    @Override
-    public boolean deletePerson(String prefix, String username)
-    {
-        Key key = new Key();
-        
-        key.setPrefix(prefix);
-        key.setUsername(username);
-        
-        return graphDAO.deletePerson(key);
     }
     
     /* ********************************************************************** *
@@ -246,28 +209,57 @@ public class StorageServiceImpl implements StorageService
      * @throws PersonNotFoundException 
      */
     @Override
-    public List<Relation> retrieveRelations(Integer id) throws PersonNotFoundException
+    public List<Relation> retrieveRelations(Integer id, SourceFilter filter) throws PersonNotFoundException
     {
-        return graphDAO.retrieveRelations(id, DirectionEnum.ALL);
+        
+        List<Relation> relations = graphDAO.retrieveRelations(id, DirectionEnum.ALL);
+                
+        return processRelations(relations, filter);
     }
-
+    
     /**
      * 
-     * @param prefix
-     * @param username
+     * @param id
+     * @param type
+     * @param filter
      * @return
      * @throws PersonNotFoundException 
      */
     @Override
-    public List<Relation> retrieveRelations(String prefix, String username)
-            throws PersonNotFoundException
+    public List<Relation> retrieveRelations(Integer id, String type, SourceFilter filter) throws PersonNotFoundException
     {
-        Key key = new Key();
+        List<Relation> relations = graphDAO.retrieveRelations(id, DirectionEnum.ALL, type);
+                
+        return processRelations(relations, filter);
+    }
+    
+    /**
+     * 
+     * @param object
+     * @param subject
+     * @param type
+     * @param filter
+     * @return
+     * @throws PersonNotFoundException 
+     */
+    @Override
+    public List<Relation> retrieveRelations(Integer object, Integer subject, String type, SourceFilter filter) throws PersonNotFoundException
+    {
+        List<Relation> relations = graphDAO.retrieveRelations(object, DirectionEnum.ALL, type);
         
-        key.setPrefix(prefix);
-        key.setUsername(username);
+        relations = processRelations(relations, filter);
         
-        return graphDAO.retrieveRelations(key, DirectionEnum.ALL);
+        List<Relation> list = new LinkedList<Relation>();
+        
+        for (Relation relation : relations)
+        {
+            if (relation.getObject().equals(subject) || relation.getSubject().equals(subject))
+            {
+                list.add(relation);
+            }
+        }
+                
+        return list;
     }
 
     /**
@@ -301,15 +293,36 @@ public class StorageServiceImpl implements StorageService
      * ********************************************************************** */
     /**
      * 
-     * @param alterEgos
-     * @param acceptableSource
+     * @param relations
+     * @param filter
      * @return 
      */
-    private List<Person> filterAlterAgos(Path alterEgos, Set<URI> acceptableSource)
+    private List<Relation> processRelations(List<Relation> relations,
+            SourceFilter filter)
     {
-        List<Person> ae = new ArrayList<Person>();
+        List<Relation> list = new LinkedList<Relation>();
         
-        if (alterEgos.getPersons() != null && !alterEgos.getPersons().isEmpty())
+        for (Relation relation : relations)
+        {
+            if (filter.isAcceptable(relation.getSources()))
+            {
+                list.add(relation);
+            }
+        }
+        
+        return list;
+    }
+    /**
+     * 
+     * @param alterEgos
+     * @param filter
+     * @return 
+     */
+    private List<Person> processAlterEgos(Path alterEgos, SourceFilter filter)
+    {   
+        List<Person> list = new LinkedList<Person>();
+        
+        if (!CollectionUtils.isNullOrEmpty(alterEgos.getPersons()))
         {
             Stack<Iterator<Path>> stack = new Stack<Iterator<Path>>();
         
@@ -319,10 +332,9 @@ public class StorageServiceImpl implements StorageService
             {
                 Path path = iterator.next();
                 
-                // Filtrování
-                //if (path.getSources().contains(...))
+                if (filter.isAcceptable(path.getSources()))
                 {
-                    ae.add(path.getPerson());
+                    list.add(path.getPerson());
                     
                     if (path.getPersons() != null && !path.getPersons().isEmpty())
                     {
@@ -339,6 +351,6 @@ public class StorageServiceImpl implements StorageService
             }
         }
         
-        return ae;
+        return list;
     }// </editor-fold>
 }

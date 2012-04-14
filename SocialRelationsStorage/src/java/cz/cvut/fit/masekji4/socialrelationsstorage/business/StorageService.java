@@ -10,7 +10,6 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlread
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -34,15 +33,11 @@ public interface StorageService
     
     public List<Person> retrievePersons(String source);
     
-    public List<Person> retrieveAlterEgos(Integer id) throws PersonNotFoundException;
-    
-    public List<Person> retrieveAlterEgos(String prefix, String username) throws PersonNotFoundException;
+    public List<Person> retrieveAlterEgos(Integer id, SourceFilter filter) throws PersonNotFoundException;
     
     public Integer updatePerson(Person person) throws InvalidPersonException, InvalidProfileException;
     
     public boolean deletePerson(Integer id);
-    
-    public boolean deletePerson(String prefix, String username);
     
     /* ********************************************************************** *
      *                                SAMENESS                                *
@@ -62,9 +57,11 @@ public interface StorageService
 
     public Relation retrieveRelation(Integer id) throws RelationNotFoundException, IllegalAccessException;
     
-    public List<Relation> retrieveRelations(Integer id) throws PersonNotFoundException;
+    public List<Relation> retrieveRelations(Integer id, SourceFilter filter) throws PersonNotFoundException;
     
-    public List<Relation> retrieveRelations(String prefix, String username) throws PersonNotFoundException;
+    public List<Relation> retrieveRelations(Integer id, String type, SourceFilter filter) throws PersonNotFoundException;
+    
+    public List<Relation> retrieveRelations(Integer object, Integer subject, String type, SourceFilter filter) throws PersonNotFoundException;
 
     public Integer updateRelation(Relation relation) throws PersonNotFoundException, IllegalAccessException;
 

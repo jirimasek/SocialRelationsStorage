@@ -1,13 +1,16 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.data.DataProvider;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters.SourceFilterImpl;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.SourceFilter;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.BadRequestException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.NotFoundException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.common.NumberUtils;
+import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidRelationException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidSamenessException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
@@ -43,6 +46,9 @@ import org.codehaus.jettison.json.JSONObject;
 @RequestScoped
 public class APIv1
 {
+    @Inject
+    @Config
+    private String JSON_LD_ID;
 
     @Context
     private UriInfo context;
@@ -68,7 +74,7 @@ public class APIv1
         {
             JSONObject obj = dataProvider.createPerson(person);
 
-            URI uri = new URI(obj.getString("@id"));
+            URI uri = new URI(obj.getString(JSON_LD_ID));
 
             return Response.created(uri).entity(obj).build();
         }
@@ -106,38 +112,27 @@ public class APIv1
     @Path("persons/{uid}")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONObject retrievePerson(@PathParam("uid") String uid,
-            @QueryParam("fields") String fields) throws JSONException
+            @QueryParam("sources") String sources) throws JSONException
     {
-        JSONObject person;
-
         try
         {
-            if (NumberUtils.isInt(uid))
-            {
-                person = dataProvider.retrievePerson(new Integer(uid), fields);
-            }
-            else
-            {
-                String[] key = uid.split(":");
-
-                if (key.length != 2)
-                {
-                    // TODO - Add exception message.
-                    throw new BadRequestException();
-                }
-
-                person = dataProvider.retrievePerson(key[0], key[1], fields);
-            }
+            SourceFilter filter = SourceFilterImpl.buildFilter(sources);
+            
+            JSONObject person = dataProvider.retrievePerson(uid, filter);
 
             return person;
 
         }
+        catch (URISyntaxException ex)
+        {
+            throw new BadRequestException(ex);
+        }        
         catch (PersonNotFoundException ex)
         {
             throw new NotFoundException(ex);
         }
     }
-    
+
     /**
      * 
      * @return
@@ -192,25 +187,9 @@ public class APIv1
     {
         try
         {
-            if (NumberUtils.isInt(uid))
-            {
-                person = dataProvider.updatePerson(new Integer(uid), person);
-            }
-            else
-            {
-                String[] key = uid.split(":");
+            JSONObject obj = dataProvider.updatePerson(uid, person);
 
-                if (key.length != 2)
-                {
-                    // TODO - Add exception message.
-                    throw new BadRequestException();
-                }
-
-                person = dataProvider.updatePerson(key[0], key[1], person);
-            }
-
-            return person;
-
+            return obj;
         }
         catch (URISyntaxException ex)
         {
@@ -238,24 +217,7 @@ public class APIv1
     @Path("persons/{uid}")
     public void deletePerson(@PathParam("uid") String uid)
     {
-        boolean deleted;
-
-        if (NumberUtils.isInt(uid))
-        {
-            deleted = dataProvider.deletePerson(new Integer(uid));
-        }
-        else
-        {
-            String[] key = uid.split(":");
-
-            if (key.length != 2)
-            {
-                // TODO - Add exception message.
-                throw new BadRequestException();
-            }
-
-            deleted = dataProvider.deletePerson(key[0], key[1]);
-        }
+        boolean deleted = dataProvider.deletePerson(uid);
 
         if (!deleted)
         {
@@ -282,25 +244,7 @@ public class APIv1
     {
         try
         {
-            URI sameness;
-
-            if (NumberUtils.isInt(uid))
-            {
-                sameness = dataProvider.declareSameness(new Integer(uid),
-                        alterEgo);
-            }
-            else
-            {
-                String[] key = uid.split(":");
-
-                if (key.length != 2)
-                {
-                    // TODO - Add exception message.
-                    throw new BadRequestException();
-                }
-
-                sameness = dataProvider.declareSameness(key[0], key[1], alterEgo);
-            }
+            URI sameness = dataProvider.declareSameness(uid, alterEgo);
 
             if (sameness != null)
             {
@@ -326,61 +270,20 @@ public class APIv1
         }
     }
 
+    /**
+     * 
+     * @param uid1
+     * @param uid2
+     * @throws JSONException 
+     */
     @DELETE
     @Path("persons/{uid1}/sameas/{uid2}")
     public void refuseSameness(@PathParam("uid1") String uid1,
             @PathParam("uid2") String uid2) throws JSONException
     {
-        Integer person;
-        Integer alterEgo;
-
         try
         {
-            if (NumberUtils.isInt(uid1))
-            {
-                person = new Integer(uid1);
-            }
-            else
-            {
-                String[] key = uid1.split(":");
-
-                if (key.length != 2)
-                {
-                    // TODO - Add exception message.
-                    throw new BadRequestException();
-                }
-
-                JSONObject obj = dataProvider.retrievePerson(key[0], key[1],
-                        null);
-
-                String uri = obj.getString("@id");
-
-                person = new Integer(uri.substring(uri.lastIndexOf("/") + 1));
-            }
-
-            if (NumberUtils.isInt(uid2))
-            {
-                alterEgo = new Integer(uid2);
-            }
-            else
-            {
-                String[] key = uid2.split(":");
-
-                if (key.length != 2)
-                {
-                    // TODO - Add exception message.
-                    throw new BadRequestException();
-                }
-
-                JSONObject obj = dataProvider.retrievePerson(key[0], key[1],
-                        null);
-
-                String uri = obj.getString("@id");
-
-                alterEgo = new Integer(uri.substring(uri.lastIndexOf("/") + 1));
-            }
-
-            if (!dataProvider.refuseSameness(person, alterEgo))
+            if (!dataProvider.refuseSameness(uid1, uid2))
             {
                 // TODO - Add exception message.
                 throw new NotFoundException();
@@ -452,13 +355,13 @@ public class APIv1
     @Path("relations/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONObject retrieveRelation(@PathParam("id") Integer id) throws JSONException
-    {
+    {   
         try
         {
             JSONObject relation = dataProvider.retrieveRelation(id);
 
             return relation;
-        }
+        }        
         catch (RelationNotFoundException ex)
         {
             // TODO - Add exception message.
@@ -482,60 +385,100 @@ public class APIv1
     @Path("persons/{uid}/relations")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONObject retrieveRelations(@PathParam("uid") String uid,
-            @QueryParam("fields") String fields)
+            @QueryParam("sources") String sources)
             throws JSONException
     {
-        JSONObject relations;
-
         try
         {
-            if (NumberUtils.isInt(uid))
-            {
-                relations = dataProvider.retrieveRelations(new Integer(uid),
-                        fields);
-            }
-            else
-            {
-                String[] key = uid.split(":");
-
-                if (key.length != 2)
-                {
-                    // TODO - Add exception message.
-                    throw new BadRequestException();
-                }
-
-                relations = dataProvider.retrieveRelations(key[0], key[1],
-                        fields);
-            }
+            SourceFilter filter = SourceFilterImpl.buildFilter(sources);
+            
+            JSONObject relations = dataProvider.retrieveRelations(uid, filter);
 
             return relations;
-
         }
         catch (PersonNotFoundException ex)
         {
             throw new NotFoundException(ex);
         }
+        catch (URISyntaxException ex)
+        {
+            throw new BadRequestException(ex);
+        }
     }
 
+    /**
+     * 
+     * @param uid
+     * @param type
+     * @param sources
+     * @return
+     * @throws JSONException 
+     */
     @GET
     @Path("persons/{uid}/relations/{type}")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONObject retrieveRelations(@PathParam("uid") String uid,
-            @PathParam("type") String type, @QueryParam("fields") String fields)
+            @PathParam("type") String type, @QueryParam("sources") String sources)
+            throws JSONException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            SourceFilter filter = SourceFilterImpl.buildFilter(sources);
+            
+            JSONObject relations = dataProvider.retrieveRelations(uid, type, filter);
+
+            return relations;
+        }
+        catch (PersonNotFoundException ex)
+        {
+            throw new NotFoundException(ex);
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new BadRequestException(ex);
+        }
     }
 
+    /**
+     * 
+     * @param uid1
+     * @param type
+     * @param uid2
+     * @param sources
+     * @return 
+     */
     @GET
     @Path("persons/{uid1}/relations/{type}/{uid2}")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONObject retrieveRelations(@PathParam("uid1") String uid1,
             @PathParam("type") String type, @PathParam("uid2") String uid2,
-            @QueryParam("fields") String fields)
+            @QueryParam("sources") String sources) throws JSONException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            SourceFilter filter = SourceFilterImpl.buildFilter(sources);
+            
+            JSONObject relations = dataProvider.retrieveRelations(uid1, uid2, type, filter);
+
+            return relations;
+        }
+        catch (PersonNotFoundException ex)
+        {
+            throw new NotFoundException(ex);
+        }
+        catch (URISyntaxException ex)
+        {
+            throw new BadRequestException(ex);
+        }
     }
 
+    /**
+     * 
+     * @param id
+     * @param relation
+     * @return
+     * @throws JSONException 
+     */
     @PUT
     @Path("relations/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -564,6 +507,10 @@ public class APIv1
             throw new BadRequestException(ex);
         }
         catch (URISyntaxException ex)
+        {
+            throw new BadRequestException(ex);
+        }
+        catch (InvalidRelationException ex)
         {
             throw new BadRequestException(ex);
         }

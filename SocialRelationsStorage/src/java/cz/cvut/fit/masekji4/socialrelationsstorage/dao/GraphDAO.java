@@ -13,7 +13,6 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFou
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /**

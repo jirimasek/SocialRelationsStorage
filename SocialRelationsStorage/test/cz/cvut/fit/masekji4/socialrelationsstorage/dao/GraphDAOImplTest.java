@@ -72,7 +72,7 @@ public class GraphDAOImplTest
         
         persistence = new PersistenceManagerImpl(DATABASE_URI);
         keyFactory = new KeyFactory(confFactory.getNamespaces(null));
-        graphDAO = new GraphDAOImpl(persistence, keyFactory);
+        graphDAO = new GraphDAOImpl(persistence, keyFactory, 10);
         
         fbJiriMa5ek = new Person();
         
@@ -152,7 +152,7 @@ public class GraphDAOImplTest
      * @throws URISyntaxException
      * @throws PersonAlreadyExistsException 
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = InvalidPersonException.class)
     public void testCreateIncompletePerson() throws URISyntaxException, PersonAlreadyExistsException, InvalidPersonException, InvalidProfileException
     {
         System.out.println("Testing creation of incomplete person");

@@ -67,4 +67,16 @@ public class Key
         int hash = 5;
         return hash;
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder(prefix.length() + username.length() + 1);
+        
+        sb.append(prefix);
+        sb.append(":");
+        sb.append(username);
+        
+        return sb.toString();
+    }
 }
