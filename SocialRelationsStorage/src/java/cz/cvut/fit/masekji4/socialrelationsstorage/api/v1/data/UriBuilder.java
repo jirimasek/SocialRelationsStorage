@@ -7,11 +7,7 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 /**
- *
- * @author Jiří Mašek <email@jirimasek.cz>
- */
-/**
- * Class <code>JsonBuilder</code>
+ * <code>UriBuilder</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -36,11 +32,6 @@ public class UriBuilder
     @Config
     private String API_V1_SOURCES;
     
-    /**
-     * 
-     * @param uid
-     * @return 
-     */
     public String getPersonURI(String uid)
     {
         String uri = String.format("%s%s%s/%s", ROOT_URI, API_V1_URI,
@@ -49,10 +40,6 @@ public class UriBuilder
         return uri;
     }
     
-    /**
-     * 
-     * @return 
-     */
     public String getPersonsURI()
     {   
         String uri = String.format("%s%s%s", ROOT_URI, API_V1_URI,
@@ -61,11 +48,6 @@ public class UriBuilder
         return uri;
     }
 
-    /**
-     * 
-     * @param id
-     * @return 
-     */
     public String getRelationURI(Integer id)
     {
         String uri = String.format("%s%s%s/%d", ROOT_URI, API_V1_URI,
@@ -74,11 +56,6 @@ public class UriBuilder
         return uri;
     }
 
-    /**
-     * 
-     * @param personURI
-     * @return 
-     */
     public String getRelationsURI(String object, String type, String subject)
     {
         StringBuilder sb = new StringBuilder();
@@ -107,12 +84,6 @@ public class UriBuilder
         return sb.toString();
     }
 
-    /**
-     * 
-     * @param person
-     * @param alterEgo
-     * @return 
-     */
     public String getSamenessURI(String person, String alterEgo)
     {
         String uri = String.format("%s%s%s/%s/sameas/%s", ROOT_URI, API_V1_URI,
@@ -121,10 +92,6 @@ public class UriBuilder
         return uri;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public String getSourcesURI()
     {
         String uri = String.format("%s%s%s", ROOT_URI, API_V1_URI,
@@ -133,11 +100,6 @@ public class UriBuilder
         return uri;
     }
 
-    /**
-     * 
-     * @param source
-     * @return 
-     */
     public String getSourceURI(String source)
     {
         String uri = String.format("%s%s%s/%s", ROOT_URI, API_V1_URI,

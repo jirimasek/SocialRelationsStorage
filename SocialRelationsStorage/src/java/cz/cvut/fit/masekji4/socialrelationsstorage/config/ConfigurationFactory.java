@@ -16,7 +16,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
- * Třída <code>ConfigurationFactory</code>
+ * <code>ConfigurationFactory</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -90,7 +90,6 @@ public class ConfigurationFactory
         return Integer.parseInt(value);
     }
     
-
     public @Produces
     @Config
     Map<String, Namespace> getNamespaces(InjectionPoint p)

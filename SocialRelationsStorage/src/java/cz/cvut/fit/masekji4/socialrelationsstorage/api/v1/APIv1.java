@@ -54,15 +54,7 @@ public class APIv1
     @Inject
     private DataProvider dataProvider;
 
-    /* ********************************************************************** *
-     *                                PERSONS                                 *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param person
-     * @return
-     * @throws JSONException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Persons">
     @POST
     @Path("persons")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -99,13 +91,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param uid
-     * @param fields
-     * @return
-     * @throws JSONException 
-     */
     @GET
     @Path("persons/{uid}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -131,11 +116,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @return
-     * @throws JSONException 
-     */
     @GET
     @Path("persons")
     @Produces(MediaType.APPLICATION_JSON)
@@ -145,10 +125,6 @@ public class APIv1
         return dataProvider.retrievePersons();
     }
 
-    /**
-     * 
-     * @return 
-     */
     @GET
     @Path("sources")
     @Produces(MediaType.APPLICATION_JSON)
@@ -159,13 +135,6 @@ public class APIv1
     }
     
 
-    /**
-     * 
-     * @param source
-     * @return
-     * @throws JSONException
-     * @throws PersonNotFoundException 
-     */
     @GET
     @Path("sources/{source}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -182,13 +151,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param uid
-     * @param person
-     * @return
-     * @throws JSONException 
-     */
     @PUT
     @Path("persons/{uid}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -220,10 +182,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param uid 
-     */
     @DELETE
     @Path("persons/{uid}")
     public void deletePerson(@PathParam("uid") String uid)
@@ -234,17 +192,9 @@ public class APIv1
         {
             throw new NotFoundException();
         }
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                                SAMENESS                                *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param uid
-     * @param alterEgo
-     * @throws JSONException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Sameness">
     @POST
     @Path("persons/{uid}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -279,12 +229,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param uid1
-     * @param uid2
-     * @throws JSONException 
-     */
     @DELETE
     @Path("persons/{uid1}/sameas/{uid2}")
     public void refuseSameness(@PathParam("uid1") String uid1,
@@ -302,17 +246,9 @@ public class APIv1
             throw new NotFoundException(ex);
         }
 
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                               REALTIONS                                *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param relation
-     * @return
-     * @throws JSONException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Relations">
     @POST
     @Path("relations")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -353,12 +289,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws JSONException 
-     */
     @GET
     @Path("relations/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -380,13 +310,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param uid
-     * @param fields
-     * @return
-     * @throws JSONException 
-     */
     @GET
     @Path("persons/{uid}/relations")
     @Produces(MediaType.APPLICATION_JSON)
@@ -412,14 +335,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param uid
-     * @param type
-     * @param sources
-     * @return
-     * @throws JSONException 
-     */
     @GET
     @Path("persons/{uid}/relations/{type}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -445,14 +360,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param uid1
-     * @param type
-     * @param uid2
-     * @param sources
-     * @return 
-     */
     @GET
     @Path("persons/{uid1}/relations/{type}/{uid2}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -478,13 +385,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @param relation
-     * @return
-     * @throws JSONException 
-     */
     @PUT
     @Path("relations/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -522,11 +422,6 @@ public class APIv1
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @throws JSONException 
-     */
     @DELETE
     @Path("relations/{id}")
     public void deleteRelation(@PathParam("id") Integer id) throws JSONException
@@ -542,5 +437,5 @@ public class APIv1
         {
             throw new ForbiddenException(ex);
         }
-    }
+    }// </editor-fold>
 }

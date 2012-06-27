@@ -12,18 +12,11 @@ import org.codehaus.jettison.json.JSONException;
 public class BadRequestException extends WebApplicationException
 {
 
-    /**
-     * Creates a new instance of <code>BadRequestException</code> without detail message.
-     */
     public BadRequestException()
     {
         super(Response.Status.BAD_REQUEST);
     }
 
-    /**
-     * Constructs an instance of <code>BadRequestException</code> with the specified detail message.
-     * @param th
-     */
     public BadRequestException(Throwable th) throws JSONException
     {
         super(Response.Status.BAD_REQUEST, th);

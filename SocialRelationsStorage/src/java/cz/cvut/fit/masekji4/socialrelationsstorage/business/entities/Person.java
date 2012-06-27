@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Třída <code>Person</code>
+ * <code>Person</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -21,82 +21,46 @@ public class Person
     private List<URI> sources;
     private Map<String, String> properties;
 
-    /**
-     * 
-     * @return 
-     */
     public Integer getId()
     {
         return id;
     }
 
-    /**
-     * 
-     * @param id 
-     */
     public void setId(Integer id)
     {
         this.id = id;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public Key getKey()
     {
         return key;
     }
 
-    /**
-     * 
-     * @param key 
-     */
     public void setKey(Key key)
     {
         this.key = key;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public URI getProfile()
     {
         return profile;
     }
 
-    /**
-     * 
-     * @param profile 
-     */
     public void setProfile(URI profile)
     {
         this.profile = profile;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public List<URI> getSources()
     {
         return sources;
     }
 
-    /**
-     * 
-     * @param sources 
-     */
     public void setSources(List<URI> sources)
     {
         this.sources = sources;
     }
 
-    /**
-     * 
-     * @param uri 
-     */
     public void addSource(URI uri)
     {
         if (sources == null)
@@ -107,29 +71,16 @@ public class Person
         sources.add(uri);
     }
 
-    /**
-     * 
-     * @return 
-     */
     public Map<String, String> getProperties()
     {
         return properties;
     }
 
-    /**
-     * 
-     * @param properties 
-     */
     public void setProperties(Map<String, String> properties)
     {
         this.properties = properties;
     }
 
-    /**
-     * 
-     * @param property
-     * @param value 
-     */
     public void addProperty(String property, String value)
     {
         if (properties == null)
@@ -140,10 +91,6 @@ public class Person
         properties.put(property, value);
     }
 
-    /**
-     * 
-     * @return 
-     */
     public boolean isValid()
     {
         if (profile == null)
@@ -159,11 +106,6 @@ public class Person
         return true;
     }
 
-    /**
-     * 
-     * @param obj
-     * @return 
-     */
     @Override
     public boolean equals(Object obj)
     {
@@ -197,10 +139,6 @@ public class Person
         return true;
     }
 
-    /**
-     * 
-     * @return 
-     */
     @Override
     public int hashCode()
     {

@@ -112,10 +112,6 @@ public class PersistenceManagerImplTest
         owlSameAsProperties.append("sioc:note", "http://about.me/");
     }
 
-    /**
-     * 
-     * @throws InvalidPropertiesException 
-     */
     @Test
     public void testCreateNode() throws InvalidPropertiesException
     {
@@ -141,11 +137,6 @@ public class PersistenceManagerImplTest
         System.out.println("    Uzel: " + fbBartonekLukas);
     }
 
-    /**
-     * 
-     * @throws JSONException
-     * @throws InvalidPropertiesException 
-     */
     @Test
     public void testCreateNodeWithProperties() throws JSONException, InvalidPropertiesException
     {
@@ -166,11 +157,6 @@ public class PersistenceManagerImplTest
         System.out.println("    Uzel: " + twXmorfeus);
     }
 
-    /**
-     * 
-     * @throws JSONException
-     * @throws InvalidPropertiesException 
-     */
     @Test(expected = InvalidPropertiesException.class)
     public void testCreateNodeWithInvalidProperties() throws JSONException, InvalidPropertiesException
     {
@@ -190,11 +176,6 @@ public class PersistenceManagerImplTest
         pm.createNode(invalidProperties);
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testRetrieveNode() throws NodeNotFoundException, JSONException
     {
@@ -221,10 +202,6 @@ public class PersistenceManagerImplTest
         }
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testRetrieveNonexistentNode() throws NodeNotFoundException
     {
@@ -233,11 +210,6 @@ public class PersistenceManagerImplTest
         pm.retrieveNode(new Integer(98968769));
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testRetrieveProperties() throws NodeNotFoundException, JSONException
     {
@@ -254,10 +226,6 @@ public class PersistenceManagerImplTest
         }
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testRetrievePropertiesOfNonexistentNode() throws NodeNotFoundException
     {
@@ -266,11 +234,6 @@ public class PersistenceManagerImplTest
         pm.retrieveProperties(new Integer(98968769));
     }
 
-    /**
-     * 
-     * @throws PropertyNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testRetrieveProperty() throws PropertyNotFoundException, JSONException
     {
@@ -281,10 +244,6 @@ public class PersistenceManagerImplTest
         assertEquals(property, twXmorfeusProperties.get("foaf:name"));
     }
 
-    /**
-     * 
-     * @throws PropertyNotFoundException 
-     */
     @Test(expected = PropertyNotFoundException.class)
     public void testRetrieveNonexistentProperty() throws PropertyNotFoundException
     {
@@ -293,12 +252,6 @@ public class PersistenceManagerImplTest
         pm.retrieveProperty(fbJirima5ek, "foaf:name");
     }
 
-    /**
-     * 
-     * @throws InvalidPropertiesException
-     * @throws JSONException
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = InvalidPropertiesException.class)
     public void testAddInvalidProperties() throws InvalidPropertiesException,
             JSONException, NodeNotFoundException
@@ -319,11 +272,6 @@ public class PersistenceManagerImplTest
         pm.addProperties(fbJirima5ek, invalidProperties);
     }
 
-    /**
-     * 
-     * @throws InvalidPropertiesException
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testAddPropertiesToNonexistingNode() throws InvalidPropertiesException, NodeNotFoundException
     {
@@ -332,12 +280,6 @@ public class PersistenceManagerImplTest
         pm.addProperties(new Integer(98968769), fbJirima5ekProperties);
     }
 
-    /**
-     * 
-     * @throws InvalidPropertiesException
-     * @throws NodeNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testAddProperties() throws InvalidPropertiesException, NodeNotFoundException, JSONException
     {
@@ -356,10 +298,6 @@ public class PersistenceManagerImplTest
         }
     }
 
-    /**
-     * 
-     * @throws PropertyNotFoundException 
-     */
     @Test(expected = PropertyNotFoundException.class)
     public void testDeleteProperty() throws PropertyNotFoundException
     {
@@ -372,9 +310,6 @@ public class PersistenceManagerImplTest
         pm.retrieveProperty(fbJirima5ek, "foaf:name");
     }
 
-    /**
-     * 
-     */
     @Test
     public void testDeleteNonexistingProperty()
     {
@@ -385,10 +320,6 @@ public class PersistenceManagerImplTest
         assertFalse(deleted);
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test
     public void testDeleteProperties() throws NodeNotFoundException
     {
@@ -401,10 +332,6 @@ public class PersistenceManagerImplTest
         assertTrue(properties.length() == 0);
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testDeleteNonexistingNodeProperties() throws NodeNotFoundException
     {
@@ -413,14 +340,6 @@ public class PersistenceManagerImplTest
         pm.deleteProperties(new Integer(98968769));
     }
 
-    /**
-     * 
-     * @throws InvalidMetadataException
-     * @throws InvalidRelationshipException
-     * @throws JSONException
-     * @throws NodeNotFoundException
-     * @throws RelationshipNotFoundException 
-     */
     @Test(expected = InvalidRelationshipException.class)
     public void testCreateInvalidRelationship_1() throws InvalidMetadataException,
             InvalidRelationshipException, JSONException, NodeNotFoundException, RelationshipNotFoundException
@@ -430,13 +349,6 @@ public class PersistenceManagerImplTest
         pm.createRelationship(fbJirima5ek, fbBartonekLukas, "");
     }
 
-    /**
-     * 
-     * @throws InvalidMetadataException
-     * @throws InvalidRelationshipException
-     * @throws JSONException
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testCreateInvalidRelationship_2() throws InvalidMetadataException,
             InvalidRelationshipException, JSONException, NodeNotFoundException
@@ -446,13 +358,6 @@ public class PersistenceManagerImplTest
         pm.createRelationship(new Integer(98968769), fbBartonekLukas, "foaf:knows");
     }
 
-    /**
-     * 
-     * @throws InvalidMetadataException
-     * @throws InvalidRelationshipException
-     * @throws JSONException
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = InvalidRelationshipException.class)
     public void testCreateInvalidRelationship_3() throws InvalidMetadataException,
             InvalidRelationshipException, JSONException, NodeNotFoundException
@@ -462,12 +367,6 @@ public class PersistenceManagerImplTest
         pm.createRelationship(fbJirima5ek, new Integer(98968769), "foaf:knows");
     }
 
-    /**
-     * 
-     * @throws JSONException
-     * @throws InvalidRelationshipException
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = InvalidRelationshipException.class)
     public void testCreateRelationshipWithInvalidMetadata() throws JSONException,
             InvalidRelationshipException, NodeNotFoundException
@@ -488,13 +387,6 @@ public class PersistenceManagerImplTest
         pm.createRelationship(fbJirima5ek, new Integer(98968769), "foaf:knows", invalidMetadata);
     }
 
-    /**
-     * 
-     * @throws InvalidMetadataException
-     * @throws JSONException
-     * @throws InvalidRelationshipException
-     * @throws NodeNotFoundException 
-     */
     @Test
     public void testCreateRelationship() throws InvalidMetadataException,
             JSONException, InvalidRelationshipException, NodeNotFoundException
@@ -508,14 +400,6 @@ public class PersistenceManagerImplTest
         System.out.println("    Hrana: " + foafKnows);
     }
 
-    /**
-     * 
-     * @throws InvalidMetadataException
-     * @throws JSONException
-     * @throws InvalidRelationshipException
-     * @throws NodeNotFoundException
-     * @throws RelationshipNotFoundException 
-     */
     @Test
     public void testCreateRelationshipWithMetadata() throws InvalidMetadataException,
             JSONException, InvalidRelationshipException, NodeNotFoundException, RelationshipNotFoundException
@@ -529,13 +413,6 @@ public class PersistenceManagerImplTest
         System.out.println("    Hrana: " + owlSameAs);
     }
 
-    /**
-     * 
-     * @throws InvalidMetadataException
-     * @throws JSONException
-     * @throws InvalidRelationshipException
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = InvalidRelationshipException.class)
     public void testCreateRelationshipWithoutType() throws InvalidMetadataException,
             JSONException, InvalidRelationshipException, NodeNotFoundException
@@ -546,13 +423,6 @@ public class PersistenceManagerImplTest
 
     }
 
-    /**
-     * 
-     * @throws InvalidMetadataException
-     * @throws JSONException
-     * @throws InvalidRelationshipException
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testCreateRelationshipFromNonexistingNode() throws InvalidMetadataException,
             JSONException, InvalidRelationshipException, NodeNotFoundException
@@ -562,13 +432,6 @@ public class PersistenceManagerImplTest
         pm.createRelationship(new Integer(98968769), fbJirima5ek, "foaf:knows");
     }
 
-    /**
-     * 
-     * @throws InvalidMetadataException
-     * @throws JSONException
-     * @throws InvalidRelationshipException
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = InvalidRelationshipException.class)
     public void testCreateRelationshipToNonexistingNode() throws InvalidMetadataException,
             JSONException, InvalidRelationshipException, NodeNotFoundException
@@ -578,11 +441,6 @@ public class PersistenceManagerImplTest
         pm.createRelationship(fbJirima5ek, new Integer(98968769), "foaf:knows");
     }
 
-    /**
-     * 
-     * @throws RelationshipNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testRetrieveRelationship() throws RelationshipNotFoundException, JSONException
     {
@@ -595,10 +453,6 @@ public class PersistenceManagerImplTest
         assertEquals(relationship.get("type"), "foaf:knows");
     }
 
-    /**
-     * 
-     * @throws RelationshipNotFoundException 
-     */
     @Test(expected = RelationshipNotFoundException.class)
     public void testRetrieveNonexistingRelationship() throws RelationshipNotFoundException
     {
@@ -607,11 +461,6 @@ public class PersistenceManagerImplTest
         pm.retrieveRelationship(new Integer(98968769));
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testRetrieveRelationships() throws NodeNotFoundException, JSONException
     {
@@ -670,10 +519,6 @@ public class PersistenceManagerImplTest
         assertEquals(relationship.get("type"), "foaf:knows");
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testRetrieveRelationshipsFromNonexistingNode() throws NodeNotFoundException
     {
@@ -682,10 +527,6 @@ public class PersistenceManagerImplTest
         pm.retrieveRelationships(new Integer(98968769), OUT);
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testRetrieveRelationshipsToNonexistingNode() throws NodeNotFoundException
     {
@@ -694,11 +535,6 @@ public class PersistenceManagerImplTest
         pm.retrieveRelationships(new Integer(98968769), IN);
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testRetrieveSpecificRelationships() throws NodeNotFoundException, JSONException
     {
@@ -723,10 +559,6 @@ public class PersistenceManagerImplTest
         assertEquals(relationships.length(), 0);
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testRetrieveSpecificRelationshipsFromNonexistentNode() throws NodeNotFoundException
     {
@@ -736,10 +568,6 @@ public class PersistenceManagerImplTest
 
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testRetrieveSpecificRelationshipsToNonexistentNode() throws NodeNotFoundException
     {
@@ -748,12 +576,6 @@ public class PersistenceManagerImplTest
         pm.retrieveRelationships(new Integer(98968769), IN, "foaf:knows");
     }
 
-    /**
-     * 
-     * @throws JSONException
-     * @throws RelationshipNotFoundException
-     * @throws InvalidMetadataException 
-     */
     @Test(expected = InvalidMetadataException.class)
     public void testAddInvalidMetadata() throws JSONException,
             RelationshipNotFoundException, InvalidMetadataException
@@ -774,12 +596,6 @@ public class PersistenceManagerImplTest
         pm.addMetadataToRelationship(foafKnows, invalidMetadata);
     }
 
-    /**
-     * 
-     * @throws RelationshipNotFoundException
-     * @throws JSONException
-     * @throws InvalidMetadataException 
-     */
     @Test
     public void testAddMetadata() throws RelationshipNotFoundException, JSONException,
             InvalidMetadataException
@@ -797,11 +613,6 @@ public class PersistenceManagerImplTest
         assertEquals(siocNote.get(0), foafKnowsProperties.getJSONArray("sioc:note").get(0));
     }
 
-    /**
-     * 
-     * @throws RelationshipNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testRetrieveRelationshipMetada() throws RelationshipNotFoundException,
             JSONException
@@ -815,10 +626,6 @@ public class PersistenceManagerImplTest
         assertEquals(siocNote.get(0), owlSameAsProperties.getJSONArray("sioc:note").get(0));
     }
 
-    /**
-     * 
-     * @throws RelationshipNotFoundException 
-     */
     @Test(expected = RelationshipNotFoundException.class)
     public void testRetrieveNonexistingRelationshipMetadata() throws RelationshipNotFoundException
     {
@@ -827,11 +634,6 @@ public class PersistenceManagerImplTest
         pm.retrieveRelationshipMetadata(new Integer(98968769));
     }
 
-    /**
-     * 
-     * @throws MetadataNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testRetrieveMetadata() throws MetadataNotFoundException, JSONException
     {
@@ -842,10 +644,6 @@ public class PersistenceManagerImplTest
         assertEquals(siocNote.get(0), owlSameAsProperties.getJSONArray("sioc:note").get(0));
     }
 
-    /**
-     * 
-     * @throws MetadataNotFoundException 
-     */
     @Test(expected = MetadataNotFoundException.class)
     public void testRetrieveNonexistingMetadata() throws MetadataNotFoundException
     {
@@ -854,10 +652,6 @@ public class PersistenceManagerImplTest
         pm.retrieveRelationshipMetadata(owlSameAs, "sr:weight");
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test
     public void testDeleteMetadata() throws RelationshipNotFoundException
     {
@@ -872,10 +666,6 @@ public class PersistenceManagerImplTest
         assertEquals(metadata.length(), 0);
     }
 
-    /**
-     * 
-     * @throws NodeNotFoundException 
-     */
     @Test
     public void testDeleteNonexistingMetadata() throws NodeNotFoundException
     {
@@ -886,11 +676,6 @@ public class PersistenceManagerImplTest
         assertFalse(deleted);
     }
 
-    /**
-     * 
-     * @throws RelationshipNotFoundException
-     * @throws NodeNotFoundException 
-     */
     @Test
     public void testDeleteRelationshipMetadata() throws RelationshipNotFoundException, NodeNotFoundException
     {
@@ -903,10 +688,6 @@ public class PersistenceManagerImplTest
         assertEquals(metadata.length(), 0);
     }
 
-    /**
-     * 
-     * @throws RelationshipNotFoundException 
-     */
     @Test(expected = RelationshipNotFoundException.class)
     public void testDeleteNonexistingRelationshiopMetadata() throws RelationshipNotFoundException
     {
@@ -915,11 +696,6 @@ public class PersistenceManagerImplTest
         pm.deleteRelationshipMetadata(new Integer(98968769));
     }
     
-    /**
-     * 
-     * @throws JSONException
-     * @throws NodeNotFoundException 
-     */
     @Test
     public void testTraverse() throws JSONException, NodeNotFoundException
     {
@@ -945,11 +721,6 @@ public class PersistenceManagerImplTest
         assertTrue(node.getString("self").endsWith(String.valueOf(foafKnows)));
     }
     
-    /**
-     * 
-     * @throws JSONException
-     * @throws NodeNotFoundException 
-     */
     @Test(expected = NodeNotFoundException.class)
     public void testTraverseFromNonexistentNode() throws JSONException, NodeNotFoundException
     {
@@ -960,10 +731,6 @@ public class PersistenceManagerImplTest
         pm.traverse(new Integer(98968769), t, TypeEnum.NODE);
     }
     
-    /**
-     * 
-     * @throws JSONException 
-     */
     @Test
     public void testCreateNodeIndex() throws JSONException
     {
@@ -973,9 +740,6 @@ public class PersistenceManagerImplTest
         pm.createNodeIndex("tw");
     }
     
-    /**
-     * 
-     */
     @Test
     public void testRetrieveListOfNodeIndexes()
     {
@@ -987,10 +751,6 @@ public class PersistenceManagerImplTest
         assertTrue(list.has("tw"));
     }
     
-    /**
-     * 
-     * @throws JSONException 
-     */
     @Test
     public void testAddNodeToIndex() throws JSONException, NodeIndexNotFoundException
     {
@@ -999,11 +759,6 @@ public class PersistenceManagerImplTest
         pm.addNodeToIndex("fb", "username", "jirima5ek", fbJirima5ek);
     }
     
-    /**
-     * 
-     * @throws JSONException
-     * @throws NodeIndexNotFoundException 
-     */
     @Test
     public void testRetrieveNodeFromIndex() throws JSONException, NodeIndexNotFoundException
     {
@@ -1014,11 +769,6 @@ public class PersistenceManagerImplTest
         assertTrue(node.getString("self").endsWith(String.valueOf(fbJirima5ek)));
     }
     
-    /**
-     * 
-     * @throws JSONException
-     * @throws NodeIndexNotFoundException 
-     */
     @Test
     public void testRetrieveNonindexedNodeFromIndex() throws JSONException, NodeIndexNotFoundException
     {
@@ -1029,11 +779,6 @@ public class PersistenceManagerImplTest
         assertNull(node);
     }
     
-    /**
-     * 
-     * @throws NodeIndexNotFoundException
-     * @throws JSONException 
-     */
     @Test
     public void testDeleteNodeFromIndex() throws NodeIndexNotFoundException, JSONException
     {
@@ -1046,10 +791,6 @@ public class PersistenceManagerImplTest
         assertNull(node);
     }
     
-    /**
-     * 
-     * @throws NodeIndexNotFoundException 
-     */
     @Test(expected = NodeIndexNotFoundException.class)
     public void testDeleteNodeFromNonexistentIndex() throws NodeIndexNotFoundException
     {
@@ -1058,9 +799,6 @@ public class PersistenceManagerImplTest
         pm.deleteNodeFromIndex("ctu", "username", "masekji4", new Integer(98968769));
     }
     
-    /**
-     * 
-     */
     @Test
     public void testDeleteNodeIndex()
     {
@@ -1070,10 +808,6 @@ public class PersistenceManagerImplTest
         pm.deleteNodeIndex("tw");
     }
     
-    /**
-     * 
-     * @throws CannotDeleteNodeException 
-     */
     @Test(expected = CannotDeleteNodeException.class)
     public void testDeteleNodeWithRelationships() throws CannotDeleteNodeException
     {
@@ -1082,9 +816,6 @@ public class PersistenceManagerImplTest
         pm.deleteNode(fbJirima5ek);
     }
 
-    /**
-     * 
-     */
     @Test
     public void testDeleteRelationship()
     {
@@ -1101,9 +832,6 @@ public class PersistenceManagerImplTest
         assertTrue(deleted);
     }
 
-    /**
-     * 
-     */
     @Test
     public void testDeleteNonexistRelationship()
     {
@@ -1114,10 +842,6 @@ public class PersistenceManagerImplTest
         assertFalse(deleted);
     }
 
-    /**
-     * 
-     * @throws CannotDeleteNodeException 
-     */
     @Test
     public void testDeteleNode() throws CannotDeleteNodeException
     {

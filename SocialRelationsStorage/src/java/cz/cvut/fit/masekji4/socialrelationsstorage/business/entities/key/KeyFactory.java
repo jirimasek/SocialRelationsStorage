@@ -11,7 +11,7 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 /**
- * Třída <code>KeyFactory</code>
+ * <code>KeyFactory</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */

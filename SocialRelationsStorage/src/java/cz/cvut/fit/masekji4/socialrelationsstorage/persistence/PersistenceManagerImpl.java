@@ -27,7 +27,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
- * Class <code>PersistenceManagerImpl</code> implements ... and provides ...
+ * <code>PersistenceManagerImpl</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -49,26 +49,12 @@ public class PersistenceManagerImpl implements PersistenceManager
         this.DATABASE_URI = databaseURI;
     }
 
-    // <editor-fold defaultstate="collapsed" desc="Funkce zajišťující HTTP požadavky.">
-    /* ********************************************************************** *
-     *                    Funkce zajišťující HTTP požadavky.
-     * ********************************************************************** */
-    /**
-     * 
-     * @param uri
-     * @return 
-     */
+    // <editor-fold defaultstate="collapsed" desc="HTTP requests">
     private ClientResponse get(String uri)
     {
         return get(uri, null);
     }
 
-    /**
-     * 
-     * @param uri
-     * @param entity
-     * @return 
-     */
     private ClientResponse get(String uri, JSONObject entity)
     {
         Client client = new Client();
@@ -88,12 +74,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return response;
     }
 
-    /**
-     * 
-     * @param uri
-     * @param entity
-     * @return 
-     */
     private ClientResponse post(String uri, JSONObject entity)
     {
         Client client = new Client();
@@ -113,22 +93,11 @@ public class PersistenceManagerImpl implements PersistenceManager
         return response;
     }
 
-    /**
-     * 
-     * @param uri
-     * @return 
-     */
     private ClientResponse put(String uri)
     {
         return put(uri, null);
     }
 
-    /**
-     * 
-     * @param uri
-     * @param entity
-     * @return 
-     */
     private ClientResponse put(String uri, JSONObject entity)
     {
         Client client = new Client();
@@ -150,22 +119,11 @@ public class PersistenceManagerImpl implements PersistenceManager
         return response;
     }
 
-    /**
-     * 
-     * @param uri
-     * @return 
-     */
     private ClientResponse delete(String uri)
     {
         return delete(uri, null);
     }
 
-    /**
-     * 
-     * @param uri
-     * @param entity
-     * @return 
-     */
     private ClientResponse delete(String uri, JSONObject entity)
     {
         Client client = new Client();
@@ -187,16 +145,7 @@ public class PersistenceManagerImpl implements PersistenceManager
         return response;
     }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                         Implementace rozhraní.                         *
-     * ********************************************************************** */
-    /* ********************************************************************** *
-     *                                 NODES                                  *
-     * ********************************************************************** */
-    /**
-     * 
-     * @return 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Nodes">
     @Override
     public Integer createNode()
     {
@@ -210,12 +159,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         }
     }
 
-    /**
-     * 
-     * @param properties
-     * @return
-     * @throws InvalidPropertiesException 
-     */
     @Override
     public Integer createNode(JSONObject properties) throws InvalidPropertiesException
     {
@@ -235,12 +178,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return Integer.valueOf(node);
     }
 
-    /**
-     * 
-     * @param node
-     * @return
-     * @throws NodeNotFoundException 
-     */
     @Override
     public JSONObject retrieveNode(Integer node) throws NodeNotFoundException
     {
@@ -263,12 +200,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return output;
     }
 
-    /**
-     * 
-     * @param node
-     * @return
-     * @throws CannotDeleteNodeException 
-     */
     @Override
     public boolean deleteNode(Integer node) throws CannotDeleteNodeException
     {
@@ -293,13 +224,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return false;
     }
 
-    /**
-     * 
-     * @param node
-     * @param properties
-     * @throws InvalidPropertiesException
-     * @throws NodeNotFoundException 
-     */
     @Override
     public void addProperties(Integer node, JSONObject properties) throws InvalidPropertiesException, NodeNotFoundException
     {
@@ -327,12 +251,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         }
     }
 
-    /**
-     * 
-     * @param node
-     * @return
-     * @throws NodeNotFoundException 
-     */
     @Override
     public JSONObject retrieveProperties(Integer node) throws NodeNotFoundException
     {
@@ -359,13 +277,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return properties;
     }
 
-    /**
-     * 
-     * @param node
-     * @param property
-     * @return
-     * @throws PropertyNotFoundException 
-     */
     @Override
     public String retrieveProperty(Integer node, String property) throws PropertyNotFoundException
     {
@@ -403,12 +314,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return prop;
     }
 
-    /**
-     * 
-     * @param node
-     * @param property
-     * @return 
-     */
     @Override
     public boolean deleteProperty(Integer node, String property)
     {
@@ -434,12 +339,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return false;
     }
 
-    /**
-     * 
-     * @param node
-     * @return
-     * @throws NodeNotFoundException 
-     */
     @Override
     public void deleteProperties(Integer node) throws NodeNotFoundException
     {
@@ -456,22 +355,9 @@ public class PersistenceManagerImpl implements PersistenceManager
         {
             throw new NodeNotFoundException();
         }
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                                  Hrany                                 *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param startNode
-     * @param endNode
-     * @param relationship
-     * @return
-     * @throws InvalidMetadataException
-     * @throws JSONException
-     * @throws InvalidRelationshipException
-     * @throws NodeNotFoundException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Edges">
     @Override
     public Integer createRelationship(Integer startNode, Integer endNode,
             String relationship) throws InvalidMetadataException, JSONException,
@@ -480,17 +366,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return createRelationship(startNode, endNode, relationship, null);
     }
 
-    /**
-     * 
-     * @param startNode
-     * @param endNode
-     * @param relationship
-     * @param metadata
-     * @return
-     * @throws InvalidRelationshipException
-     * @throws JSONException
-     * @throws NodeNotFoundException 
-     */
     @Override
     public Integer createRelationship(Integer startNode, Integer endNode,
             String relationship, JSONObject metadata) throws InvalidRelationshipException,
@@ -537,12 +412,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return Integer.valueOf(node);
     }
 
-    /**
-     * 
-     * @param relationship
-     * @return
-     * @throws RelationshipNotFoundException 
-     */
     @Override
     public JSONObject retrieveRelationship(Integer relationship)
             throws RelationshipNotFoundException
@@ -566,13 +435,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return rel;
     }
 
-    /**
-     * 
-     * @param node
-     * @param direction
-     * @return
-     * @throws NodeNotFoundException 
-     */
     @Override
     public JSONArray retrieveRelationships(Integer node, DirectionEnum direction)
             throws NodeNotFoundException
@@ -581,14 +443,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return retrieveRelationships(node, direction, null);
     }
 
-    /**
-     * 
-     * @param node
-     * @param direction
-     * @param relationship
-     * @return
-     * @throws NodeNotFoundException 
-     */
     @Override
     public JSONArray retrieveRelationships(Integer node, DirectionEnum direction,
             String relationship) throws NodeNotFoundException
@@ -618,11 +472,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return rel;
     }
 
-    /**
-     * 
-     * @param relationship
-     * @return 
-     */
     @Override
     public boolean deleteRelationship(Integer relationship)
     {
@@ -643,13 +492,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return false;
     }
 
-    /**
-     * 
-     * @param relationship
-     * @param metadata
-     * @throws InvalidMetadataException
-     * @throws RelationshipNotFoundException 
-     */
     @Override
     public void addMetadataToRelationship(Integer relationship,
             JSONObject metadata) throws InvalidMetadataException,
@@ -674,12 +516,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         }
     }
 
-    /**
-     * 
-     * @param relationship
-     * @return
-     * @throws RelationshipNotFoundException 
-     */
     @Override
     public JSONObject retrieveRelationshipMetadata(Integer relationship)
             throws RelationshipNotFoundException
@@ -707,13 +543,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return metadata;
     }
 
-    /**
-     * 
-     * @param relationship
-     * @param metadata
-     * @return
-     * @throws MetadataNotFoundException 
-     */
     @Override
     public String retrieveRelationshipMetadata(Integer relationship,
             String metadata) throws MetadataNotFoundException
@@ -738,12 +567,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return meta;
     }
 
-    /**
-     * 
-     * @param relationship
-     * @param metadata
-     * @return 
-     */
     @Override
     public boolean deleteRelationshipMetadata(Integer relationship,
             String metadata)
@@ -766,11 +589,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return false;
     }
 
-    /**
-     * 
-     * @param relationship
-     * @throws RelationshipNotFoundException 
-     */
     @Override
     public void deleteRelationshipMetadata(Integer relationship)
             throws RelationshipNotFoundException
@@ -788,11 +606,9 @@ public class PersistenceManagerImpl implements PersistenceManager
         {
             throw new RelationshipNotFoundException();
         }
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                               Traversals                               *
-     * ********************************************************************** */
+    // <editor-fold defaultstate="collapsed" desc="Traversals">
     @Override
     public JSONArray traverse(Integer startNode, TraversalDescription t,
             TypeEnum type)
@@ -823,16 +639,9 @@ public class PersistenceManagerImpl implements PersistenceManager
         {
             return new JSONArray();
         }
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                                INDEXES                                 *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param name
-     * @throws JSONException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Indexes">
     @Override
     public void createNodeIndex(String name) throws JSONException
     {
@@ -850,10 +659,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         ClientResponse response = post(nodeIndexEntryPointURI, entity);
     }
 
-    /**
-     * 
-     * @param name 
-     */
     @Override
     public void deleteNodeIndex(String name)
     {
@@ -867,10 +672,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         ClientResponse response = delete(nodeIndexURI);
     }
 
-    /**
-     * 
-     * @return
-     */
     @Override
     public JSONObject retrieveListOfNodeIndexes()
     {
@@ -891,14 +692,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return list;
     }
 
-    /**
-     * 
-     * @param name
-     * @param key
-     * @param value
-     * @param node
-     * @throws JSONException
-     */
     @Override
     public void addNodeToIndex(String name, String key, String value,
             Integer node) throws JSONException, NodeIndexNotFoundException
@@ -906,16 +699,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         addNodeToIndex(name, key, value, node, true);
     }
 
-    /**
-     * 
-     * @param name
-     * @param key
-     * @param value
-     * @param node
-     * @param unique
-     * @throws JSONException
-     * @throws NodeIndexNotFoundException 
-     */
     @Override
     public void addNodeToIndex(String name, String key, String value,
             Integer node, boolean unique) throws JSONException, NodeIndexNotFoundException
@@ -962,14 +745,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         }
     }
 
-    /**
-     * 
-     * @param name
-     * @param key
-     * @param value
-     * @return
-     * @throws JSONException
-     */
     @Override
     public JSONObject retrieveNodeFromIndex(String name, String key,
             String value) throws JSONException, NodeIndexNotFoundException
@@ -984,14 +759,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return null;
     }
 
-    /**
-     * 
-     * @param name
-     * @param key
-     * @param value
-     * @return
-     * @throws JSONException
-     */
     @Override
     public JSONArray retrieveNodesFromIndex(String name, String key,
             String value) throws JSONException, NodeIndexNotFoundException
@@ -1025,14 +792,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         return nodes;
     }
 
-    /**
-     * 
-     * @param name
-     * @param key
-     * @param value
-     * @param node
-     * @throws NodeIndexNotFoundException 
-     */
     @Override
     public void deleteNodeFromIndex(String name, String key, String value,
             Integer node)
@@ -1068,11 +827,6 @@ public class PersistenceManagerImpl implements PersistenceManager
         }
     }
 
-    /**
-     * Serializuje entitu do formátu JSON.
-     * 
-     * @return      JSON
-     */
     private JSONObject serializeTraversalDesc(TraversalDescription t) throws JSONException
     {
         JSONObject json = new JSONObject();
@@ -1099,5 +853,5 @@ public class PersistenceManagerImpl implements PersistenceManager
         json.put("max_depth", t.getMaxDepth());
 
         return json;
-    }
+    }// </editor-fold>
 }

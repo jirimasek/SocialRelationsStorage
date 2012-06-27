@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 import javax.inject.Qualifier;
 
 /**
+ * <code>Neo4j</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */

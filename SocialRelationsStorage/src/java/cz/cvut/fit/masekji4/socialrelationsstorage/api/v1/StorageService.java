@@ -14,16 +14,14 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * Rozhraní <code>StorageService</code>
+ * <code>StorageService</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
 public interface StorageService
 {
-    /* ********************************************************************** *
-     *                                PERSONS                                 *
-     * ********************************************************************** */
     
+    // <editor-fold defaultstate="collapsed" desc="Persons">
     public Integer createPerson(Person person) throws InvalidPersonException, InvalidProfileException, PersonAlreadyExistsException;
     
     public Person retrievePerson(Integer id) throws PersonNotFoundException;
@@ -38,22 +36,16 @@ public interface StorageService
     
     public Integer updatePerson(Person person) throws InvalidPersonException, InvalidProfileException;
     
-    public boolean deletePerson(Integer id);
+    public boolean deletePerson(Integer id);// </editor-fold>
     
-    /* ********************************************************************** *
-     *                                SAMENESS                                *
-     * ********************************************************************** */
-    
+    // <editor-fold defaultstate="collapsed" desc="Sameness">
     public boolean declareSameness(Integer person, Integer alterEgo, List<URI> sorces)
             throws PersonNotFoundException;
     
     public boolean refuseSameness(Integer person, Integer alterEgo)
-            throws PersonNotFoundException;
+            throws PersonNotFoundException;// </editor-fold>
 
-    /* ********************************************************************** *
-     *                               REALTIONS                                *
-     * ********************************************************************** */
-
+    // <editor-fold defaultstate="collapsed" desc="Relations">
     public Integer createRelation(Relation relation) throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException;
 
     public Relation retrieveRelation(Integer id) throws RelationNotFoundException, IllegalAccessException;
@@ -68,5 +60,5 @@ public interface StorageService
 
     public boolean deleteRelation(Integer id) throws IllegalAccessException;
 
-    public List<URI> retrieveSources();
+    public List<URI> retrieveSources();// </editor-fold>
 }

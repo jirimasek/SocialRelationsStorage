@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Třída <code>Relation</code>
+ * <code>Relation</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -20,100 +20,56 @@ public class Relation
     private List<URI> sources;
     private Map<String, String> properties;
 
-    /**
-     * 
-     * @return 
-     */
     public Integer getId()
     {
         return id;
     }
 
-    /**
-     * 
-     * @param id 
-     */
     public void setId(Integer id)
     {
         this.id = id;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public Integer getObject()
     {
         return object;
     }
 
-    /**
-     * 
-     * @param object 
-     */
     public void setObject(Integer object)
     {
         this.object = object;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public Integer getSubject()
     {
         return subject;
     }
 
-    /**
-     * 
-     * @param subject 
-     */
     public void setSubject(Integer subject)
     {
         this.subject = subject;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public String getType()
     {
         return type;
     }
 
-    /**
-     * 
-     * @param type 
-     */
     public void setType(String type)
     {
         this.type = type;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public List<URI> getSources()
     {
         return sources;
     }
 
-    /**
-     * 
-     * @param sources 
-     */
     public void setSources(List<URI> sources)
     {
         this.sources = sources;
     }
 
-    /**
-     * 
-     * @param uri 
-     */
     public void addSource(URI uri)
     {
         if (sources == null)
@@ -124,29 +80,16 @@ public class Relation
         sources.add(uri);
     }
 
-    /**
-     * 
-     * @return 
-     */
     public Map<String, String> getProperties()
     {
         return properties;
     }
 
-    /**
-     * 
-     * @param properties 
-     */
     public void setProperties(Map<String, String> properties)
     {
         this.properties = properties;
     }
 
-    /**
-     * 
-     * @param property
-     * @param value 
-     */
     public void addProperty(String property, String value)
     {
         if (properties == null)
@@ -157,10 +100,6 @@ public class Relation
         properties.put(property, value);
     }
 
-    /**
-     * 
-     * @return 
-     */
     public boolean isValid()
     {
         if (object == null)
@@ -186,11 +125,6 @@ public class Relation
         return true;
     }
 
-    /**
-     * 
-     * @param obj
-     * @return 
-     */
     @Override
     public boolean equals(Object obj)
     {
@@ -234,15 +168,9 @@ public class Relation
         return true;
     }
 
-    /**
-     * 
-     * @return 
-     */
     @Override
     public int hashCode()
     {
         return id;
-    }
-    
-    
+    } 
 }

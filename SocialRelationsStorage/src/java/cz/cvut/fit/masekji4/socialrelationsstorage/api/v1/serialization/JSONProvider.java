@@ -26,24 +26,11 @@ public class JSONProvider implements MessageBodyWriter<JSONObject>
 
     private final String encoding = "UTF-8";
 
-    /**
-     * 
-     * @param json
-     * @return 
-     */
     private String serialize(JSONObject json)
     {
         return json.toString().replaceAll("\\\\/", "/");
     }
 
-    /**
-     * 
-     * @param type
-     * @param genericType
-     * @param annotations
-     * @param mediaType
-     * @return 
-     */
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType)
@@ -58,15 +45,6 @@ public class JSONProvider implements MessageBodyWriter<JSONObject>
         return false;
     }
 
-    /**
-     * 
-     * @param t
-     * @param type
-     * @param genericType
-     * @param annotations
-     * @param mediaType
-     * @return 
-     */
     @Override
     public long getSize(JSONObject t,
             Class<?> type, Type genericType, Annotation[] annotations,
@@ -88,18 +66,6 @@ public class JSONProvider implements MessageBodyWriter<JSONObject>
         }
     }
 
-    /**
-     * 
-     * @param t
-     * @param type
-     * @param genericType
-     * @param annotations
-     * @param mediaType
-     * @param httpHeaders
-     * @param entityStream
-     * @throws IOException
-     * @throws WebApplicationException 
-     */
     @Override
     public void writeTo(JSONObject t,
             Class<?> type, Type genericType, Annotation[] annotations,

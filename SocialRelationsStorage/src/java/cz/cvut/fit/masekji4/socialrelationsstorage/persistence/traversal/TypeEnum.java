@@ -1,7 +1,7 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal;
 
 /**
- * Výčet <code>TypeEnum</code>
+ * <code>TypeEnum</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */

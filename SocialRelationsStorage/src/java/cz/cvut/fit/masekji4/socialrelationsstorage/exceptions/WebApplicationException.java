@@ -8,35 +8,21 @@ import org.codehaus.jettison.json.JSONObject;
 
 /**
  * <code>WebApplicationException</code>
- * 
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
 public abstract class WebApplicationException extends javax.ws.rs.WebApplicationException
 {
 
-    /**
-     * Creates a new instance of <code>WebApplicationException</code> without detail message.
-     */
     public WebApplicationException()
     {
     }
 
-    /**
-     * 
-     * @param status
-     */
     public WebApplicationException(Status status)
     {
         super(Response.status(status).build());
     }
 
-    /**
-     * 
-     * @param status
-     * @param th
-     * @throws JSONException 
-     */
     public WebApplicationException(Status status, Throwable th) throws JSONException
     {
         super(Response.status(status)
@@ -44,12 +30,6 @@ public abstract class WebApplicationException extends javax.ws.rs.WebApplication
                 .type(MediaType.APPLICATION_JSON).build());
     }
 
-    /**
-     * 
-     * @param th
-     * @return
-     * @throws JSONException 
-     */
     private static JSONObject getEntity(Throwable th) throws JSONException
     {
         String message = th.getMessage();

@@ -16,7 +16,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
- * Class <code>JsonBuilder</code>
+ * <code>JsonBuilder</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -97,14 +97,6 @@ public class JsonBuilder
     @Inject
     private UriBuilder uriBuilder;
 
-    /**
-     * 
-     * @param person
-     * @param uid
-     * @param sameAs
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject getPerson(Person person, String uid,
             Collection<String> sameAs) throws JSONException
     {
@@ -141,25 +133,12 @@ public class JsonBuilder
         return obj;
     }
     
-    /**
-     * 
-     * @param persons
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject getPersons(Collection<Person> persons)
             throws JSONException
     {
         return getPersons(persons, null);
     }
 
-    /**
-     * 
-     * @param persons
-     * @param source
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject getPersons(Collection<Person> persons, String source)
             throws JSONException
     {   
@@ -192,12 +171,6 @@ public class JsonBuilder
         return obj;
     }
 
-    /**
-     * 
-     * @param relation
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject getRelation(Relation relation) throws JSONException
     {
         JSONObject type = new JSONObject();
@@ -230,42 +203,18 @@ public class JsonBuilder
         return rel;
     }
 
-    /**
-     * 
-     * @param relations
-     * @param object
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject getRelations(Collection<Relation> relations, String object)
             throws JSONException
     {
         return getRelations(relations, object, null, null);
     }
     
-    /**
-     * 
-     * @param relations
-     * @param object
-     * @param type
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject getRelations(Collection<Relation> relations, String object, String type)
             throws JSONException
     {
         return getRelations(relations, object, type, null);
     }
     
-    /**
-     * 
-     * @param relations
-     * @param object
-     * @param type
-     * @param subject
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject getRelations(Collection<Relation> relations, String object, String type, String subject)
             throws JSONException
     {
@@ -291,12 +240,6 @@ public class JsonBuilder
         return rels;
     }
     
-    /**
-     * 
-     * @param sources
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject getSources(List<URI> sources) throws JSONException
     {   
         
@@ -321,12 +264,6 @@ public class JsonBuilder
     /* ********************************************************************** *
      *                            ACESSOR METHODS                             *
      * ********************************************************************** */
-    /**
-     * 
-     * @param type
-     * @return
-     * @throws JSONException 
-     */
     private JSONObject getContext(int type) throws JSONException
     {
         JSONObject context = new JSONObject();

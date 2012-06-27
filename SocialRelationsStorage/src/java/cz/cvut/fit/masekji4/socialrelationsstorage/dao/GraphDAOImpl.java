@@ -42,7 +42,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
- * Třída <code>GraphDAOImpl</code> implementuje ... a zajišťuje ...
+ * <code>GraphDAOImpl</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -83,18 +83,7 @@ public class GraphDAOImpl implements GraphDAO
         this.ALTEREGO_TRAVERSATION_MAX_DEPTH = ALTEREGO_TRAVERSATION_MAX_DEPTH;
     }
 
-    /* ********************************************************************** *
-     *                                PERSONS                                 *
-     * ********************************************************************** */
-    
-    /**
-     * 
-     * @param person
-     * @return
-     * @throws InvalidPersonException
-     * @throws InvalidProfileException
-     * @throws PersonAlreadyExistsException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Persons">
     @Override
     public Integer createPerson(Person person) throws InvalidPersonException, InvalidProfileException, PersonAlreadyExistsException
     {
@@ -141,12 +130,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public Person retrievePerson(Integer id) throws PersonNotFoundException
     {
@@ -185,12 +168,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param key
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public Person retrievePerson(Key key) throws PersonNotFoundException
     {
@@ -229,10 +206,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
     
-    /**
-     * 
-     * @return 
-     */
     @Override
     public List<Person> retrievePersons()
     {
@@ -268,11 +241,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param source
-     * @return 
-     */
     @Override
     public List<Person> retrievePersons(URI source)
     {
@@ -309,13 +277,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param person
-     * @return
-     * @throws InvalidPersonException
-     * @throws InvalidProfileException 
-     */
     @Override
     public Integer updatePerson(Person person) throws InvalidPersonException, InvalidProfileException
     {
@@ -367,11 +328,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @return 
-     */
     @Override
     public boolean deletePerson(Integer id)
     {
@@ -413,11 +369,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param key
-     * @return 
-     */
     @Override
     public boolean deletePerson(Key key)
     {
@@ -452,19 +403,9 @@ public class GraphDAOImpl implements GraphDAO
         {
             return false;
         }
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                                SAMENESS                                *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param person
-     * @param alterEgo
-     * @param sources
-     * @return
-     * @throws PersonNotFoundException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Sameness">
     @Override
     public boolean declareSameness(Integer person, Integer alterEgo,
             List<URI> sources) throws PersonNotFoundException
@@ -549,14 +490,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param person
-     * @param alterEgo
-     * @param sources
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public boolean declareSameness(Key person, Key alterEgo, List<URI> sources)
             throws PersonNotFoundException
@@ -609,12 +542,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public Path retrieveAlterEgos(Integer id) throws PersonNotFoundException
     {
@@ -737,12 +664,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param key
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public Path retrieveAlterEgos(Key key) throws PersonNotFoundException
     {
@@ -778,13 +699,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param person
-     * @param alterEgo
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public boolean refuseSameness(Integer person, Integer alterEgo)
             throws PersonNotFoundException
@@ -816,13 +730,6 @@ public class GraphDAOImpl implements GraphDAO
         return deleted > 0;
     }
 
-    /**
-     * 
-     * @param person
-     * @param alterEgo
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public boolean refuseSameness(Key person, Key alterEgo) throws PersonNotFoundException
     {
@@ -869,21 +776,9 @@ public class GraphDAOImpl implements GraphDAO
         {
             throw new RuntimeException(ex);
         }
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                               REALTIONS                                *
-     * ********************************************************************** */
-    
-    /**
-     * 
-     * @param relation
-     * @return
-     * @throws PersonNotFoundException
-     * @throws RelationAlreadyExistsException
-     * @throws IllegalAccessException
-     * @throws InvalidRelationshipException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Relations">
     @Override
     public Integer createRelation(Relation relation) throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException
     {
@@ -933,13 +828,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws RelationNotFoundException
-     * @throws IllegalAccessException 
-     */
     @Override
     public Relation retrieveRelation(Integer id)
             throws RelationNotFoundException, IllegalAccessException
@@ -976,13 +864,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param person
-     * @param direction
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public List<Relation> retrieveRelations(Integer person,
             DirectionEnum direction) throws PersonNotFoundException
@@ -990,13 +871,6 @@ public class GraphDAOImpl implements GraphDAO
         return retrieveRelations(person, direction, null);
     }
 
-    /**
-     * 
-     * @param key
-     * @param direction
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public List<Relation> retrieveRelations(Key key, DirectionEnum direction)
             throws PersonNotFoundException
@@ -1004,14 +878,6 @@ public class GraphDAOImpl implements GraphDAO
         return retrieveRelations(key, direction, null);
     }
 
-    /**
-     * 
-     * @param person
-     * @param direction
-     * @param type
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public List<Relation> retrieveRelations(Integer person,
             DirectionEnum direction,
@@ -1055,14 +921,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param key
-     * @param direction
-     * @param type
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public List<Relation> retrieveRelations(Key key, DirectionEnum direction,
             String type) throws PersonNotFoundException
@@ -1105,13 +963,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param relation
-     * @return
-     * @throws PersonNotFoundException
-     * @throws IllegalAccessException 
-     */
     @Override
     public Integer updateRelation(Relation relation)
             throws PersonNotFoundException, IllegalAccessException
@@ -1178,12 +1029,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws IllegalAccessException 
-     */
     @Override
     public boolean deleteRelation(Integer id) throws IllegalAccessException
     {
@@ -1210,12 +1055,6 @@ public class GraphDAOImpl implements GraphDAO
         return pm.deleteRelationship(id);
     }
 
-    /**
-     * 
-     * @param person
-     * @return
-     * @throws PersonNotFoundException 
-     */
     private List<Relation> retrieveSameness(Integer person) throws PersonNotFoundException
     {
         if (person == null)
@@ -1251,18 +1090,9 @@ public class GraphDAOImpl implements GraphDAO
         {
             throw new RuntimeException(ex);
         }
-    }
+    }// </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Accessor Methods">
-    /* ********************************************************************** *
-     *                            Accessor Methods                            *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param key
-     * @return
-     * @throws JSONException 
-     */
     private boolean isPersonAlreadyCreated(Key key) throws JSONException
     {
         JSONObject node;
@@ -1284,14 +1114,6 @@ public class GraphDAOImpl implements GraphDAO
         return false;
     }
 
-    /**
-     * 
-     * @param object
-     * @param subject
-     * @param type
-     * @return
-     * @throws PersonNotFoundException 
-     */
     private boolean isRelationAlreadyCreated(Integer object, Integer subject,
             String type) throws PersonNotFoundException
     {
@@ -1308,12 +1130,6 @@ public class GraphDAOImpl implements GraphDAO
         return false;
     }
 
-    /**
-     * 
-     * @param person
-     * @return
-     * @throws JSONException 
-     */
     private JSONObject toProperties(Person person) throws JSONException
     {
         JSONObject data = new JSONObject();
@@ -1340,12 +1156,6 @@ public class GraphDAOImpl implements GraphDAO
         return data;
     }
 
-    /**
-     * 
-     * @param relation
-     * @return
-     * @throws JSONException 
-     */
     private JSONObject toProperties(Relation relation) throws JSONException
     {
         JSONObject data = new JSONObject();
@@ -1370,13 +1180,6 @@ public class GraphDAOImpl implements GraphDAO
         return data;
     }
 
-    /**
-     * 
-     * @param node
-     * @return
-     * @throws JSONException
-     * @throws URISyntaxException 
-     */
     private Person toPerson(JSONObject node) throws JSONException, URISyntaxException, InvalidProfileException
     {
         Person person = new Person();
@@ -1445,13 +1248,6 @@ public class GraphDAOImpl implements GraphDAO
         return person;
     }
 
-    /**
-     * 
-     * @param node
-     * @return
-     * @throws JSONException
-     * @throws URISyntaxException 
-     */
     private Relation toRelation(JSONObject node) throws JSONException, URISyntaxException
     {
         Relation relation = new Relation();
@@ -1533,12 +1329,6 @@ public class GraphDAOImpl implements GraphDAO
         return relation;
     }
 
-    /**
-     * 
-     * @param id
-     * @param sources
-     * @throws JSONException 
-     */
     private void indexSources(Integer id, List<URI> sources) throws JSONException
     {   
         try
@@ -1557,12 +1347,6 @@ public class GraphDAOImpl implements GraphDAO
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @param sources
-     * @throws JSONException 
-     */
     private void reindexSources(Integer id, List<URI> oldSources, List<URI> newSources) throws JSONException
     {   
         for (URI source : oldSources)

@@ -69,20 +69,7 @@ public class DataProvider
     @Inject
     private UriBuilder uriBuilder;
 
-    /* ********************************************************************** *
-     *                                PERSONS                                 *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param person
-     * @return
-     * @throws InvalidPersonException
-     * @throws InvalidProfileException
-     * @throws PersonAlreadyExistsException
-     * @throws PersonNotFoundException
-     * @throws JSONException
-     * @throws URISyntaxException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Persons">
     public JSONObject createPerson(JSONObject person) throws InvalidPersonException,
             InvalidProfileException, PersonAlreadyExistsException,
             PersonNotFoundException, JSONException, URISyntaxException
@@ -94,14 +81,6 @@ public class DataProvider
         return retrievePerson(id.toString(), null);
     }
 
-    /**
-     * 
-     * @param uid
-     * @param filter
-     * @return
-     * @throws PersonNotFoundException
-     * @throws JSONException 
-     */
     public JSONObject retrievePerson(String uid, SourceFilter filter)
             throws PersonNotFoundException, JSONException
     {
@@ -134,11 +113,6 @@ public class DataProvider
 
     }
 
-    /**
-     * 
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject retrievePersons() throws JSONException
     {
         List<Person> list = storageService.retrievePersons();
@@ -148,12 +122,6 @@ public class DataProvider
         return persons;
     }
 
-    /**
-     * 
-     * @param source
-     * @return
-     * @throws JSONException 
-     */
     public JSONObject retrievePersons(String source) throws JSONException
     {
         List<Person> list = storageService.retrievePersons("http://" + source);
@@ -163,17 +131,6 @@ public class DataProvider
         return persons;
     }
 
-    /**
-     * 
-     * @param uid
-     * @param person
-     * @return
-     * @throws JSONException
-     * @throws URISyntaxException
-     * @throws InvalidPersonException
-     * @throws InvalidProfileException
-     * @throws PersonNotFoundException 
-     */
     public JSONObject updatePerson(String uid, JSONObject person)
             throws JSONException, URISyntaxException, InvalidPersonException,
             InvalidProfileException, PersonNotFoundException
@@ -265,11 +222,6 @@ public class DataProvider
         return retrievePerson(nuid, SourceFilterImpl.buildFilter(null));
     }
 
-    /**
-     * 
-     * @param uid
-     * @return 
-     */
     public boolean deletePerson(String uid)
     {
         try
@@ -282,20 +234,9 @@ public class DataProvider
         {
             return false;
         }
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                                SAMENESS                                *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param id
-     * @param sameness
-     * @throws JSONException
-     * @throws URISyntaxException
-     * @throws InvalidSamenessException
-     * @throws PersonNotFoundException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Sameness">
     public URI declareSameness(String uid, JSONObject sameness)
             throws JSONException, URISyntaxException, InvalidSamenessException, PersonNotFoundException
     {
@@ -322,17 +263,9 @@ public class DataProvider
             }
         }
 
-        // TODO - Add exception message.
         throw new InvalidSamenessException();
     }
 
-    /**
-     * 
-     * @param person
-     * @param alterEgo
-     * @return
-     * @throws PersonNotFoundException 
-     */
     public boolean refuseSameness(String person, String alterEgo)
             throws PersonNotFoundException
     {
@@ -340,23 +273,9 @@ public class DataProvider
         Integer uid2 = getPersonId(alterEgo);
         
         return storageService.refuseSameness(uid1, uid2);
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                               REALTIONS                                *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param relation
-     * @return
-     * @throws PersonNotFoundException
-     * @throws RelationAlreadyExistsException
-     * @throws IllegalAccessException
-     * @throws InvalidRelationshipException
-     * @throws JSONException
-     * @throws RelationNotFoundException
-     * @throws URISyntaxException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Relations">
     public JSONObject createRelation(JSONObject relation) throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException, JSONException, RelationNotFoundException, URISyntaxException
     {
         Relation obj = objectBuilder.getRelation(relation);
@@ -366,13 +285,6 @@ public class DataProvider
         return retrieveRelation(id);
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws RelationNotFoundException
-     * @throws JSONException 
-     */
     public JSONObject retrieveRelation(Integer id)
             throws RelationNotFoundException, JSONException, IllegalAccessException
     {
@@ -383,14 +295,6 @@ public class DataProvider
         return relation;
     }
 
-    /**
-     * 
-     * @param uid
-     * @param filter
-     * @return
-     * @throws PersonNotFoundException
-     * @throws JSONException 
-     */
     public JSONObject retrieveRelations(String uid, SourceFilter filter)
             throws PersonNotFoundException, JSONException
     {
@@ -403,15 +307,6 @@ public class DataProvider
         return relations;
     }
 
-    /**
-     * 
-     * @param uid
-     * @param type
-     * @param filter
-     * @return
-     * @throws PersonNotFoundException
-     * @throws JSONException 
-     */
     public JSONObject retrieveRelations(String uid, String type,
             SourceFilter filter) throws PersonNotFoundException, JSONException
     {
@@ -424,16 +319,6 @@ public class DataProvider
         return relations;
     }
 
-    /**
-     * 
-     * @param object
-     * @param subject
-     * @param type
-     * @param filter
-     * @return
-     * @throws PersonNotFoundException
-     * @throws JSONException 
-     */
     public JSONObject retrieveRelations(String object, String subject,
             String type, SourceFilter filter) throws PersonNotFoundException,
             JSONException
@@ -449,19 +334,6 @@ public class DataProvider
         return relations;
     }
 
-    /**
-     * 
-     * @param id
-     * @param relation
-     * @return
-     * @throws RelationNotFoundException
-     * @throws IllegalAccessException
-     * @throws JSONException
-     * @throws PersonNotFoundException
-     * @throws InvalidRelationshipException
-     * @throws URISyntaxException
-     * @throws InvalidRelationException 
-     */
     public JSONObject updateRelation(Integer id, JSONObject relation)
             throws RelationNotFoundException, IllegalAccessException,
             JSONException, PersonNotFoundException, InvalidRelationshipException,
@@ -545,25 +417,12 @@ public class DataProvider
         return retrieveRelation(id);
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws IllegalAccessException 
-     */
     public boolean deleteRelation(Integer id) throws IllegalAccessException
     {
         return storageService.deleteRelation(id);
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                                SOURCES                                 *
-     * ********************************************************************** */
-    
-    /**
-     * 
-     * @return 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Sources">
     public JSONObject retrieveSources() throws JSONException
     {
         List<URI> list = storageService.retrieveSources();
@@ -571,18 +430,9 @@ public class DataProvider
         JSONObject sources = jsonBuilder.getSources(list);
         
         return sources;
-    }
+    }// </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Accessor Methods">
-    /* ********************************************************************** *
-     *                            ACESSOR METHODS                             *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param uid
-     * @return
-     * @throws PersonNotFoundException 
-     */
     public Integer getPersonId(String uid) throws PersonNotFoundException
     {
         if (NumberUtils.isInt(uid))
@@ -604,13 +454,6 @@ public class DataProvider
         }
     }
     
-    /**
-     * 
-     * @param object
-     * @return
-     * @throws JSONException
-     * @throws URISyntaxException 
-     */
     private List<URI> getSources(JSONObject object) throws JSONException, URISyntaxException
     {
         List<URI> sources = new LinkedList<URI>();

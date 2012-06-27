@@ -63,10 +63,6 @@ public class GraphDAOImplTest
     private Person ctuMasekJi4;
     private Person ctuBartolu5;
 
-    /**
-     * 
-     * @throws URISyntaxException 
-     */
     @Before
     public void init() throws URISyntaxException
     {
@@ -119,11 +115,6 @@ public class GraphDAOImplTest
         ctuBartolu5.addProperty("foaf:name", "Lukáš Bartoněk");
     }
 
-    /**
-     * 
-     * @throws URISyntaxException
-     * @throws PersonAlreadyExistsException 
-     */
     @Test
     public void testCreatePerson() throws URISyntaxException, PersonAlreadyExistsException, InvalidPersonException, InvalidProfileException
     {
@@ -142,11 +133,6 @@ public class GraphDAOImplTest
         assertNotNull(twJiriMasekId);
     }
 
-    /**
-     * 
-     * @throws URISyntaxException
-     * @throws PersonAlreadyExistsException 
-     */
     @Test(expected = PersonAlreadyExistsException.class)
     public void testCreateAlreadyCreatedPerson() throws URISyntaxException, PersonAlreadyExistsException, InvalidPersonException, InvalidProfileException
     {
@@ -155,11 +141,6 @@ public class GraphDAOImplTest
         graphDAO.createPerson(fbJiriMa5ek);
     }
     
-    /**
-     * 
-     * @throws URISyntaxException
-     * @throws PersonAlreadyExistsException 
-     */
     @Test(expected = InvalidPersonException.class)
     public void testCreateIncompletePerson() throws URISyntaxException, PersonAlreadyExistsException, InvalidPersonException, InvalidProfileException
     {
@@ -173,11 +154,6 @@ public class GraphDAOImplTest
         
     }
     
-    /**
-     * 
-     * @throws PersonNotFoundException
-     * @throws URISyntaxException 
-     */
     @Test
     public void testRetrievePerson() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
@@ -194,11 +170,6 @@ public class GraphDAOImplTest
         assertTrue(person.equals(fbBartonekLukas));
     }
     
-    /**
-     * 
-     * @throws PersonNotFoundException
-     * @throws URISyntaxException 
-     */
     @Test(expected = PersonNotFoundException.class)
     public void testRetrieveNonexistentPersonById() throws PersonNotFoundException, URISyntaxException
     {
@@ -207,11 +178,6 @@ public class GraphDAOImplTest
         graphDAO.retrievePerson(new Integer(98968769));
     }
     
-    /**
-     * 
-     * @throws PersonNotFoundException
-     * @throws URISyntaxException 
-     */
     @Test(expected = PersonNotFoundException.class)
     public void testRetrieveNonexistentPersonByKey() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
@@ -222,10 +188,6 @@ public class GraphDAOImplTest
         graphDAO.retrievePerson(key);
     }
     
-    /**
-     * 
-     * @throws URISyntaxException 
-     */
     @Test
     public void testRetrievePersons() throws URISyntaxException
     {
@@ -253,11 +215,6 @@ public class GraphDAOImplTest
         assertEquals(persons.size(), 0);
     }
     
-    /**
-     * 
-     * @throws URISyntaxException
-     * @throws PersonNotFoundException 
-     */
     @Test
     public void testUpdatePerson() throws URISyntaxException, PersonNotFoundException, InvalidPersonException, InvalidProfileException
     {
@@ -291,12 +248,6 @@ public class GraphDAOImplTest
         assertNotNull(ctuBartolu5Id);
     }
     
-    /**
-     * 
-     * @throws URISyntaxException
-     * @throws RelationAlreadyExistsException
-     * @throws PersonNotFoundException 
-     */
     @Test
     public void testCreateRelation() throws URISyntaxException, RelationAlreadyExistsException, PersonNotFoundException, IllegalAccessException, InvalidRelationshipException
     {
@@ -315,12 +266,6 @@ public class GraphDAOImplTest
         assertNotNull(foafKnows1);
     }
     
-    /**
-     * 
-     * @throws URISyntaxException
-     * @throws RelationAlreadyExistsException
-     * @throws PersonNotFoundException 
-     */
     @Test(expected = RelationAlreadyExistsException.class)
     public void testCreateAlreadyCreatedRelation() throws URISyntaxException, RelationAlreadyExistsException, PersonNotFoundException, IllegalAccessException, InvalidRelationshipException
     {
@@ -336,12 +281,6 @@ public class GraphDAOImplTest
         graphDAO.createRelation(relation);
     }
     
-    /**
-     * 
-     * @throws RelationNotFoundException
-     * @throws URISyntaxException
-     * @throws PersonNotFoundException 
-     */
     @Test
     public void testRetrieveRelations() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException, IllegalAccessException, InvalidProfileException
     {
@@ -396,36 +335,18 @@ public class GraphDAOImplTest
         assertEquals(relations.size(), 0);
     }
     
-    /**
-     * 
-     * @throws RelationNotFoundException
-     * @throws URISyntaxException
-     * @throws PersonNotFoundException 
-     */
     @Test(expected = RelationNotFoundException.class)
     public void testRetrieveNonexistentRelation() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException, IllegalAccessException
     {
         graphDAO.retrieveRelation(new Integer(98968769));
     }
     
-    /**
-     * 
-     * @throws RelationNotFoundException
-     * @throws URISyntaxException
-     * @throws PersonNotFoundException 
-     */
     @Test(expected = PersonNotFoundException.class)
     public void testRetrieveRelationsOfNonexistentById() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException
     {
         graphDAO.retrieveRelations(new Integer(98968769), ALL);
     }
     
-    /**
-     * 
-     * @throws RelationNotFoundException
-     * @throws URISyntaxException
-     * @throws PersonNotFoundException 
-     */
     @Test(expected = PersonNotFoundException.class)
     public void testRetrieveRelationsOfNonexistentByKey() throws RelationNotFoundException, URISyntaxException, PersonNotFoundException, InvalidProfileException
     {
@@ -434,13 +355,6 @@ public class GraphDAOImplTest
         graphDAO.retrieveRelations(key, ALL);
     }
     
-    /**
-     * 
-     * @throws URISyntaxException
-     * @throws PersonNotFoundException
-     * @throws RelationAlreadyExistsException
-     * @throws RelationNotFoundException 
-     */
     @Test
     public void testUpdateRelation() throws URISyntaxException, PersonNotFoundException, RelationNotFoundException, IllegalAccessException
     {
@@ -477,11 +391,6 @@ public class GraphDAOImplTest
         assertNotNull(foafKnows2);
     }
     
-    /**
-     * 
-     * @throws URISyntaxException
-     * @throws PersonNotFoundException 
-     */
     @Test
     public void testDeclareSameness() throws URISyntaxException, PersonNotFoundException, InvalidProfileException
     {
@@ -514,11 +423,6 @@ public class GraphDAOImplTest
         graphDAO.declareSameness(k4, k5, sources);
     }
     
-    /**
-     * 
-     * @throws PersonNotFoundException
-     * @throws URISyntaxException 
-     */
     @Test
     public void testRetrieveAlterEgos() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
@@ -583,10 +487,6 @@ public class GraphDAOImplTest
         assertEquals(path.getPersons(), null);
     }
     
-    /**
-     * 
-     * @throws PersonNotFoundException 
-     */
     @Test(expected = PersonNotFoundException.class)
     public void testRetrieveAlterEgosForNonexistentPersonById() throws PersonNotFoundException
     {
@@ -595,11 +495,6 @@ public class GraphDAOImplTest
         graphDAO.retrieveAlterEgos(new Integer(98968769));
     }
     
-    /**
-     * 
-     * @throws PersonNotFoundException
-     * @throws URISyntaxException 
-     */
     @Test(expected = PersonNotFoundException.class)
     public void testRetrieveAlterEgosForNonexistentPersonByKey() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
@@ -610,11 +505,6 @@ public class GraphDAOImplTest
         graphDAO.retrieveAlterEgos(key);
     }
     
-    /**
-     * 
-     * @throws PersonNotFoundException
-     * @throws URISyntaxException 
-     */
     @Test
     public void testResufeSameness() throws PersonNotFoundException, URISyntaxException, InvalidProfileException
     {
@@ -634,9 +524,6 @@ public class GraphDAOImplTest
         assertFalse(deleted);
     }
     
-    /**
-     * 
-     */
     @Test
     public void testDeleteRelation() throws IllegalAccessException
     {
@@ -653,10 +540,6 @@ public class GraphDAOImplTest
         assertFalse(deleted);
     }
     
-    /**
-     * 
-     * @throws URISyntaxException 
-     */
     @Test
     public void testDeletePerson() throws URISyntaxException, InvalidProfileException
     {

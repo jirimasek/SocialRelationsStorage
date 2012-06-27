@@ -2,7 +2,6 @@ package cz.cvut.fit.masekji4.socialrelationsstorage.business;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters.SourceFilter;
 import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.StorageService;
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.GraphDAO;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.CollectionUtils;
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
 import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Path;
@@ -30,7 +29,7 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 /**
- * Třída <code>StorageServiceImpl</code>
+ * <code>StorageServiceImpl</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -45,42 +44,19 @@ public class StorageServiceImpl implements StorageService
     @Inject
     private GraphDAO graphDAO;
 
-    /* ********************************************************************** *
-     *                                PERSONS                                 *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param person
-     * @return
-     * @throws InvalidPersonException
-     * @throws InvalidProfileException
-     * @throws PersonAlreadyExistsException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Persons">
     @Override
     public Integer createPerson(Person person) throws InvalidPersonException, InvalidProfileException, PersonAlreadyExistsException
     {
         return graphDAO.createPerson(person);
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public Person retrievePerson(Integer id) throws PersonNotFoundException
     {
         return graphDAO.retrievePerson(id);
     }
 
-    /**
-     * 
-     * @param prefix
-     * @param username
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public Person retrievePerson(String prefix, String username) throws PersonNotFoundException
     {
@@ -92,22 +68,12 @@ public class StorageServiceImpl implements StorageService
         return graphDAO.retrievePerson(key);
     }
 
-    /**
-     * 
-     * 
-     * @return 
-     */
     @Override
     public List<Person> retrievePersons()
     {
         return graphDAO.retrievePersons();
     }
 
-    /**
-     * 
-     * @param source
-     * @return 
-     */
     @Override
     public List<Person> retrievePersons(String source)
     {
@@ -121,12 +87,6 @@ public class StorageServiceImpl implements StorageService
         }
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public List<Person> retrieveAlterEgos(Integer id, SourceFilter filter)
             throws PersonNotFoundException
@@ -142,28 +102,13 @@ public class StorageServiceImpl implements StorageService
         return graphDAO.updatePerson(person);
     }
 
-    /**
-     * 
-     * @param id
-     * @return 
-     */
     @Override
     public boolean deletePerson(Integer id)
     {
         return graphDAO.deletePerson(id);
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                                SAMENESS                                *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param person
-     * @param alterEgo
-     * @param sources
-     * @return
-     * @throws PersonNotFoundException 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Sameness">
     @Override
     public boolean declareSameness(Integer person, Integer alterEgo,
             List<URI> sources)
@@ -172,36 +117,20 @@ public class StorageServiceImpl implements StorageService
         return graphDAO.declareSameness(person, alterEgo, sources);
     }
 
-    /**
-     * 
-     * @param person
-     * @param alterEgo
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public boolean refuseSameness(Integer person, Integer alterEgo)
             throws PersonNotFoundException
     {
         return graphDAO.refuseSameness(person, alterEgo);
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                               REALTIONS                                *
-     * ********************************************************************** */
+    // <editor-fold defaultstate="collapsed" desc="Relations">
     @Override
     public Integer createRelation(Relation relation) throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException
     {
         return graphDAO.createRelation(relation);
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws RelationNotFoundException
-     * @throws IllegalAccessException 
-     */
     @Override
     public Relation retrieveRelation(Integer id)
             throws RelationNotFoundException, IllegalAccessException
@@ -209,12 +138,6 @@ public class StorageServiceImpl implements StorageService
         return graphDAO.retrieveRelation(id);
     }
 
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public List<Relation> retrieveRelations(Integer id, SourceFilter filter)
             throws PersonNotFoundException
@@ -226,14 +149,6 @@ public class StorageServiceImpl implements StorageService
         return processRelations(relations, filter);
     }
 
-    /**
-     * 
-     * @param id
-     * @param type
-     * @param filter
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public List<Relation> retrieveRelations(Integer id, String type,
             SourceFilter filter) throws PersonNotFoundException
@@ -244,15 +159,6 @@ public class StorageServiceImpl implements StorageService
         return processRelations(relations, filter);
     }
 
-    /**
-     * 
-     * @param object
-     * @param subject
-     * @param type
-     * @param filter
-     * @return
-     * @throws PersonNotFoundException 
-     */
     @Override
     public List<Relation> retrieveRelations(Integer object, Integer subject,
             String type, SourceFilter filter) throws PersonNotFoundException
@@ -276,13 +182,6 @@ public class StorageServiceImpl implements StorageService
         return list;
     }
 
-    /**
-     * 
-     * @param relation
-     * @return
-     * @throws PersonNotFoundException
-     * @throws IllegalAccessException 
-     */
     @Override
     public Integer updateRelation(Relation relation)
             throws PersonNotFoundException, IllegalAccessException
@@ -290,24 +189,13 @@ public class StorageServiceImpl implements StorageService
         return graphDAO.updateRelation(relation);
     }
 
-    /**
-     * 
-     * @param id
-     * @throws IllegalAccessException 
-     */
     @Override
     public boolean deleteRelation(Integer id) throws IllegalAccessException
     {
         return graphDAO.deleteRelation(id);
-    }
+    }// </editor-fold>
 
-    /* ********************************************************************** *
-     *                                SOURCES                                 *
-     * ********************************************************************** */
-    /**
-     * 
-     * @return 
-     */
+    // <editor-fold defaultstate="collapsed" desc="Sources">
     @Override
     public List<URI> retrieveSources()
     {
@@ -327,18 +215,9 @@ public class StorageServiceImpl implements StorageService
         }
         
         return sources;
-    }
+    }// </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Accessor Methods">
-    /* ********************************************************************** *
-     *                            Accessor Methods                            *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param relations
-     * @param filter
-     * @return 
-     */
     private List<Relation> processRelations(List<Relation> relations,
             SourceFilter filter)
     {
@@ -355,12 +234,6 @@ public class StorageServiceImpl implements StorageService
         return list;
     }
 
-    /**
-     * 
-     * @param alterEgos
-     * @param filter
-     * @return 
-     */
     private List<Person> processAlterEgos(Path alterEgos, SourceFilter filter)
     {
         List<Person> list = new LinkedList<Person>();

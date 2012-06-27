@@ -22,7 +22,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
- * Class <code>ObjectBuilder</code>
+ * <code>ObjectBuilder</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -56,13 +56,6 @@ public class ObjectBuilder
     @Inject
     private StorageService storageService;
     
-    /**
-     * 
-     * @param person
-     * @return
-     * @throws JSONException
-     * @throws URISyntaxException 
-     */
     public Person getPerson(JSONObject person) throws JSONException, URISyntaxException
     {
         Person obj = new Person();
@@ -124,15 +117,6 @@ public class ObjectBuilder
         return obj;
     }
 
-    /**
-     * 
-     * @param relation
-     * @return
-     * @throws JSONException
-     * @throws PersonNotFoundException
-     * @throws InvalidRelationshipException
-     * @throws URISyntaxException 
-     */
     public Relation getRelation(JSONObject relation) throws JSONException, PersonNotFoundException, InvalidRelationshipException, URISyntaxException
     {
         Relation obj = new Relation();
@@ -253,16 +237,6 @@ public class ObjectBuilder
     }
 
     // <editor-fold defaultstate="collapsed" desc="Accessor Methods">
-    /* ********************************************************************** *
-     *                            ACESSOR METHODS                             *
-     * ********************************************************************** */
-    /**
-     * 
-     * @param object
-     * @return
-     * @throws JSONException
-     * @throws URISyntaxException 
-     */
     private List<URI> getSources(JSONObject object) throws JSONException, URISyntaxException
     {
         List<URI> sources = new LinkedList<URI>();

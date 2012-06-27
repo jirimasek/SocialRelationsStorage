@@ -1,7 +1,7 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
 /**
- * Výčet <code>DirectionEnum</code>
+ * <code>DirectionEnum</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */

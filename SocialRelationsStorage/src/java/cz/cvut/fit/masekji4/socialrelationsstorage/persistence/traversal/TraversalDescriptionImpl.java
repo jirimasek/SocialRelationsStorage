@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Třída <code>TraversalDescriptionImpl</code>
+ * <code>TraversalDescriptionImpl</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
@@ -32,9 +32,6 @@ public final class TraversalDescriptionImpl implements TraversalDescription
     private String returnFilter;
     private List<Relationship> relationships;
 
-    /**
-     * 
-     */
     public TraversalDescriptionImpl()
     {
         uniqueness = NODE_GLOBAL;
@@ -43,101 +40,56 @@ public final class TraversalDescriptionImpl implements TraversalDescription
         order = DEPTH_FIRST;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public String getOrder()
     {
         return order;
     }
 
-    /**
-     * 
-     * @param order 
-     */
     public void setOrder(String order)
     {
         this.order = order;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public String getUniqueness()
     {
         return uniqueness;
     }
 
-    /**
-     * 
-     * @param uniqueness 
-     */
     public void setUniqueness(String uniqueness)
     {
         this.uniqueness = uniqueness;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public int getMaxDepth()
     {
         return maxDepth;
     }
 
-    /**
-     * 
-     * @param maxDepth 
-     */
     public void setMaxDepth(int maxDepth)
     {
         this.maxDepth = maxDepth;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public String getReturnFilter()
     {
         return returnFilter;
     }
 
-    /**
-     * 
-     * @param returnFilter 
-     */
     public void setReturnFilter(String returnFilter)
     {
         this.returnFilter = returnFilter;
     }
 
-    /**
-     * 
-     * @return 
-     */
     public List<Relationship> getRelationships()
     {
         return relationships;
     }
 
-    /**
-     * 
-     * @param relationships 
-     */
     public void setRelationships(List<Relationship> relationships)
     {
         this.relationships = relationships;
     }
 
-    /**
-     * 
-     * @param type
-     * @param direction 
-     */
     public void addRelationship(String type, DirectionEnum direction)
     {
         if (relationships == null)

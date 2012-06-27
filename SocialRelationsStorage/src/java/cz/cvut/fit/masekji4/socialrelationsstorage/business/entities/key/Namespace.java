@@ -1,7 +1,7 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key;
 
 /**
- * Třída <code>Namespace</code>
+ * <code>Namespace</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */

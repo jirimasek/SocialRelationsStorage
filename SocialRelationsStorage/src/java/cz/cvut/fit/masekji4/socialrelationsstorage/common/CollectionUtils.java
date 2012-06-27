@@ -10,11 +10,6 @@ import java.util.Collection;
 public class CollectionUtils
 {
  
-    /**
-     * 
-     * @param collection
-     * @return 
-     */
     public static boolean isNullOrEmpty(Collection collection)
     {
         if (collection == null || collection.isEmpty())

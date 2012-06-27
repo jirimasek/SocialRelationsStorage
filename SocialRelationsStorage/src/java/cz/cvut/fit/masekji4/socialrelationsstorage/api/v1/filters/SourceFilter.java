@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Collection;
 
 /**
- * Interface <code>Filter</code>
+ * <code>Filter</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */

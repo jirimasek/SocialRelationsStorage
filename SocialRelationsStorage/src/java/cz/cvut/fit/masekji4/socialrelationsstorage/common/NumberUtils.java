@@ -8,11 +8,6 @@ package cz.cvut.fit.masekji4.socialrelationsstorage.common;
 public class NumberUtils
 {
     
-    /**
-     * 
-     * @param string
-     * @return 
-     */
     public static boolean isInt(String string)
     {
         try
