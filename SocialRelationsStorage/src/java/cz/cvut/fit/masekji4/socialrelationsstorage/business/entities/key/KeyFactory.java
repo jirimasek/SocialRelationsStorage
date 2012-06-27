@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key;
+package cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
@@ -22,7 +22,7 @@ public class KeyFactory
 
     @Inject
     @Config
-    private Map<String, Namespace> namespaces;
+    private Map<String, Namespace> NAMESPACES;
 
     public KeyFactory()
     {
@@ -30,14 +30,14 @@ public class KeyFactory
 
     public KeyFactory(Map<String, Namespace> namespaces)
     {
-        this.namespaces = namespaces;
+        NAMESPACES = namespaces;
     }
     
     public Key createKey(URI uri) throws InvalidProfileException
     {
-        for (String prefix : namespaces.keySet())
+        for (String prefix : NAMESPACES.keySet())
         {
-            Namespace namespace = namespaces.get(prefix);
+            Namespace namespace = NAMESPACES.get(prefix);
 
             Pattern pattern = Pattern.compile(namespace.getRegex());
             Matcher matcher = pattern.matcher(uri.toString());

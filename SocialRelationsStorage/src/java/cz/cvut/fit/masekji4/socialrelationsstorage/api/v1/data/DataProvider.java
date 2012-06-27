@@ -1,14 +1,14 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.data;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters.SourceFilter;
 import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters.SourceFilterImpl;
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.SourceFilter;
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.StorageService;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.StorageService;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.NumberUtils;
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.KeyFactory;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.Key;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.KeyFactory;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidRelationException;
@@ -554,6 +554,23 @@ public class DataProvider
     public boolean deleteRelation(Integer id) throws IllegalAccessException
     {
         return storageService.deleteRelation(id);
+    }
+
+    /* ********************************************************************** *
+     *                                SOURCES                                 *
+     * ********************************************************************** */
+    
+    /**
+     * 
+     * @return 
+     */
+    public JSONObject retrieveSources() throws JSONException
+    {
+        List<URI> list = storageService.retrieveSources();
+        
+        JSONObject sources = jsonBuilder.getSources(list);
+        
+        return sources;
     }
 
     // <editor-fold defaultstate="collapsed" desc="Accessor Methods">

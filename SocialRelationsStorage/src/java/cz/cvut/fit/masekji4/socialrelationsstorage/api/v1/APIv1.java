@@ -2,7 +2,7 @@ package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.data.DataProvider;
 import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters.SourceFilterImpl;
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.SourceFilter;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters.SourceFilter;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.exceptions.BadRequestException;
@@ -49,7 +49,6 @@ public class APIv1
     @Inject
     @Config
     private String JSON_LD_ID;
-
     @Context
     private UriInfo context;
     @Inject
@@ -75,7 +74,7 @@ public class APIv1
             JSONObject obj = dataProvider.createPerson(person);
 
             URI uri = new URI(obj.getString(JSON_LD_ID));
-
+            
             return Response.created(uri).entity(obj).build();
         }
         catch (InvalidProfileException ex)
@@ -84,7 +83,6 @@ public class APIv1
         }
         catch (PersonAlreadyExistsException ex)
         {
-            // TODO - Add exception message.
             throw new ConflictException(ex);
         }
         catch (PersonNotFoundException ex)
@@ -149,6 +147,20 @@ public class APIv1
 
     /**
      * 
+     * @return 
+     */
+    @GET
+    @Path("sources")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject retrieveSources()
+            throws JSONException
+    {    
+        return dataProvider.retrieveSources();
+    }
+    
+
+    /**
+     * 
      * @param source
      * @return
      * @throws JSONException
@@ -166,7 +178,6 @@ public class APIv1
         }
         catch (IllegalArgumentException ex)
         {
-            // TODO - Add exception message.
             throw new BadRequestException(ex);
         }
     }
@@ -221,7 +232,6 @@ public class APIv1
 
         if (!deleted)
         {
-            // TODO - Add exception message.
             throw new NotFoundException();
         }
     }
@@ -252,7 +262,6 @@ public class APIv1
             }
             else
             {
-                // TODO - Add exception message.
                 throw new ConflictException();
             }
         }
@@ -285,7 +294,6 @@ public class APIv1
         {
             if (!dataProvider.refuseSameness(uid1, uid2))
             {
-                // TODO - Add exception message.
                 throw new NotFoundException();
             }
         }
@@ -364,12 +372,10 @@ public class APIv1
         }        
         catch (RelationNotFoundException ex)
         {
-            // TODO - Add exception message.
             throw new NotFoundException(ex);
         }
         catch (IllegalAccessException ex)
         {
-            // TODO - Add exception message.
             throw new ForbiddenException(ex);
         }
     }
@@ -529,13 +535,11 @@ public class APIv1
         {
             if (!dataProvider.deleteRelation(id))
             {
-                // TODO - Add exception message.
                 throw new NotFoundException();
             }
         }
         catch (IllegalAccessException ex)
         {
-            // TODO - Add exception message.
             throw new ForbiddenException(ex);
         }
     }

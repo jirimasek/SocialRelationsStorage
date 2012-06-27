@@ -1,12 +1,12 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TraversalDescription;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TraversalDescriptionImpl;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.NodeIndexNotFoundException;
 import static org.junit.Assert.*;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.ALL;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.IN;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.OUT;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum.ALL;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum.IN;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum.OUT;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
@@ -925,9 +925,9 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test traverzování");
         
-        TraversalDescription t;
+        TraversalDescriptionImpl t;
         
-        t = new TraversalDescription();
+        t = new TraversalDescriptionImpl();
         t.addRelationship("foaf:knows", OUT);
         
         JSONArray nodes;
@@ -955,7 +955,7 @@ public class PersistenceManagerImplTest
     {
         System.out.println("Test traverzování z neexistujícího uzlu");
         
-        TraversalDescription t = new TraversalDescription();
+        TraversalDescriptionImpl t = new TraversalDescriptionImpl();
         
         pm.traverse(new Integer(98968769), t, TypeEnum.NODE);
     }

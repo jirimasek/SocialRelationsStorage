@@ -9,9 +9,14 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Social Relation Storage</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>RESTful Data Sources</h1>
+        
+        <ul>
+            <li><a href="/api/v1/persons">/api/v1/persons</a></li>
+            <li><a href="/api/v1/sources">/api/v1/sources</a></li>
+        </ul>
     </body>
 </html>

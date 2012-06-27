@@ -3,9 +3,11 @@ package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.data;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.NumberUtils;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.StringUtils;
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
+import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -287,6 +289,32 @@ public class JsonBuilder
         }
 
         return rels;
+    }
+    
+    /**
+     * 
+     * @param sources
+     * @return
+     * @throws JSONException 
+     */
+    public JSONObject getSources(List<URI> sources) throws JSONException
+    {   
+        
+        JSONObject obj = new JSONObject();
+
+        obj.put(JSON_LD_CONTEXT, getContext(CONTEXT_PERSONS));
+        obj.put(JSON_LD_ID, uriBuilder.getSourcesURI());
+
+        for (URI uri : sources)
+        {
+            JSONObject o = new JSONObject();
+
+            o.put(JSON_LD_ID, uriBuilder.getSourceURI(uri.getHost()));
+
+            obj.accumulate(JSON_LD_GRAPH, o);
+        }
+
+        return obj;
     }
 
     // <editor-fold defaultstate="collapsed" desc="Accessor Methods">

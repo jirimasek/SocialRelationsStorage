@@ -1,6 +1,5 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities;
+package cz.cvut.fit.masekji4.socialrelationsstorage.business.entities;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,16 +7,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Třída <code>Person</code>
+ * Třída <code>Relation</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
-public class Person
+public class Relation
 {
-
     private Integer id;
-    private Key key;
-    private URI profile;
+    private Integer object;
+    private Integer subject;
+    private String type;
     private List<URI> sources;
     private Map<String, String> properties;
 
@@ -43,36 +42,54 @@ public class Person
      * 
      * @return 
      */
-    public Key getKey()
+    public Integer getObject()
     {
-        return key;
+        return object;
     }
 
     /**
      * 
-     * @param key 
+     * @param object 
      */
-    public void setKey(Key key)
+    public void setObject(Integer object)
     {
-        this.key = key;
+        this.object = object;
     }
 
     /**
      * 
      * @return 
      */
-    public URI getProfile()
+    public Integer getSubject()
     {
-        return profile;
+        return subject;
     }
 
     /**
      * 
-     * @param profile 
+     * @param subject 
      */
-    public void setProfile(URI profile)
+    public void setSubject(Integer subject)
     {
-        this.profile = profile;
+        this.subject = subject;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    /**
+     * 
+     * @param type 
+     */
+    public void setType(String type)
+    {
+        this.type = type;
     }
 
     /**
@@ -146,11 +163,21 @@ public class Person
      */
     public boolean isValid()
     {
-        if (profile == null)
+        if (object == null)
         {
             return false;
         }
-
+        
+        if (subject == null)
+        {
+            return false;
+        }
+        
+        if (type == null)
+        {
+            return false;
+        }
+        
         if (sources == null || sources.isEmpty())
         {
             return false;
@@ -177,9 +204,19 @@ public class Person
             return false;
         }
         
-        final Person other = (Person) obj;
+        final Relation other = (Relation) obj;
         
-        if (this.profile != other.profile && (this.profile == null || !this.profile.equals(other.profile)))
+        if (this.object != other.object)
+        {
+            return false;
+        }
+        
+        if (this.subject != other.subject)
+        {
+            return false;
+        }
+        
+        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type))
         {
             return false;
         }
@@ -206,4 +243,6 @@ public class Person
     {
         return id;
     }
+    
+    
 }

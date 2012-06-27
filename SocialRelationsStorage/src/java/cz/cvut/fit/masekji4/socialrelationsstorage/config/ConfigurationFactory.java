@@ -1,15 +1,19 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.config;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Namespace;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.Namespace;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 /**
  * Třída <code>ConfigurationFactory</code>
@@ -91,11 +95,26 @@ public class ConfigurationFactory
     @Config
     Map<String, Namespace> getNamespaces(InjectionPoint p)
     {
+        String value = getConfiguration(p);
+        
         Map<String, Namespace> namespaces = new HashMap<String, Namespace>();
         
-        namespaces.put("ctu", new Namespace("ctu", "http://usermap.cvut.cz/profile/", "(http|https)://usermap.cvut.cz/profile/([a-zA-Z0-9]+)", 2));
-        namespaces.put("fb", new Namespace("fb", "http://www.facebook.com/", "(http|https)://(www.)?facebook.com/([a-zA-Z0-9\\.]+)", 3));
-        namespaces.put("tw", new Namespace("tw", "http://www.twitter.com/", "(http|https)://(www.)?twitter.com/([a-zA-Z0-9]+)", 3));
+        try
+        {
+            JSONObject obj = new JSONObject(value);
+            
+            for (Iterator it = obj.keys() ; it.hasNext() ;)
+            {
+                String namespace = (String) it.next();
+                
+                JSONArray arr = obj.getJSONArray(namespace);
+                
+                namespaces.put(namespace, new Namespace(namespace, arr.getString(0), arr.getString(1), arr.getInt(2)));
+            }
+        }
+        catch (JSONException ex)
+        {
+        }
 
         return namespaces;
     }

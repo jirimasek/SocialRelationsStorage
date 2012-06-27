@@ -1,6 +1,5 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.SourceFilter;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.CollectionUtils;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.StringUtils;
 import java.net.URI;

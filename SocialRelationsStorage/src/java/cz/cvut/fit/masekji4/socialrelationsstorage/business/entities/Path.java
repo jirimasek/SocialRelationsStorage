@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities;
+package cz.cvut.fit.masekji4.socialrelationsstorage.business.entities;
 
 import java.net.URI;
 import java.util.HashSet;

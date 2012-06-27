@@ -1,16 +1,17 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.GraphDAO;
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.ALL;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.OUT;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum.ALL;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum.OUT;
 
 import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum.FULLPATH;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.KeyFactory;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Path;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.Key;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.KeyFactory;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
@@ -18,9 +19,7 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFound
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.Neo4j;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManager;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TraversalDescription;
+import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TraversalDescriptionImpl;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidPropertiesException;
@@ -87,6 +86,7 @@ public class GraphDAOImpl implements GraphDAO
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
+    
     /**
      * 
      * @param person
@@ -618,7 +618,7 @@ public class GraphDAOImpl implements GraphDAO
     @Override
     public Path retrieveAlterEgos(Integer id) throws PersonNotFoundException
     {
-        TraversalDescription t = new TraversalDescription();
+        TraversalDescription t = new TraversalDescriptionImpl();
 
         t.addRelationship(owlSameAs, OUT);
         t.setMaxDepth(ALTEREGO_TRAVERSATION_MAX_DEPTH);
@@ -874,6 +874,7 @@ public class GraphDAOImpl implements GraphDAO
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
+    
     /**
      * 
      * @param relation
@@ -956,7 +957,6 @@ public class GraphDAOImpl implements GraphDAO
 
             if (relation.getType().equals(owlSameAs))
             {
-                // TODO - Add exception message.
                 throw new IllegalAccessException();
             }
 

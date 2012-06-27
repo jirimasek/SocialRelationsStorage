@@ -4,27 +4,29 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonE
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import static org.junit.Assert.*;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.ALL;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.IN;
-import static cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum.OUT;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum.ALL;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum.IN;
+import static cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum.OUT;
 
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.ConfigurationFactory;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Path;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.KeyFactory;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.Key;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.KeyFactory;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.Namespace;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManager;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.PersistenceManagerImpl;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -68,10 +70,16 @@ public class GraphDAOImplTest
     @Before
     public void init() throws URISyntaxException
     {
+        Map<String, Namespace> namespaces = new HashMap<String, Namespace>();
+        
+        namespaces.put("ctu", new Namespace("ctu", "http://usermap.cvut.cz/profile/", "(http|https)://usermap.cvut.cz/profile/([a-zA-Z0-9]+)", 2));
+        namespaces.put("fb", new Namespace("fb", "http://www.facebook.com/", "(http|https)://(www.)?facebook.com/([a-zA-Z0-9\\.]+)", 3));
+        namespaces.put("tw", new Namespace("tw", "http://www.twitter.com/", "(http|https)://(www.)?twitter.com/([a-zA-Z0-9]+)", 3));
+
         confFactory = new ConfigurationFactory();
         
         persistence = new PersistenceManagerImpl(DATABASE_URI);
-        keyFactory = new KeyFactory(confFactory.getNamespaces(null));
+        keyFactory = new KeyFactory(namespaces);
         graphDAO = new GraphDAOImpl(persistence, keyFactory, 10);
         
         fbJiriMa5ek = new Person();

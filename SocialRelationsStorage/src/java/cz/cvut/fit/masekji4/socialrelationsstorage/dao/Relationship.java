@@ -1,6 +1,5 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities;
+package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 

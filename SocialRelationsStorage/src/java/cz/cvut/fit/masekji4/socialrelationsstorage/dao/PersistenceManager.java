@@ -1,7 +1,8 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.persistence;
+package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TraversalDescription;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.TraversalDescription;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.TypeEnum;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.CannotDeleteNodeException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidMetadataException;
@@ -257,7 +258,7 @@ public interface PersistenceManager
     
     /**
      * 
-     * @return 
+     * @return
      */
     public JSONObject retrieveListOfNodeIndexes();
     

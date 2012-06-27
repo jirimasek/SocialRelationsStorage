@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.business;
+package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters;
 
 import java.net.URI;
 import java.util.Collection;

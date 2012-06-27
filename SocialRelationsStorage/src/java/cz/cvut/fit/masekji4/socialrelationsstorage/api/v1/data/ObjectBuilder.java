@@ -1,10 +1,10 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.data;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.business.StorageService;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.StorageService;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.NumberUtils;
 import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
 import java.net.URI;

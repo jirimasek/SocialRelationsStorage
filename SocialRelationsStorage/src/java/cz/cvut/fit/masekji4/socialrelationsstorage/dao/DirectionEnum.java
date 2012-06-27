@@ -1,4 +1,4 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal;
+package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
 
 /**
  * Výčet <code>DirectionEnum</code>

@@ -1,9 +1,10 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.dao;
+package cz.cvut.fit.masekji4.socialrelationsstorage.business;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Path;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.Key;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
@@ -11,7 +12,6 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFound
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
 import java.net.URI;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public interface GraphDAO
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
-    
+
     /**
      * 
      * @param person
@@ -35,7 +35,7 @@ public interface GraphDAO
      * @throws PersonAlreadyExistsException 
      */
     public Integer createPerson(Person person) throws InvalidPersonException, InvalidProfileException, PersonAlreadyExistsException;
-    
+
     /**
      * 
      * @param id
@@ -43,7 +43,7 @@ public interface GraphDAO
      * @throws PersonNotFoundException 
      */
     public Person retrievePerson(Integer id) throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param key
@@ -51,7 +51,7 @@ public interface GraphDAO
      * @throws PersonNotFoundException 
      */
     public Person retrievePerson(Key key) throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param source
@@ -64,7 +64,7 @@ public interface GraphDAO
      * @return 
      */
     public List<Person> retrievePersons();
-    
+
     /**
      * 
      * @param person
@@ -73,21 +73,21 @@ public interface GraphDAO
      * @throws InvalidProfileException 
      */
     public Integer updatePerson(Person person) throws InvalidPersonException, InvalidProfileException;
-    
+
     /**
      * 
      * @param id
      * @return 
      */
     public boolean deletePerson(Integer id);
-    
+
     /**
      * 
      * @param key
      * @return 
      */
     public boolean deletePerson(Key key);
-    
+
     /* ********************************************************************** *
      *                                SAMENESS                                *
      * ********************************************************************** */
@@ -99,9 +99,10 @@ public interface GraphDAO
      * @return
      * @throws PersonNotFoundException 
      */
-    public boolean declareSameness(Integer person, Integer alterEgo, List<URI> sources)
+    public boolean declareSameness(Integer person, Integer alterEgo,
+            List<URI> sources)
             throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param person
@@ -112,7 +113,7 @@ public interface GraphDAO
      */
     public boolean declareSameness(Key person, Key alterEgo, List<URI> sources)
             throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param id
@@ -120,7 +121,7 @@ public interface GraphDAO
      * @throws PersonNotFoundException 
      */
     public Path retrieveAlterEgos(Integer id) throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param key
@@ -128,7 +129,7 @@ public interface GraphDAO
      * @throws PersonNotFoundException 
      */
     public Path retrieveAlterEgos(Key key) throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param person
@@ -137,7 +138,7 @@ public interface GraphDAO
      * @throws PersonNotFoundException 
      */
     public boolean refuseSameness(Integer person, Integer alterEgo) throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param person
@@ -146,7 +147,7 @@ public interface GraphDAO
      * @throws PersonNotFoundException 
      */
     public boolean refuseSameness(Key person, Key alterEgo) throws PersonNotFoundException;
-    
+
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
@@ -162,7 +163,7 @@ public interface GraphDAO
      */
     public Integer createRelation(Relation relation)
             throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException;
-    
+
     /**
      * 
      * @param id
@@ -172,7 +173,7 @@ public interface GraphDAO
      */
     public Relation retrieveRelation(Integer id)
             throws RelationNotFoundException, IllegalAccessException;
-    
+
     /**
      * 
      * @param person
@@ -180,9 +181,10 @@ public interface GraphDAO
      * @return
      * @throws PersonNotFoundException 
      */
-    public List<Relation> retrieveRelations(Integer person, DirectionEnum direction)
+    public List<Relation> retrieveRelations(Integer person,
+            DirectionEnum direction)
             throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param key
@@ -192,7 +194,7 @@ public interface GraphDAO
      */
     public List<Relation> retrieveRelations(Key key, DirectionEnum direction)
             throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param person
@@ -201,9 +203,10 @@ public interface GraphDAO
      * @return
      * @throws PersonNotFoundException 
      */
-    public List<Relation> retrieveRelations(Integer person, DirectionEnum direction, String type)
+    public List<Relation> retrieveRelations(Integer person,
+            DirectionEnum direction, String type)
             throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param key
@@ -212,9 +215,10 @@ public interface GraphDAO
      * @return
      * @throws PersonNotFoundException 
      */
-    public List<Relation> retrieveRelations(Key key, DirectionEnum direction, String type)
+    public List<Relation> retrieveRelations(Key key, DirectionEnum direction,
+            String type)
             throws PersonNotFoundException;
-    
+
     /**
      * 
      * @param relation
@@ -224,7 +228,7 @@ public interface GraphDAO
      */
     public Integer updateRelation(Relation relation)
             throws PersonNotFoundException, IllegalAccessException;
-    
+
     /**
      * 
      * @param id

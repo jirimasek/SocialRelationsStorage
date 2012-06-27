@@ -1,17 +1,17 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.entities.Relationship;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.TraversalDescription;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.Relationship;
 import java.util.ArrayList;
 import java.util.List;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 
 /**
- * Třída <code>TraversalDescription</code>
+ * Třída <code>TraversalDescriptionImpl</code>
  *
  * @author Jiří Mašek <masekji4@fit.cvut.cz>
  */
-public final class TraversalDescription
+public final class TraversalDescriptionImpl implements TraversalDescription
 {
 
     public static final String DEPTH_FIRST = "depth_first";
@@ -35,7 +35,7 @@ public final class TraversalDescription
     /**
      * 
      */
-    public TraversalDescription()
+    public TraversalDescriptionImpl()
     {
         uniqueness = NODE_GLOBAL;
         maxDepth = 1;
@@ -148,37 +148,5 @@ public final class TraversalDescription
         Relationship relation = new Relationship(type, direction);
         
         relationships.add(relation);
-    }
-
-    /**
-     * Serializuje entitu do formátu JSON.
-     * 
-     * @return      JSON
-     */
-    public JSONObject toJson() throws JSONException
-    {
-        JSONObject json = new JSONObject();
-
-        json.put("order", order);
-        json.put("uniqueness", uniqueness);
-
-        if (relationships != null)
-        {
-            for (int i = 0 ; i < relationships.size() ; i++)
-            {
-                json.append("relationships", relationships.get(i).toJson());
-            }
-        }
-
-        JSONObject filter = new JSONObject();
-
-        filter.put("language", "builtin");
-        filter.put("name", returnFilter);
-
-        json.put("return_filter", filter);
-
-        json.put("max_depth", maxDepth);
-
-        return json;
     }
 }

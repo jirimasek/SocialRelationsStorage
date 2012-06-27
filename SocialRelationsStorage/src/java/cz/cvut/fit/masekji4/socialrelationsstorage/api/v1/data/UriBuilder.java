@@ -123,6 +123,18 @@ public class UriBuilder
 
     /**
      * 
+     * @return 
+     */
+    public String getSourcesURI()
+    {
+        String uri = String.format("%s%s%s", ROOT_URI, API_V1_URI,
+                API_V1_SOURCES);
+
+        return uri;
+    }
+
+    /**
+     * 
      * @param source
      * @return 
      */

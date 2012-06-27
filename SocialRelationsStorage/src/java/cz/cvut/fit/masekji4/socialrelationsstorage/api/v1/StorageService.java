@@ -1,7 +1,8 @@
-package cz.cvut.fit.masekji4.socialrelationsstorage.business;
+package cz.cvut.fit.masekji4.socialrelationsstorage.api.v1;
 
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters.SourceFilter;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
@@ -66,4 +67,6 @@ public interface StorageService
     public Integer updateRelation(Relation relation) throws PersonNotFoundException, IllegalAccessException;
 
     public boolean deleteRelation(Integer id) throws IllegalAccessException;
+
+    public List<URI> retrieveSources();
 }

@@ -1,11 +1,14 @@
 package cz.cvut.fit.masekji4.socialrelationsstorage.business;
 
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.filters.SourceFilter;
+import cz.cvut.fit.masekji4.socialrelationsstorage.api.v1.StorageService;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.GraphDAO;
 import cz.cvut.fit.masekji4.socialrelationsstorage.common.CollectionUtils;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.GraphDAO;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Path;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Person;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.Relation;
-import cz.cvut.fit.masekji4.socialrelationsstorage.dao.entities.key.Key;
+import cz.cvut.fit.masekji4.socialrelationsstorage.config.Config;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Path;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Person;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.Relation;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.Key;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidPersonException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.InvalidProfileException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonAlreadyExistsException;
@@ -13,12 +16,14 @@ import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.PersonNotFound
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationAlreadyExistsException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.dao.exceptions.RelationNotFoundException;
 import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.exceptions.InvalidRelationshipException;
-import cz.cvut.fit.masekji4.socialrelationsstorage.persistence.traversal.DirectionEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.dao.DirectionEnum;
+import cz.cvut.fit.masekji4.socialrelationsstorage.business.entities.key.Namespace;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
@@ -33,14 +38,16 @@ import javax.inject.Inject;
 @Stateless
 public class StorageServiceImpl implements StorageService
 {
-
+    
+    @Inject
+    @Config
+    private Map<String, Namespace> NAMESPACES;
     @Inject
     private GraphDAO graphDAO;
 
     /* ********************************************************************** *
      *                                PERSONS                                 *
      * ********************************************************************** */
-    
     /**
      * 
      * @param person
@@ -66,7 +73,7 @@ public class StorageServiceImpl implements StorageService
     {
         return graphDAO.retrievePerson(id);
     }
-    
+
     /**
      * 
      * @param prefix
@@ -78,13 +85,13 @@ public class StorageServiceImpl implements StorageService
     public Person retrievePerson(String prefix, String username) throws PersonNotFoundException
     {
         Key key = new Key();
-        
+
         key.setPrefix(prefix);
         key.setUsername(username);
-        
+
         return graphDAO.retrievePerson(key);
     }
-    
+
     /**
      * 
      * 
@@ -95,7 +102,7 @@ public class StorageServiceImpl implements StorageService
     {
         return graphDAO.retrievePersons();
     }
-    
+
     /**
      * 
      * @param source
@@ -121,19 +128,20 @@ public class StorageServiceImpl implements StorageService
      * @throws PersonNotFoundException 
      */
     @Override
-    public List<Person> retrieveAlterEgos(Integer id, SourceFilter filter) throws PersonNotFoundException
+    public List<Person> retrieveAlterEgos(Integer id, SourceFilter filter)
+            throws PersonNotFoundException
     {
         Path alterEgos = graphDAO.retrieveAlterEgos(id);
-        
+
         return processAlterEgos(alterEgos, filter);
     }
-    
+
     @Override
     public Integer updatePerson(Person person) throws InvalidPersonException, InvalidProfileException
     {
         return graphDAO.updatePerson(person);
     }
-    
+
     /**
      * 
      * @param id
@@ -144,11 +152,10 @@ public class StorageServiceImpl implements StorageService
     {
         return graphDAO.deletePerson(id);
     }
-    
+
     /* ********************************************************************** *
      *                                SAMENESS                                *
      * ********************************************************************** */
-    
     /**
      * 
      * @param person
@@ -158,12 +165,13 @@ public class StorageServiceImpl implements StorageService
      * @throws PersonNotFoundException 
      */
     @Override
-    public boolean declareSameness(Integer person, Integer alterEgo, List<URI> sources)
+    public boolean declareSameness(Integer person, Integer alterEgo,
+            List<URI> sources)
             throws PersonNotFoundException
     {
-        return graphDAO.declareSameness(person, alterEgo, sources);   
+        return graphDAO.declareSameness(person, alterEgo, sources);
     }
-    
+
     /**
      * 
      * @param person
@@ -177,17 +185,16 @@ public class StorageServiceImpl implements StorageService
     {
         return graphDAO.refuseSameness(person, alterEgo);
     }
-    
+
     /* ********************************************************************** *
      *                               REALTIONS                                *
      * ********************************************************************** */
-
     @Override
     public Integer createRelation(Relation relation) throws PersonNotFoundException, RelationAlreadyExistsException, IllegalAccessException, InvalidRelationshipException
     {
         return graphDAO.createRelation(relation);
     }
-    
+
     /**
      * 
      * @param id
@@ -209,14 +216,16 @@ public class StorageServiceImpl implements StorageService
      * @throws PersonNotFoundException 
      */
     @Override
-    public List<Relation> retrieveRelations(Integer id, SourceFilter filter) throws PersonNotFoundException
+    public List<Relation> retrieveRelations(Integer id, SourceFilter filter)
+            throws PersonNotFoundException
     {
-        
-        List<Relation> relations = graphDAO.retrieveRelations(id, DirectionEnum.ALL);
-                
+
+        List<Relation> relations = graphDAO.retrieveRelations(id,
+                DirectionEnum.ALL);
+
         return processRelations(relations, filter);
     }
-    
+
     /**
      * 
      * @param id
@@ -226,13 +235,15 @@ public class StorageServiceImpl implements StorageService
      * @throws PersonNotFoundException 
      */
     @Override
-    public List<Relation> retrieveRelations(Integer id, String type, SourceFilter filter) throws PersonNotFoundException
+    public List<Relation> retrieveRelations(Integer id, String type,
+            SourceFilter filter) throws PersonNotFoundException
     {
-        List<Relation> relations = graphDAO.retrieveRelations(id, DirectionEnum.ALL, type);
-                
+        List<Relation> relations = graphDAO.retrieveRelations(id,
+                DirectionEnum.ALL, type);
+
         return processRelations(relations, filter);
     }
-    
+
     /**
      * 
      * @param object
@@ -243,22 +254,25 @@ public class StorageServiceImpl implements StorageService
      * @throws PersonNotFoundException 
      */
     @Override
-    public List<Relation> retrieveRelations(Integer object, Integer subject, String type, SourceFilter filter) throws PersonNotFoundException
+    public List<Relation> retrieveRelations(Integer object, Integer subject,
+            String type, SourceFilter filter) throws PersonNotFoundException
     {
-        List<Relation> relations = graphDAO.retrieveRelations(object, DirectionEnum.ALL, type);
-        
+        List<Relation> relations = graphDAO.retrieveRelations(object,
+                DirectionEnum.ALL, type);
+
         relations = processRelations(relations, filter);
-        
+
         List<Relation> list = new LinkedList<Relation>();
-        
+
         for (Relation relation : relations)
         {
-            if (relation.getObject().equals(subject) || relation.getSubject().equals(subject))
+            if (relation.getObject().equals(subject) || relation.getSubject().
+                    equals(subject))
             {
                 list.add(relation);
             }
         }
-                
+
         return list;
     }
 
@@ -286,7 +300,35 @@ public class StorageServiceImpl implements StorageService
     {
         return graphDAO.deleteRelation(id);
     }
-    
+
+    /* ********************************************************************** *
+     *                                SOURCES                                 *
+     * ********************************************************************** */
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public List<URI> retrieveSources()
+    {
+        List<URI> sources = new LinkedList<URI>();
+        
+        for (Namespace namespace : NAMESPACES.values())
+        {
+            try
+            {
+                URI uri = new URI(namespace.getUri());
+                
+                sources.add(uri);
+            }
+            catch (URISyntaxException ex)
+            {
+            }
+        }
+        
+        return sources;
+    }
+
     // <editor-fold defaultstate="collapsed" desc="Accessor Methods">
     /* ********************************************************************** *
      *                            Accessor Methods                            *
@@ -301,7 +343,7 @@ public class StorageServiceImpl implements StorageService
             SourceFilter filter)
     {
         List<Relation> list = new LinkedList<Relation>();
-        
+
         for (Relation relation : relations)
         {
             if (filter.isAcceptable(relation.getSources()))
@@ -309,9 +351,10 @@ public class StorageServiceImpl implements StorageService
                 list.add(relation);
             }
         }
-        
+
         return list;
     }
+
     /**
      * 
      * @param alterEgos
@@ -319,30 +362,30 @@ public class StorageServiceImpl implements StorageService
      * @return 
      */
     private List<Person> processAlterEgos(Path alterEgos, SourceFilter filter)
-    {   
+    {
         List<Person> list = new LinkedList<Person>();
-        
+
         if (!CollectionUtils.isNullOrEmpty(alterEgos.getPersons()))
         {
             Stack<Iterator<Path>> stack = new Stack<Iterator<Path>>();
-        
+
             Iterator<Path> iterator = alterEgos.getPersons().iterator();
-        
+
             while (iterator.hasNext())
             {
                 Path path = iterator.next();
-                
+
                 if (filter.isAcceptable(path.getSources()))
                 {
                     list.add(path.getPerson());
-                    
+
                     if (path.getPersons() != null && !path.getPersons().isEmpty())
                     {
                         stack.add(iterator);
-                        
+
                         iterator = path.getPersons().iterator();
                     }
-                    
+
                     if (!iterator.hasNext() && !stack.empty())
                     {
                         iterator = stack.pop();
@@ -350,7 +393,7 @@ public class StorageServiceImpl implements StorageService
                 }
             }
         }
-        
+
         return list;
     }// </editor-fold>
 }
